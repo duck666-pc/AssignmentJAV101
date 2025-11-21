@@ -1,0 +1,277 @@
+<!doctype html>
+<html lang="vi">
+<head>
+    <meta charset="utf-8" />
+    <title>Quản lý công việc</title>
+    <meta name="viewport" content="width=device-width,initial-scale=1"/>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 16px;
+            padding: 30px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+        }
+
+        h1 {
+            color: #333;
+            margin-bottom: 24px;
+            font-size: 28px;
+        }
+
+        #addForm {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 20px;
+        }
+
+        #addForm input {
+            flex: 1;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: border 0.3s;
+        }
+
+        #addForm input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        #addForm button {
+            padding: 12px 24px;
+            background: #667eea;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: background 0.3s;
+        }
+
+        #addForm button:hover {
+            background: #5568d3;
+        }
+
+        .filters {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 20px;
+            padding: 12px;
+            background: #f5f5f5;
+            border-radius: 8px;
+        }
+
+        .filters label {
+            cursor: pointer;
+            padding: 6px 12px;
+            border-radius: 6px;
+            transition: all 0.3s;
+        }
+
+        .filters input[type="radio"] {
+            margin-right: 4px;
+        }
+
+        .filters label:has(input:checked) {
+            background: #667eea;
+            color: white;
+        }
+
+        .task {
+            display: flex;
+            align-items: center;
+            padding: 16px;
+            border-bottom: 1px solid #eee;
+            transition: background 0.2s;
+        }
+
+        .task:hover {
+            background: #f9f9f9;
+        }
+
+        .task input[type="checkbox"] {
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+            margin-right: 12px;
+        }
+
+        .task-content {
+            flex: 1;
+        }
+
+        .task input[type="text"] {
+            width: 100%;
+            border: none;
+            background: transparent;
+            font-size: 16px;
+            padding: 4px;
+        }
+
+        .task input[type="text"]:focus {
+            outline: none;
+            background: #f0f0f0;
+            border-radius: 4px;
+        }
+
+        .task.done input[type="text"] {
+            text-decoration: line-through;
+            color: #999;
+        }
+
+        .task-due {
+            font-size: 12px;
+            color: #666;
+            margin-top: 4px;
+        }
+
+        .task button {
+            padding: 6px 12px;
+            background: #ff5252;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 13px;
+            transition: background 0.3s;
+        }
+
+        .task button:hover {
+            background: #d32f2f;
+        }
+
+        .empty {
+            text-align: center;
+            padding: 40px;
+            color: #999;
+        }
+    </style>
+</head>
+<body>
+<div class="container">YourTasks
+    <h1></h1>
+
+    <div id="addForm">
+        <input id="title" placeholder="Thêm công việc mới...">
+        <input id="due" type="date">
+        <button id="addBtn">Thêm</button>
+    </div>
+
+    <div class="filters">
+        <label><input type="radio" name="filter" value="all" checked> Tất cả</label>
+        <label><input type="radio" name="filter" value="todo"> Chưa xong</label>
+        <label><input type="radio" name="filter" value="done"> Đã xong</label>
+    </div>
+
+    <div id="tasksList"></div>
+</div>
+
+<script>
+    const API = 'tasks';
+    let tasks = [];
+
+    // Gọi API
+    async function get() {
+        const r = await fetch(API);
+        return r.json();
+    }
+
+    async function add(data) {
+        const r = await fetch(API, {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify(data)
+        });
+        return r.json();
+    }
+
+    async function update(id, data) {
+        await fetch(`${API}?id=${id}`, {
+            method: 'PUT',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify(data)
+        });
+    }
+
+    async function remove(id) {
+        await fetch(`${API}?id=${id}`, {method: 'DELETE'});
+    }
+
+    function show() {
+        const filter = document.querySelector('input[name="filter"]:checked').value;
+        const list = document.getElementById('tasksList');
+        const filtered = tasks.filter(t => filter === 'all' || t.status === filter);
+
+        if (filtered.length === 0) {
+            list.innerHTML = '<div class="empty">Không có công việc nào</div>';
+            return;
+        }
+
+        list.innerHTML = filtered.map(t => `
+        <div class="task ${t.status}">
+          <input type="checkbox" ${t.status === 'done' ? 'checked' : ''}
+                 onchange="toggleDone(${t.id}, this.checked)">
+          <div class="task-content">
+            <input type="text" value="${t.title}"
+                   onblur="editTitle(${t.id}, this.value)">
+            ${t.dueDate ? `<div class="task-due">📅 ${t.dueDate}</div>` : ''}
+          </div>
+          <button onclick="deleteTask(${t.id})">Xóa</button>
+        </div>
+      `).join('');
+    }
+
+    async function load() {
+        tasks = await get();
+        show();
+    }
+
+    document.getElementById('addBtn').onclick = async () => {
+        const title = document.getElementById('title').value.trim();
+        if (!title) return alert('Nhập tên công việc!');
+
+        const due = document.getElementById('due').value;
+        await add({title, dueDate: due || null});
+
+        document.getElementById('title').value = '';
+        document.getElementById('due').value = '';
+        load();
+    };
+
+    window.toggleDone = async (id, checked) => {
+        await update(id, {status: checked ? 'done' : 'todo'});
+        load();
+    };
+
+    window.editTitle = async (id, newTitle) => {
+        if (!newTitle.trim()) return load();
+        await update(id, {title: newTitle});
+        load();
+    };
+
+    window.deleteTask = async (id) => {
+        if (!confirm('Xóa công việc này?')) return;
+        await remove(id);
+        load();
+    };
+
+    document.querySelectorAll('input[name="filter"]').forEach(r => {
+        r.onchange = show;
+    });
+
+    load();
+</script>
+</body>
+</html>
