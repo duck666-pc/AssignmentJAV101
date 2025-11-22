@@ -18,7 +18,6 @@ public class DuAnServlet extends HttpServlet {
     private static int nextId = 1;
 
     static {
-        // Dự án mẫu
         duAnList.add(new DuAn(nextId++, "Website Bán Hàng", "Admin", new Date(), null, "Dự án phát triển web", "#667eea"));
         duAnList.add(new DuAn(nextId++, "App Mobile", "Admin", new Date(), null, "Phát triển ứng dụng di động", "#f093fb"));
     }

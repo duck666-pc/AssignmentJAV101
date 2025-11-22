@@ -30,7 +30,6 @@ public class NhiemVu {
         this.doUuTien = doUuTien;
     }
 
-    // Getters và Setters
     public int getId() {
         return id;
     }

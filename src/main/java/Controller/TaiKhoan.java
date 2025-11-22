@@ -8,8 +8,8 @@ public class TaiKhoan {
     private String ten;
     private String email;
     private String matKhau;
-    private String vaiTro; // admin, user
-    private List<Integer> duAnIds; // Danh sách ID dự án tham gia
+    private String vaiTro;
+    private List<Integer> duAnIds;
 
     public TaiKhoan() {
         this.duAnIds = new ArrayList<>();
@@ -73,7 +73,6 @@ public class TaiKhoan {
         this.duAnIds = duAnIds != null ? duAnIds : new ArrayList<>();
     }
 
-    // Phương thức thêm/xóa dự án
     public void themDuAn(int duAnId) {
         if (this.duAnIds == null) {
             this.duAnIds = new ArrayList<>();

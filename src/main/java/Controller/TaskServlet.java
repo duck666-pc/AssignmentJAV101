@@ -16,14 +16,12 @@ public class TaskServlet extends HttpServlet {
     private List<Task> taskList = new ArrayList<>();
     private int nextId = 1;
 
-    // Lấy danh sách task
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
         resp.setContentType("application/json; charset=UTF-8");
         resp.getWriter().write(gson.toJson(taskList));
     }
 
-    // Thêm task mới
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws IOException {
         Task task = gson.fromJson(req.getReader(), Task.class);
@@ -42,7 +40,6 @@ public class TaskServlet extends HttpServlet {
         resp.getWriter().write(gson.toJson(task));
     }
 
-    // Cập nhật task
     @Override
     protected void doPut(HttpServletRequest req, HttpServletResponse resp) throws IOException {
         int id = Integer.parseInt(req.getParameter("id"));
@@ -64,7 +61,6 @@ public class TaskServlet extends HttpServlet {
         resp.getWriter().write("{\"error\":\"Không tìm thấy\"}");
     }
 
-    // Xóa task
     @Override
     protected void doDelete(HttpServletRequest req, HttpServletResponse resp) throws IOException {
         int id = Integer.parseInt(req.getParameter("id"));
@@ -77,7 +73,6 @@ public class TaskServlet extends HttpServlet {
         }
     }
 
-    // Class Task đơn giản
     public static class Task {
         public int id;
         public String title;

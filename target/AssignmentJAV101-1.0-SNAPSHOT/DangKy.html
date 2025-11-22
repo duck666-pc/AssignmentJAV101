@@ -96,6 +96,12 @@
             transform: translateY(0);
         }
 
+        .btn-primary:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
         .auth-footer {
             text-align: center;
             margin-top: 25px;
@@ -167,17 +173,17 @@
     <form id="registerForm">
         <div class="form-group">
             <label for="name">Họ và tên</label>
-            <input type="text" id="name" name="name" required placeholder="Nguyễn Văn A">
+            <input type="text" id="name" name="name" required placeholder="Nguyễn Văn A" autocomplete="name">
         </div>
 
         <div class="form-group">
             <label for="email">Email</label>
-            <input type="email" id="email" name="email" required placeholder="your@email.com">
+            <input type="email" id="email" name="email" required placeholder="your@email.com" autocomplete="email">
         </div>
 
         <div class="form-group">
             <label for="password">Mật khẩu</label>
-            <input type="password" id="password" name="password" required placeholder="••••••••" minlength="6">
+            <input type="password" id="password" name="password" required placeholder="••••••••" minlength="6" autocomplete="new-password">
             <div class="strength-bar">
                 <div class="strength-bar-fill" id="strengthBar"></div>
             </div>
@@ -186,10 +192,10 @@
 
         <div class="form-group">
             <label for="confirmPassword">Xác nhận mật khẩu</label>
-            <input type="password" id="confirmPassword" name="confirmPassword" required placeholder="••••••••">
+            <input type="password" id="confirmPassword" name="confirmPassword" required placeholder="••••••••" autocomplete="new-password">
         </div>
 
-        <button type="submit" class="btn-primary">Đăng Ký</button>
+        <button type="submit" class="btn-primary" id="submitBtn">Đăng Ký</button>
     </form>
 
     <div class="auth-footer">
@@ -204,8 +210,8 @@
     const passwordInput = document.getElementById('password');
     const strengthBar = document.getElementById('strengthBar');
     const strengthText = document.getElementById('strengthText');
+    const submitBtn = document.getElementById('submitBtn');
 
-    // Kiểm tra độ mạnh mật khẩu
     passwordInput.addEventListener('input', () => {
         const password = passwordInput.value;
         let strength = 0;
@@ -238,15 +244,27 @@
 
     form.addEventListener('submit', async (e) => {
         e.preventDefault();
+
         errorMsg.style.display = 'none';
         successMsg.style.display = 'none';
 
-        const name = document.getElementById('name').value;
-        const email = document.getElementById('email').value;
+        const name = document.getElementById('name').value.trim();
+        const email = document.getElementById('email').value.trim();
         const password = document.getElementById('password').value;
         const confirmPassword = document.getElementById('confirmPassword').value;
 
-        // Validate
+        if (!name) {
+            errorMsg.textContent = 'Vui lòng nhập họ tên';
+            errorMsg.style.display = 'block';
+            return;
+        }
+
+        if (!email) {
+            errorMsg.textContent = 'Vui lòng nhập email';
+            errorMsg.style.display = 'block';
+            return;
+        }
+
         if (password !== confirmPassword) {
             errorMsg.textContent = 'Mật khẩu xác nhận không khớp';
             errorMsg.style.display = 'block';
@@ -259,10 +277,17 @@
             return;
         }
 
+        submitBtn.disabled = true;
+        submitBtn.textContent = 'Đang xử lý...';
+
+        console.log('Đang đăng ký với:', name, email);
+
         try {
             const response = await fetch('/auth/register', {
                 method: 'POST',
-                headers: {'Content-Type': 'application/json'},
+                headers: {
+                    'Content-Type': 'application/json; charset=UTF-8'
+                },
                 body: JSON.stringify({
                     ten: name,
                     email: email,
@@ -270,7 +295,10 @@
                 })
             });
 
+            console.log('Response status:', response.status);
+
             const data = await response.json();
+            console.log('Response data:', data);
 
             if (response.ok && data.success) {
                 successMsg.textContent = 'Đăng ký thành công! Đang chuyển hướng...';
@@ -282,10 +310,15 @@
             } else {
                 errorMsg.textContent = data.error || 'Đăng ký thất bại';
                 errorMsg.style.display = 'block';
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'Đăng Ký';
             }
         } catch (error) {
-            errorMsg.textContent = 'Lỗi kết nối đến máy chủ';
+            console.error('Lỗi:', error);
+            errorMsg.textContent = 'Lỗi kết nối đến máy chủ. Vui lòng kiểm tra xem server đã chạy chưa.';
             errorMsg.style.display = 'block';
+            submitBtn.disabled = false;
+            submitBtn.textContent = 'Đăng Ký';
         }
     });
 </script>

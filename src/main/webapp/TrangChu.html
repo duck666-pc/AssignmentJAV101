@@ -124,7 +124,6 @@
             transform: translateY(-2px);
         }
 
-        /* List View */
         .list-view {
             background: white;
             border-radius: 12px;
@@ -163,6 +162,11 @@
             font-size: 16px;
             color: #333;
             margin-bottom: 4px;
+        }
+
+        .task-title.completed {
+            text-decoration: line-through;
+            color: #999;
         }
 
         .task-meta {
@@ -209,7 +213,6 @@
             background: #fdd;
         }
 
-        /* Kanban View */
         .kanban-view {
             display: flex;
             gap: 20px;
@@ -218,7 +221,8 @@
         }
 
         .kanban-column {
-            min-width: 300px;
+            min-width: 320px;
+            flex: 1;
             background: white;
             border-radius: 12px;
             padding: 20px;
@@ -232,22 +236,29 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
+            font-size: 16px;
         }
 
         .kanban-count {
             background: #f0f0f0;
-            padding: 2px 8px;
-            border-radius: 10px;
+            padding: 4px 10px;
+            border-radius: 12px;
             font-size: 12px;
+            font-weight: 500;
+        }
+
+        .kanban-cards {
+            min-height: 200px;
         }
 
         .kanban-card {
             background: #f9f9f9;
             padding: 15px;
             border-radius: 8px;
-            margin-bottom: 10px;
-            cursor: move;
+            margin-bottom: 12px;
+            cursor: pointer;
             transition: all 0.2s;
+            border-left: 4px solid #667eea;
         }
 
         .kanban-card:hover {
@@ -255,10 +266,23 @@
             transform: translateY(-2px);
         }
 
+        .kanban-card.priority-high {
+            border-left-color: #ff5252;
+        }
+
+        .kanban-card.priority-medium {
+            border-left-color: #ffa726;
+        }
+
+        .kanban-card.priority-low {
+            border-left-color: #66bb6a;
+        }
+
         .kanban-card-title {
             font-weight: 500;
             color: #333;
             margin-bottom: 8px;
+            font-size: 14px;
         }
 
         .kanban-card-meta {
@@ -267,6 +291,15 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
+            gap: 8px;
+        }
+
+        .kanban-card-project {
+            background: #e3f2fd;
+            color: #1976d2;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 11px;
         }
 
         .calendar-view {
@@ -283,6 +316,11 @@
             margin-bottom: 20px;
         }
 
+        .calendar-header h2 {
+            font-size: 20px;
+            color: #333;
+        }
+
         .calendar-nav {
             display: flex;
             gap: 10px;
@@ -291,33 +329,45 @@
         .calendar-grid {
             display: grid;
             grid-template-columns: repeat(7, 1fr);
-            gap: 10px;
+            gap: 8px;
         }
 
         .calendar-day-header {
             text-align: center;
             font-weight: 600;
             color: #666;
-            padding: 10px;
+            padding: 12px;
+            font-size: 14px;
         }
 
         .calendar-day {
-            min-height: 100px;
+            min-height: 120px;
             border: 1px solid #e0e0e0;
             border-radius: 8px;
             padding: 8px;
             background: #fafafa;
+            transition: all 0.2s;
+        }
+
+        .calendar-day:hover {
+            background: #f5f5f5;
+            border-color: #667eea;
         }
 
         .calendar-day-number {
             font-weight: 600;
             color: #333;
-            margin-bottom: 5px;
+            margin-bottom: 8px;
+            font-size: 14px;
         }
 
         .calendar-day.today {
             background: #e3f2fd;
             border-color: #667eea;
+        }
+
+        .calendar-day.today .calendar-day-number {
+            color: #667eea;
         }
 
         .calendar-task {
@@ -331,6 +381,24 @@
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
+            transition: all 0.2s;
+        }
+
+        .calendar-task:hover {
+            background: #5568d3;
+            transform: translateX(2px);
+        }
+
+        .calendar-task.priority-high {
+            background: #ff5252;
+        }
+
+        .calendar-task.priority-medium {
+            background: #ffa726;
+        }
+
+        .calendar-task.priority-low {
+            background: #66bb6a;
         }
 
         /* Modal */
@@ -419,6 +487,17 @@
         }
 
         .hidden { display: none !important; }
+
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #999;
+        }
+
+        .empty-state-icon {
+            font-size: 48px;
+            margin-bottom: 16px;
+        }
     </style>
 </head>
 <body>
@@ -436,7 +515,7 @@
     <div class="toolbar">
         <div class="project-selector">
             <label>Dự án:</label>
-            <select id="projectSelect">
+            <select id="projectSelect" onchange="loadTasks()">
                 <option value="">Tất cả dự án</option>
             </select>
         </div>
@@ -457,23 +536,24 @@
     </div>
 
     <div id="listView" class="list-view"></div>
-
     <div id="kanbanView" class="kanban-view hidden"></div>
-
     <div id="calendarView" class="calendar-view hidden"></div>
 </div>
 
 <div class="modal" id="taskModal">
     <div class="modal-content">
-        <div class="modal-header">Thêm Nhiệm Vụ Mới</div>
+        <div class="modal-header" id="modalTitle">Thêm Nhiệm Vụ Mới</div>
         <form id="taskForm">
+            <input type="hidden" id="editTaskId">
             <div class="form-group">
                 <label>Tên nhiệm vụ *</label>
                 <input type="text" id="taskTitle" required>
             </div>
             <div class="form-group">
-                <label>Dự án</label>
-                <select id="taskProject"></select>
+                <label>Dự án (Tùy chọn)</label>
+                <select id="taskProject">
+                    <option value="">Không thuộc dự án nào</option>
+                </select>
             </div>
             <div class="form-group">
                 <label>Ngày bắt đầu</label>
@@ -486,9 +566,17 @@
             <div class="form-group">
                 <label>Độ ưu tiên</label>
                 <select id="taskPriority">
-                    <option value="3">Trung bình</option>
-                    <option value="5">Cao</option>
                     <option value="1">Thấp</option>
+                    <option value="3" selected>Trung bình</option>
+                    <option value="5">Cao</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Trạng thái</label>
+                <select id="taskStatus">
+                    <option value="todo">Cần làm</option>
+                    <option value="inprogress">Đang làm</option>
+                    <option value="done">Hoàn thành</option>
                 </select>
             </div>
             <div class="form-group">
@@ -497,41 +585,118 @@
             </div>
             <div class="modal-actions">
                 <button type="button" class="btn-cancel" onclick="closeModal()">Hủy</button>
-                <button type="submit" class="btn-submit">Thêm</button>
+                <button type="submit" class="btn-submit">Lưu</button>
             </div>
         </form>
     </div>
 </div>
 
 <script>
+    let currentUser = null;
     let currentView = 'list';
+    let currentMonth = new Date().getMonth();
+    let currentYear = new Date().getFullYear();
     let tasks = [];
     let projects = [];
-    let currentUser = null;
 
-    async function checkAuth() {
-        try {
-            const response = await fetch('/auth');
-            if (response.ok) {
-                currentUser = await response.json();
-                document.getElementById('userName').textContent = currentUser.ten;
-            } else {
-                window.location.href = 'DangNhap.html';
-            }
-        } catch (error) {
+    const TASKS_KEY = 'taskManagerTasks';
+    const PROJECTS_KEY = 'taskManagerProjects';
+
+    function checkAuth() {
+        const userStr = sessionStorage.getItem('currentUser');
+        if (!userStr) {
             window.location.href = 'DangNhap.html';
+            return;
         }
+        currentUser = JSON.parse(userStr);
+        document.getElementById('userName').textContent = currentUser.ten;
     }
 
-    async function logout() {
-        await fetch('/auth/logout', { method: 'POST' });
+    function logout() {
+        sessionStorage.removeItem('currentUser');
         window.location.href = 'DangNhap.html';
     }
 
-    async function loadProjects() {
-        const response = await fetch('/projects');
-        projects = await response.json();
+    function initData() {
+        let savedProjects = localStorage.getItem(PROJECTS_KEY);
+        if (!savedProjects) {
+            projects = [
+                { id: 1, ten: 'Website Bán Hàng', mauSac: '#667eea' },
+                { id: 2, ten: 'App Mobile', mauSac: '#f093fb' },
+                { id: 3, ten: 'Dự án Marketing', mauSac: '#4facfe' }
+            ];
+            localStorage.setItem(PROJECTS_KEY, JSON.stringify(projects));
+        } else {
+            projects = JSON.parse(savedProjects);
+        }
 
+        let savedTasks = localStorage.getItem(TASKS_KEY);
+        if (!savedTasks) {
+            const today = new Date();
+            const tomorrow = new Date(today);
+            tomorrow.setDate(tomorrow.getDate() + 1);
+            const nextWeek = new Date(today);
+            nextWeek.setDate(nextWeek.getDate() + 7);
+
+            tasks = [
+                {
+                    id: 1,
+                    ten: 'Thiết kế giao diện trang chủ',
+                    duAnId: 1,
+                    ngayBatDau: today.toISOString().split('T')[0],
+                    ngayKetThuc: tomorrow.toISOString().split('T')[0],
+                    doUuTien: 5,
+                    trangThai: 'todo',
+                    ghiChu: 'Thiết kế UI/UX cho trang chủ website'
+                },
+                {
+                    id: 2,
+                    ten: 'Phát triển Backend API',
+                    duAnId: 1,
+                    ngayBatDau: today.toISOString().split('T')[0],
+                    ngayKetThuc: nextWeek.toISOString().split('T')[0],
+                    doUuTien: 5,
+                    trangThai: 'inprogress',
+                    ghiChu: 'Xây dựng REST API với Spring Boot'
+                },
+                {
+                    id: 3,
+                    ten: 'Viết tài liệu hướng dẫn',
+                    duAnId: null,
+                    ngayBatDau: today.toISOString().split('T')[0],
+                    ngayKetThuc: null,
+                    doUuTien: 3,
+                    trangThai: 'todo',
+                    ghiChu: 'Tài liệu cho người dùng'
+                },
+                {
+                    id: 4,
+                    ten: 'Testing và Deploy',
+                    duAnId: 2,
+                    ngayBatDau: today.toISOString().split('T')[0],
+                    ngayKetThuc: tomorrow.toISOString().split('T')[0],
+                    doUuTien: 4,
+                    trangThai: 'done',
+                    ghiChu: 'Kiểm thử và triển khai lên production'
+                },
+                {
+                    id: 5,
+                    ten: 'Họp team hàng tuần',
+                    duAnId: null,
+                    ngayBatDau: today.toISOString().split('T')[0],
+                    ngayKetThuc: today.toISOString().split('T')[0],
+                    doUuTien: 3,
+                    trangThai: 'inprogress',
+                    ghiChu: 'Daily standup meeting'
+                }
+            ];
+            localStorage.setItem(TASKS_KEY, JSON.stringify(tasks));
+        } else {
+            tasks = JSON.parse(savedTasks);
+        }
+    }
+
+    function loadProjects() {
         const selects = [document.getElementById('projectSelect'), document.getElementById('taskProject')];
         selects.forEach(select => {
             const options = projects.map(p =>
@@ -540,17 +705,24 @@
             if (select.id === 'projectSelect') {
                 select.innerHTML = '<option value="">Tất cả dự án</option>' + options;
             } else {
-                select.innerHTML = options;
+                select.innerHTML = '<option value="">Không thuộc dự án nào</option>' + options;
             }
         });
     }
 
-    async function loadTasks() {
+    function loadTasks() {
         const projectId = document.getElementById('projectSelect').value;
-        const url = projectId ? `/nhiemvu?duAnId=${projectId}` : '/nhiemvu';
-        const response = await fetch(url);
-        tasks = await response.json();
-        renderView();
+        const filteredTasks = projectId
+            ? tasks.filter(t => t.duAnId == projectId)
+            : tasks;
+
+        if (currentView === 'list') {
+            renderListView(filteredTasks);
+        } else if (currentView === 'kanban') {
+            renderKanbanView(filteredTasks);
+        } else if (currentView === 'calendar') {
+            renderCalendarView();
+        }
     }
 
     function changeView(view) {
@@ -563,82 +735,87 @@
         document.getElementById('kanbanView').classList.add('hidden');
         document.getElementById('calendarView').classList.add('hidden');
 
-        renderView();
+        loadTasks();
     }
 
-    function renderView() {
-        if (currentView === 'list') renderListView();
-        else if (currentView === 'kanban') renderKanbanView();
-        else if (currentView === 'calendar') renderCalendarView();
-    }
-
-    function renderListView() {
+    function renderListView(taskList) {
         const view = document.getElementById('listView');
         view.classList.remove('hidden');
 
-        if (tasks.length === 0) {
-            view.innerHTML = '<p style="text-align:center;padding:40px;color:#999">Chưa có nhiệm vụ nào</p>';
+        if (taskList.length === 0) {
+            view.innerHTML = `
+                <div class="empty-state">
+                    <div class="empty-state-icon">📝</div>
+                    <p>Chưa có nhiệm vụ nào</p>
+                    <p style="font-size: 14px; margin-top: 8px;">Nhấn "Thêm nhiệm vụ" để bắt đầu</p>
+                </div>
+            `;
             return;
         }
 
-        view.innerHTML = tasks.map(t => {
+        view.innerHTML = taskList.map(t => {
             const priority = t.doUuTien >= 4 ? 'high' : t.doUuTien >= 3 ? 'medium' : 'low';
             const priorityText = t.doUuTien >= 4 ? 'Cao' : t.doUuTien >= 3 ? 'TB' : 'Thấp';
-            const project = projects.find(p => p.id === t.duAnId);
+            const project = t.duAnId ? projects.find(p => p.id === t.duAnId) : null;
+            const completed = t.trangThai === 'done';
 
             return `
-                    <div class="task-item">
-                        <input type="checkbox" class="task-checkbox" ${t.trangThai === 'done' ? 'checked' : ''}
-                               onchange="toggleTask(${t.id}, this.checked)">
-                        <div class="task-content">
-                            <div class="task-title">${t.ten}</div>
-                            <div class="task-meta">
-                                <span class="task-priority priority-${priority}">${priorityText}</span>
-                                ${project ? project.ten : ''}
-                                ${t.ngayKetThuc ? ' • ' + new Date(t.ngayKetThuc).toLocaleDateString('vi-VN') : ''}
-                            </div>
-                        </div>
-                        <div class="task-actions">
-                            <button class="btn-icon" onclick="editTask(${t.id})">✏️</button>
-                            <button class="btn-icon btn-delete" onclick="deleteTask(${t.id})">🗑️</button>
+                <div class="task-item">
+                    <input type="checkbox" class="task-checkbox" ${completed ? 'checked' : ''}
+                           onchange="toggleTask(${t.id}, this.checked)">
+                    <div class="task-content">
+                        <div class="task-title ${completed ? 'completed' : ''}">${t.ten}</div>
+                        <div class="task-meta">
+                            <span class="task-priority priority-${priority}">${priorityText}</span>
+                            ${project ? project.ten : 'Không thuộc dự án'}
+                            ${t.ngayKetThuc ? ' • ' + new Date(t.ngayKetThuc).toLocaleDateString('vi-VN') : ''}
                         </div>
                     </div>
-                `;
+                    <div class="task-actions">
+                        <button class="btn-icon" onclick="editTask(${t.id})">✏️</button>
+                        <button class="btn-icon btn-delete" onclick="deleteTask(${t.id})">🗑️</button>
+                    </div>
+                </div>
+            `;
         }).join('');
     }
 
-    function renderKanbanView() {
+    function renderKanbanView(taskList) {
         const view = document.getElementById('kanbanView');
         view.classList.remove('hidden');
 
         const columns = [
-            { status: 'todo', title: 'Cần làm', color: '#667eea' },
-            { status: 'inprogress', title: 'Đang làm', color: '#ffa726' },
-            { status: 'done', title: 'Hoàn thành', color: '#66bb6a' }
+            { status: 'todo', title: '📋 Cần làm', color: '#667eea' },
+            { status: 'inprogress', title: '⚡ Đang làm', color: '#ffa726' },
+            { status: 'done', title: '✅ Hoàn thành', color: '#66bb6a' }
         ];
 
         view.innerHTML = columns.map(col => {
-            const colTasks = tasks.filter(t => t.trangThai === col.status);
+            const colTasks = taskList.filter(t => t.trangThai === col.status);
             return `
-                    <div class="kanban-column">
-                        <div class="kanban-header">
-                            <span>${col.title}</span>
-                            <span class="kanban-count">${colTasks.length}</span>
-                        </div>
+                <div class="kanban-column">
+                    <div class="kanban-header">
+                        <span>${col.title}</span>
+                        <span class="kanban-count">${colTasks.length}</span>
+                    </div>
+                    <div class="kanban-cards">
+                        ${colTasks.length === 0 ? '<p style="text-align:center;color:#999;padding:20px;">Không có nhiệm vụ</p>' : ''}
                         ${colTasks.map(t => {
-                const project = projects.find(p => p.id === t.duAnId);
+                const priority = t.doUuTien >= 4 ? 'high' : t.doUuTien >= 3 ? 'medium' : 'low';
+                const project = t.duAnId ? projects.find(p => p.id === t.duAnId) : null;
                 return `
-                                <div class="kanban-card" draggable="true" data-task-id="${t.id}">
+                                <div class="kanban-card priority-${priority}" onclick="editTask(${t.id})">
                                     <div class="kanban-card-title">${t.ten}</div>
                                     <div class="kanban-card-meta">
-                                        <span>${project ? project.ten : ''}</span>
+                                        ${project ? `<span class="kanban-card-project">${project.ten}</span>` : '<span style="color:#999;">Không thuộc dự án</span>'}
                                         <span>${t.ngayKetThuc ? new Date(t.ngayKetThuc).toLocaleDateString('vi-VN') : ''}</span>
                                     </div>
                                 </div>
                             `;
             }).join('')}
                     </div>
-                `;
+                </div>
+            `;
         }).join('');
     }
 
@@ -646,68 +823,112 @@
         const view = document.getElementById('calendarView');
         view.classList.remove('hidden');
 
-        const today = new Date();
-        const year = today.getFullYear();
-        const month = today.getMonth();
-
-        const firstDay = new Date(year, month, 1);
-        const lastDay = new Date(year, month + 1, 0);
+        const firstDay = new Date(currentYear, currentMonth, 1);
+        const lastDay = new Date(currentYear, currentMonth + 1, 0);
         const daysInMonth = lastDay.getDate();
+        const startDay = firstDay.getDay();
 
         const monthNames = ['Tháng 1', 'Tháng 2', 'Tháng 3', 'Tháng 4', 'Tháng 5', 'Tháng 6',
             'Tháng 7', 'Tháng 8', 'Tháng 9', 'Tháng 10', 'Tháng 11', 'Tháng 12'];
 
+        const today = new Date();
+        const isCurrentMonth = currentMonth === today.getMonth() && currentYear === today.getFullYear();
+
         view.innerHTML = `
-                <div class="calendar-header">
-                    <h2>${monthNames[month]} ${year}</h2>
-                    <div class="calendar-nav">
-                        <button class="btn-icon">◀</button>
-                        <button class="btn-icon">▶</button>
-                    </div>
+            <div class="calendar-header">
+                <h2>${monthNames[currentMonth]} ${currentYear}</h2>
+                <div class="calendar-nav">
+                    <button class="btn-icon" onclick="changeMonth(-1)">◀</button>
+                    <button class="btn-icon" onclick="changeMonth(0)">Hôm nay</button>
+                    <button class="btn-icon" onclick="changeMonth(1)">▶</button>
                 </div>
-                <div class="calendar-grid">
-                    ${['CN', 'T2', 'T3', 'T4', 'T5', 'T6', 'T7'].map(day =>
+            </div>
+            <div class="calendar-grid">
+                ${['CN', 'T2', 'T3', 'T4', 'T5', 'T6', 'T7'].map(day =>
             `<div class="calendar-day-header">${day}</div>`
         ).join('')}
-                    ${Array.from({length: daysInMonth}, (_, i) => {
+                ${Array.from({length: startDay}, () => '<div></div>').join('')}
+                ${Array.from({length: daysInMonth}, (_, i) => {
             const day = i + 1;
-            const date = new Date(year, month, day);
-            const isToday = date.toDateString() === today.toDateString();
+            const date = new Date(currentYear, currentMonth, day);
+            const isToday = isCurrentMonth && day === today.getDate();
+            const dateStr = date.toISOString().split('T')[0];
+
             const dayTasks = tasks.filter(t => {
                 if (!t.ngayKetThuc) return false;
-                const taskDate = new Date(t.ngayKetThuc);
-                return taskDate.toDateString() === date.toDateString();
+                return t.ngayKetThuc === dateStr;
             });
 
             return `
-                            <div class="calendar-day ${isToday ? 'today' : ''}">
-                                <div class="calendar-day-number">${day}</div>
-                                ${dayTasks.map(t =>
-                `<div class="calendar-task" title="${t.ten}">${t.ten}</div>`
-            ).join('')}
-                            </div>
-                        `;
+                        <div class="calendar-day ${isToday ? 'today' : ''}">
+                            <div class="calendar-day-number">${day}</div>
+                            ${dayTasks.map(t => {
+                const priority = t.doUuTien >= 4 ? 'high' : t.doUuTien >= 3 ? 'medium' : 'low';
+                return `<div class="calendar-task priority-${priority}" onclick="editTask(${t.id})" title="${t.ten}">${t.ten}</div>`;
+            }).join('')}
+                        </div>
+                    `;
         }).join('')}
-                </div>
-            `;
+            </div>
+        `;
     }
 
-    async function toggleTask(id, checked) {
-        await fetch(`/nhiemvu?id=${id}`, {
-            method: 'PUT',
-            headers: {'Content-Type': 'application/json'},
-            body: JSON.stringify({ trangThai: checked ? 'done' : 'todo' })
-        });
+    function changeMonth(delta) {
+        if (delta === 0) {
+            const today = new Date();
+            currentMonth = today.getMonth();
+            currentYear = today.getFullYear();
+        } else {
+            currentMonth += delta;
+            if (currentMonth > 11) {
+                currentMonth = 0;
+                currentYear++;
+            } else if (currentMonth < 0) {
+                currentMonth = 11;
+                currentYear--;
+            }
+        }
+        renderCalendarView();
+    }
+
+    function toggleTask(id, checked) {
+        const task = tasks.find(t => t.id === id);
+        if (task) {
+            task.trangThai = checked ? 'done' : 'todo';
+            saveTasks();
+            loadTasks();
+        }
+    }
+
+    function deleteTask(id) {
+        if (!confirm('Bạn có chắc muốn xóa nhiệm vụ này?')) return;
+        tasks = tasks.filter(t => t.id !== id);
+        saveTasks();
         loadTasks();
     }
 
-    async function deleteTask(id) {
-        if (!confirm('Xóa nhiệm vụ này?')) return;
-        await fetch(`/nhiemvu?id=${id}`, { method: 'DELETE' });
-        loadTasks();
+    function editTask(id) {
+        const task = tasks.find(t => t.id === id);
+        if (!task) return;
+
+        document.getElementById('modalTitle').textContent = 'Sửa Nhiệm Vụ';
+        document.getElementById('editTaskId').value = task.id;
+        document.getElementById('taskTitle').value = task.ten;
+        document.getElementById('taskProject').value = task.duAnId || '';
+        document.getElementById('taskStartDate').value = task.ngayBatDau || '';
+        document.getElementById('taskEndDate').value = task.ngayKetThuc || '';
+        document.getElementById('taskPriority').value = task.doUuTien;
+        document.getElementById('taskStatus').value = task.trangThai;
+        document.getElementById('taskNote').value = task.ghiChu || '';
+
+        document.getElementById('taskModal').classList.add('active');
     }
 
     function showAddModal() {
+        document.getElementById('modalTitle').textContent = 'Thêm Nhiệm Vụ Mới';
+        document.getElementById('taskForm').reset();
+        document.getElementById('editTaskId').value = '';
+        document.getElementById('taskStatus').value = 'todo';
         document.getElementById('taskModal').classList.add('active');
     }
 
@@ -716,35 +937,46 @@
         document.getElementById('taskForm').reset();
     }
 
-    document.getElementById('taskForm').addEventListener('submit', async (e) => {
+    document.getElementById('taskForm').addEventListener('submit', (e) => {
         e.preventDefault();
 
-        const data = {
+        const editId = document.getElementById('editTaskId').value;
+        const projectValue = document.getElementById('taskProject').value;
+
+        const taskData = {
             ten: document.getElementById('taskTitle').value,
-            duAnId: parseInt(document.getElementById('taskProject').value) || 1,
-            nguoiTao: currentUser.ten,
+            duAnId: projectValue ? parseInt(projectValue) : null,
             ngayBatDau: document.getElementById('taskStartDate').value || null,
             ngayKetThuc: document.getElementById('taskEndDate').value || null,
             doUuTien: parseInt(document.getElementById('taskPriority').value),
+            trangThai: document.getElementById('taskStatus').value,
             ghiChu: document.getElementById('taskNote').value
         };
 
-        await fetch('/nhiemvu', {
-            method: 'POST',
-            headers: {'Content-Type': 'application/json'},
-            body: JSON.stringify(data)
-        });
+        if (editId) {
+            const task = tasks.find(t => t.id == editId);
+            if (task) {
+                Object.assign(task, taskData);
+            }
+        } else {
+            const newId = tasks.length > 0 ? Math.max(...tasks.map(t => t.id)) + 1 : 1;
+            tasks.push({ id: newId, ...taskData });
+        }
 
+        saveTasks();
         closeModal();
         loadTasks();
     });
 
-    document.getElementById('projectSelect').addEventListener('change', loadTasks);
+    function saveTasks() {
+        localStorage.setItem(TASKS_KEY, JSON.stringify(tasks));
+    }
 
-    async function init() {
-        await checkAuth();
-        await loadProjects();
-        await loadTasks();
+    function init() {
+        checkAuth();
+        initData();
+        loadProjects();
+        loadTasks();
     }
 
     init();

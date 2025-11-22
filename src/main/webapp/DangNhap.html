@@ -107,6 +107,7 @@
             color: #667eea;
             text-decoration: none;
             font-weight: 500;
+            cursor: pointer;
         }
 
         .auth-footer a:hover {
@@ -132,6 +133,21 @@
             font-size: 14px;
             display: none;
         }
+
+        .account-info {
+            background: #e3f2fd;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            font-size: 13px;
+            color: #1565c0;
+        }
+
+        .account-info strong {
+            display: block;
+            margin-bottom: 8px;
+            color: #0d47a1;
+        }
     </style>
 </head>
 <body>
@@ -147,65 +163,125 @@
     <form id="loginForm">
         <div class="form-group">
             <label for="email">Email</label>
-            <input type="email" id="email" name="email" required placeholder="your@email.com">
+            <input type="email" id="email" name="email">
         </div>
 
         <div class="form-group">
             <label for="password">Mật khẩu</label>
-            <input type="password" id="password" name="password" required placeholder="••••••••">
+            <input type="password" id="password" name="password">
         </div>
 
         <button type="submit" class="btn-primary">Đăng Nhập</button>
     </form>
 
     <div class="auth-footer">
-        <p>Chưa có tài khoản? <a href="DangKy.html">Đăng ký ngay</a></p>
-        <p style="margin-top: 10px; font-size: 12px; color: #999;">
-            Tài khoản mẫu: admin@example.com / admin123
-        </p>
+        <p>Chưa có tài khoản? <a onclick="quickRegister()">Đăng ký nhanh</a></p>
     </div>
 </div>
 
 <script>
+    const ACCOUNTS_KEY = 'taskManagerAccounts';
+
+    function initAccounts() {
+        let accounts = JSON.parse(localStorage.getItem(ACCOUNTS_KEY) || '[]');
+
+        if (!accounts.find(a => a.email === 'admin@example.com')) {
+            accounts.push({
+                id: 1,
+                ten: 'Admin',
+                email: 'admin@example.com',
+                matKhau: 'admin123',
+                vaiTro: 'admin'
+            });
+            localStorage.setItem(ACCOUNTS_KEY, JSON.stringify(accounts));
+        }
+
+        return accounts;
+    }
+
     const form = document.getElementById('loginForm');
     const errorMsg = document.getElementById('errorMsg');
     const successMsg = document.getElementById('successMsg');
 
-    form.addEventListener('submit', async (e) => {
+    form.addEventListener('submit', (e) => {
         e.preventDefault();
         errorMsg.style.display = 'none';
         successMsg.style.display = 'none';
 
-        const email = document.getElementById('email').value;
+        const email = document.getElementById('email').value.trim();
         const password = document.getElementById('password').value;
 
-        try {
-            const response = await fetch('/auth/login', {
-                method: 'POST',
-                headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify({
-                    email: email,
-                    matKhau: password
-                })
-            });
+        const accounts = initAccounts();
+        const user = accounts.find(a => a.email === email && a.matKhau === password);
 
-            const data = await response.json();
+        if (user) {
+            sessionStorage.setItem('currentUser', JSON.stringify({
+                id: user.id,
+                ten: user.ten,
+                email: user.email,
+                vaiTro: user.vaiTro
+            }));
 
-            if (response.ok && data.success) {
-                successMsg.textContent = 'Đăng nhập thành công! Đang chuyển hướng...';
-                successMsg.style.display = 'block';
-                setTimeout(() => {
-                    window.location.href = 'TrangChu.html';
-                }, 1000);
-            } else {
-                errorMsg.textContent = data.error || 'Đăng nhập thất bại';
-                errorMsg.style.display = 'block';
-            }
-        } catch (error) {
-            errorMsg.textContent = 'Lỗi kết nối đến máy chủ';
+            successMsg.textContent = 'Đăng nhập thành công! Đang chuyển hướng...';
+            successMsg.style.display = 'block';
+
+            setTimeout(() => {
+                window.location.href = 'TrangChu.html';
+            }, 1000);
+        } else {
+            errorMsg.textContent = 'Email hoặc mật khẩu không đúng!';
             errorMsg.style.display = 'block';
         }
     });
+
+    function quickRegister() {
+        const name = prompt('Nhập họ tên của bạn:', 'Nguyễn Văn A');
+        if (!name) return;
+
+        const email = prompt('Nhập email:', 'user@example.com');
+        if (!email) return;
+
+        const password = prompt('Nhập mật khẩu (tối thiểu 6 ký tự):', '123456');
+        if (!password || password.length < 6) {
+            alert('Mật khẩu phải có ít nhất 6 ký tự!');
+            return;
+        }
+
+        const accounts = initAccounts();
+
+        if (accounts.find(a => a.email === email)) {
+            alert('Email đã được sử dụng!');
+            return;
+        }
+
+        const newId = accounts.length > 0 ? Math.max(...accounts.map(a => a.id)) + 1 : 1;
+        const newAccount = {
+            id: newId,
+            ten: name,
+            email: email,
+            matKhau: password,
+            vaiTro: 'user'
+        };
+
+        accounts.push(newAccount);
+        localStorage.setItem(ACCOUNTS_KEY, JSON.stringify(accounts));
+
+        sessionStorage.setItem('currentUser', JSON.stringify({
+            id: newAccount.id,
+            ten: newAccount.ten,
+            email: newAccount.email,
+            vaiTro: newAccount.vaiTro
+        }));
+
+        successMsg.textContent = 'Đăng ký thành công! Đang chuyển hướng...';
+        successMsg.style.display = 'block';
+
+        setTimeout(() => {
+            window.location.href = 'TrangChu.html';
+        }, 1000);
+    }
+
+    initAccounts();
 </script>
 </body>
 </html>
