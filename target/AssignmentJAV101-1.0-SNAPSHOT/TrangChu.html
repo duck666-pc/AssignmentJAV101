@@ -124,7 +124,6 @@
             transform: translateY(-2px);
         }
 
-        /* List View */
         .list-view {
             background: white;
             border-radius: 12px;
@@ -214,7 +213,6 @@
             background: #fdd;
         }
 
-        /* Kanban View */
         .kanban-view {
             display: flex;
             gap: 20px;
@@ -970,12 +968,10 @@
         loadTasks();
     });
 
-    // Lưu tasks vào localStorage
     function saveTasks() {
         localStorage.setItem(TASKS_KEY, JSON.stringify(tasks));
     }
 
-    // Khởi động
     function init() {
         checkAuth();
         initData();
