@@ -11,6 +11,28 @@
             box-sizing: border-box;
         }
 
+        html {
+            scroll-behavior: smooth;
+        }
+
+        /* Custom scrollbar */
+        body::-webkit-scrollbar {
+            width: 12px;
+        }
+
+        body::-webkit-scrollbar-track {
+            background: rgba(0,0,0,0.1);
+        }
+
+        body::-webkit-scrollbar-thumb {
+            background: rgba(255,255,255,0.3);
+            border-radius: 10px;
+        }
+
+        body::-webkit-scrollbar-thumb:hover {
+            background: rgba(255,255,255,0.5);
+        }
+
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
@@ -18,82 +40,152 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            padding: 20px;
+            padding: 40px 20px;
+            position: relative;
+        }
+
+        body::before {
+            content: '';
+            position: absolute;
+            width: 500px;
+            height: 500px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+            top: -250px;
+            right: -250px;
+            animation: float 20s infinite;
+        }
+
+        body::after {
+            content: '';
+            position: absolute;
+            width: 400px;
+            height: 400px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+            bottom: -200px;
+            left: -200px;
+            animation: float 15s infinite reverse;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translate(0, 0) rotate(0deg); }
+            50% { transform: translate(30px, 30px) rotate(180deg); }
         }
 
         .auth-container {
             background: white;
-            border-radius: 20px;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
-            padding: 40px;
+            border-radius: 30px;
+            box-shadow: 0 30px 80px rgba(0,0,0,0.3);
+            padding: 50px;
             width: 100%;
-            max-width: 400px;
+            max-width: 500px;
+            position: relative;
+            z-index: 1;
+            animation: slideIn 0.5s ease-out;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
 
         .auth-header {
             text-align: center;
-            margin-bottom: 30px;
+            margin-bottom: 35px;
+        }
+
+        .auth-logo {
+            font-size: 56px;
+            margin-bottom: 15px;
+            animation: bounce 2s infinite;
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
         }
 
         .auth-header h1 {
             color: #333;
-            font-size: 28px;
+            font-size: 32px;
             margin-bottom: 10px;
+            font-weight: 700;
         }
 
         .auth-header p {
             color: #666;
-            font-size: 14px;
+            font-size: 15px;
         }
 
         .form-group {
-            margin-bottom: 20px;
+            margin-bottom: 22px;
         }
 
         .form-group label {
             display: block;
             color: #333;
-            font-weight: 500;
-            margin-bottom: 8px;
+            font-weight: 600;
+            margin-bottom: 10px;
             font-size: 14px;
+        }
+
+        .input-wrapper {
+            position: relative;
+        }
+
+        .input-icon {
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 18px;
+            color: #999;
         }
 
         .form-group input {
             width: 100%;
-            padding: 12px 15px;
+            padding: 15px 15px 15px 45px;
             border: 2px solid #e0e0e0;
-            border-radius: 10px;
-            font-size: 14px;
+            border-radius: 15px;
+            font-size: 15px;
             transition: all 0.3s;
         }
 
         .form-group input:focus {
             outline: none;
             border-color: #667eea;
-            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+            box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
         }
 
         .btn-primary {
             width: 100%;
-            padding: 14px;
+            padding: 16px;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
             border: none;
-            border-radius: 10px;
+            border-radius: 15px;
             font-size: 16px;
-            font-weight: 600;
+            font-weight: 700;
             cursor: pointer;
-            transition: transform 0.2s;
+            transition: all 0.3s;
             margin-top: 10px;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
         }
 
         .btn-primary:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
+            transform: translateY(-3px);
+            box-shadow: 0 6px 25px rgba(102, 126, 234, 0.5);
         }
 
         .btn-primary:active {
-            transform: translateY(0);
+            transform: translateY(-1px);
         }
 
         .btn-primary:disabled {
@@ -104,52 +196,63 @@
 
         .auth-footer {
             text-align: center;
-            margin-top: 25px;
-            padding-top: 25px;
-            border-top: 1px solid #e0e0e0;
+            margin-top: 30px;
+            padding-top: 30px;
+            border-top: 2px solid #f0f0f0;
         }
 
         .auth-footer a {
             color: #667eea;
             text-decoration: none;
-            font-weight: 500;
+            font-weight: 600;
+            transition: all 0.3s;
         }
 
         .auth-footer a:hover {
+            color: #764ba2;
             text-decoration: underline;
         }
 
         .error-message {
-            background: #fee;
+            background: linear-gradient(135deg, #fee 0%, #fdd 100%);
             color: #c33;
-            padding: 12px;
-            border-radius: 8px;
-            margin-bottom: 20px;
+            padding: 15px;
+            border-radius: 12px;
+            margin-bottom: 25px;
             font-size: 14px;
             display: none;
+            border-left: 4px solid #c33;
+            animation: shake 0.5s;
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-10px); }
+            75% { transform: translateX(10px); }
         }
 
         .success-message {
-            background: #efe;
+            background: linear-gradient(135deg, #efe 0%, #dfd 100%);
             color: #3c3;
-            padding: 12px;
-            border-radius: 8px;
-            margin-bottom: 20px;
+            padding: 15px;
+            border-radius: 12px;
+            margin-bottom: 25px;
             font-size: 14px;
             display: none;
+            border-left: 4px solid #3c3;
         }
 
         .password-strength {
-            margin-top: 5px;
+            margin-top: 8px;
             font-size: 12px;
-            color: #666;
+            font-weight: 600;
         }
 
         .strength-bar {
-            height: 4px;
+            height: 6px;
             background: #e0e0e0;
-            border-radius: 2px;
-            margin-top: 5px;
+            border-radius: 3px;
+            margin-top: 8px;
             overflow: hidden;
         }
 
@@ -157,14 +260,50 @@
             height: 100%;
             width: 0%;
             transition: all 0.3s;
+            border-radius: 3px;
+        }
+
+        .requirements {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 12px;
+            margin-top: 10px;
+            font-size: 12px;
+        }
+
+        .requirement {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin: 6px 0;
+            color: #999;
+        }
+
+        .requirement.met {
+            color: #43a047;
+        }
+
+        .requirement-icon {
+            font-size: 14px;
+        }
+
+        @media (max-width: 480px) {
+            .auth-container {
+                padding: 35px 25px;
+            }
+
+            .auth-header h1 {
+                font-size: 26px;
+            }
         }
     </style>
 </head>
 <body>
 <div class="auth-container">
     <div class="auth-header">
-        <h1>🚀 Tạo Tài Khoản</h1>
-        <p>Bắt đầu quản lý công việc hiệu quả</p>
+        <div class="auth-logo">🚀</div>
+        <h1>Tạo Tài Khoản</h1>
+        <p>Bắt đầu quản lý công việc hiệu quả hơn</p>
     </div>
 
     <div class="error-message" id="errorMsg"></div>
@@ -172,27 +311,54 @@
 
     <form id="registerForm">
         <div class="form-group">
-            <label for="name">Họ và tên</label>
-            <input type="text" id="name" name="name" required placeholder="Nguyễn Văn A" autocomplete="name">
+            <label for="name">Họ và tên *</label>
+            <div class="input-wrapper">
+                <span class="input-icon">👤</span>
+                <input type="text" id="name" name="name" required placeholder="Nguyễn Văn A">
+            </div>
         </div>
 
         <div class="form-group">
-            <label for="email">Email</label>
-            <input type="email" id="email" name="email" required placeholder="your@email.com" autocomplete="email">
+            <label for="email">Email *</label>
+            <div class="input-wrapper">
+                <span class="input-icon">📧</span>
+                <input type="email" id="email" name="email" required placeholder="your@email.com">
+            </div>
         </div>
 
         <div class="form-group">
-            <label for="password">Mật khẩu</label>
-            <input type="password" id="password" name="password" required placeholder="••••••••" minlength="6" autocomplete="new-password">
+            <label for="password">Mật khẩu *</label>
+            <div class="input-wrapper">
+                <span class="input-icon">🔒</span>
+                <input type="password" id="password" name="password" required placeholder="••••••••" minlength="6">
+            </div>
             <div class="strength-bar">
                 <div class="strength-bar-fill" id="strengthBar"></div>
             </div>
             <div class="password-strength" id="strengthText"></div>
+
+            <div class="requirements">
+                <div class="requirement" id="req-length">
+                    <span class="requirement-icon">○</span>
+                    <span>Ít nhất 6 ký tự</span>
+                </div>
+                <div class="requirement" id="req-letter">
+                    <span class="requirement-icon">○</span>
+                    <span>Chứa chữ cái</span>
+                </div>
+                <div class="requirement" id="req-number">
+                    <span class="requirement-icon">○</span>
+                    <span>Chứa số (khuyến nghị)</span>
+                </div>
+            </div>
         </div>
 
         <div class="form-group">
-            <label for="confirmPassword">Xác nhận mật khẩu</label>
-            <input type="password" id="confirmPassword" name="confirmPassword" required placeholder="••••••••" autocomplete="new-password">
+            <label for="confirmPassword">Xác nhận mật khẩu *</label>
+            <div class="input-wrapper">
+                <span class="input-icon">🔒</span>
+                <input type="password" id="confirmPassword" name="confirmPassword" required placeholder="••••••••">
+            </div>
         </div>
 
         <button type="submit" class="btn-primary" id="submitBtn">Đăng Ký</button>
@@ -204,45 +370,85 @@
 </div>
 
 <script>
+    const ACCOUNTS_KEY = 'taskManagerAccounts';
     const form = document.getElementById('registerForm');
     const errorMsg = document.getElementById('errorMsg');
     const successMsg = document.getElementById('successMsg');
     const passwordInput = document.getElementById('password');
+    const confirmPasswordInput = document.getElementById('confirmPassword');
     const strengthBar = document.getElementById('strengthBar');
     const strengthText = document.getElementById('strengthText');
     const submitBtn = document.getElementById('submitBtn');
 
+    // Password strength checker
     passwordInput.addEventListener('input', () => {
         const password = passwordInput.value;
         let strength = 0;
+        let metRequirements = 0;
 
-        if (password.length >= 6) strength += 25;
-        if (password.length >= 8) strength += 25;
-        if (/[a-z]/.test(password) && /[A-Z]/.test(password)) strength += 25;
-        if (/[0-9]/.test(password)) strength += 25;
+        // Check length
+        const reqLength = document.getElementById('req-length');
+        if (password.length >= 6) {
+            strength += 33;
+            metRequirements++;
+            reqLength.classList.add('met');
+            reqLength.querySelector('.requirement-icon').textContent = '✓';
+        } else {
+            reqLength.classList.remove('met');
+            reqLength.querySelector('.requirement-icon').textContent = '○';
+        }
+
+        // Check for letters
+        const reqLetter = document.getElementById('req-letter');
+        if (/[a-zA-Z]/.test(password)) {
+            strength += 33;
+            metRequirements++;
+            reqLetter.classList.add('met');
+            reqLetter.querySelector('.requirement-icon').textContent = '✓';
+        } else {
+            reqLetter.classList.remove('met');
+            reqLetter.querySelector('.requirement-icon').textContent = '○';
+        }
+
+        // Check for numbers
+        const reqNumber = document.getElementById('req-number');
+        if (/[0-9]/.test(password)) {
+            strength += 34;
+            metRequirements++;
+            reqNumber.classList.add('met');
+            reqNumber.querySelector('.requirement-icon').textContent = '✓';
+        } else {
+            reqNumber.classList.remove('met');
+            reqNumber.querySelector('.requirement-icon').textContent = '○';
+        }
 
         strengthBar.style.width = strength + '%';
 
-        if (strength <= 25) {
-            strengthBar.style.background = '#ff5252';
-            strengthText.textContent = 'Yếu';
+        if (strength <= 33) {
+            strengthBar.style.background = 'linear-gradient(135deg, #ff5252 0%, #ee5a6f 100%)';
+            strengthText.textContent = '⚠️ Yếu';
             strengthText.style.color = '#ff5252';
-        } else if (strength <= 50) {
-            strengthBar.style.background = '#ffa726';
-            strengthText.textContent = 'Trung bình';
+        } else if (strength <= 66) {
+            strengthBar.style.background = 'linear-gradient(135deg, #ffa726 0%, #fb8c00 100%)';
+            strengthText.textContent = '⚡ Trung bình';
             strengthText.style.color = '#ffa726';
-        } else if (strength <= 75) {
-            strengthBar.style.background = '#66bb6a';
-            strengthText.textContent = 'Khá';
-            strengthText.style.color = '#66bb6a';
         } else {
-            strengthBar.style.background = '#43a047';
-            strengthText.textContent = 'Mạnh';
+            strengthBar.style.background = 'linear-gradient(135deg, #66bb6a 0%, #43a047 100%)';
+            strengthText.textContent = '✓ Mạnh';
             strengthText.style.color = '#43a047';
         }
     });
 
-    form.addEventListener('submit', async (e) => {
+    // Confirm password match checker
+    confirmPasswordInput.addEventListener('input', () => {
+        if (confirmPasswordInput.value && passwordInput.value !== confirmPasswordInput.value) {
+            confirmPasswordInput.style.borderColor = '#ff5252';
+        } else {
+            confirmPasswordInput.style.borderColor = '#e0e0e0';
+        }
+    });
+
+    form.addEventListener('submit', (e) => {
         e.preventDefault();
 
         errorMsg.style.display = 'none';
@@ -253,26 +459,33 @@
         const password = document.getElementById('password').value;
         const confirmPassword = document.getElementById('confirmPassword').value;
 
+        // Validation
         if (!name) {
-            errorMsg.textContent = 'Vui lòng nhập họ tên';
+            errorMsg.textContent = '❌ Vui lòng nhập họ tên!';
             errorMsg.style.display = 'block';
             return;
         }
 
         if (!email) {
-            errorMsg.textContent = 'Vui lòng nhập email';
+            errorMsg.textContent = '❌ Vui lòng nhập email!';
             errorMsg.style.display = 'block';
             return;
         }
 
-        if (password !== confirmPassword) {
-            errorMsg.textContent = 'Mật khẩu xác nhận không khớp';
+        if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+            errorMsg.textContent = '❌ Email không hợp lệ!';
             errorMsg.style.display = 'block';
             return;
         }
 
         if (password.length < 6) {
-            errorMsg.textContent = 'Mật khẩu phải có ít nhất 6 ký tự';
+            errorMsg.textContent = '❌ Mật khẩu phải có ít nhất 6 ký tự!';
+            errorMsg.style.display = 'block';
+            return;
+        }
+
+        if (password !== confirmPassword) {
+            errorMsg.textContent = '❌ Mật khẩu xác nhận không khớp!';
             errorMsg.style.display = 'block';
             return;
         }
@@ -280,46 +493,47 @@
         submitBtn.disabled = true;
         submitBtn.textContent = 'Đang xử lý...';
 
-        console.log('Đang đăng ký với:', name, email);
+        setTimeout(() => {
+            let accounts = JSON.parse(localStorage.getItem(ACCOUNTS_KEY) || '[]');
 
-        try {
-            const response = await fetch('/auth/register', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json; charset=UTF-8'
-                },
-                body: JSON.stringify({
-                    ten: name,
-                    email: email,
-                    matKhau: password
-                })
-            });
-
-            console.log('Response status:', response.status);
-
-            const data = await response.json();
-            console.log('Response data:', data);
-
-            if (response.ok && data.success) {
-                successMsg.textContent = 'Đăng ký thành công! Đang chuyển hướng...';
-                successMsg.style.display = 'block';
-                form.reset();
-                setTimeout(() => {
-                    window.location.href = 'TrangChu.html';
-                }, 1500);
-            } else {
-                errorMsg.textContent = data.error || 'Đăng ký thất bại';
+            // Check if email already exists
+            if (accounts.find(a => a.email === email)) {
+                errorMsg.textContent = '❌ Email đã được sử dụng!';
                 errorMsg.style.display = 'block';
                 submitBtn.disabled = false;
                 submitBtn.textContent = 'Đăng Ký';
+                return;
             }
-        } catch (error) {
-            console.error('Lỗi:', error);
-            errorMsg.textContent = 'Lỗi kết nối đến máy chủ. Vui lòng kiểm tra xem server đã chạy chưa.';
-            errorMsg.style.display = 'block';
-            submitBtn.disabled = false;
-            submitBtn.textContent = 'Đăng Ký';
-        }
+
+            // Create new account
+            const newId = accounts.length > 0 ? Math.max(...accounts.map(a => a.id)) + 1 : 1;
+            const newAccount = {
+                id: newId,
+                ten: name,
+                email: email,
+                matKhau: password,
+                vaiTro: 'user'
+            };
+
+            accounts.push(newAccount);
+            localStorage.setItem(ACCOUNTS_KEY, JSON.stringify(accounts));
+
+            // Auto login
+            sessionStorage.setItem('currentUser', JSON.stringify({
+                id: newAccount.id,
+                ten: newAccount.ten,
+                email: newAccount.email,
+                vaiTro: newAccount.vaiTro
+            }));
+
+            successMsg.textContent = '✅ Đăng ký thành công! Đang chuyển hướng...';
+            successMsg.style.display = 'block';
+            form.reset();
+
+            setTimeout(() => {
+                window.location.href = 'TrangChu.html';
+            }, 1500);
+        }, 500);
     });
 </script>
 </body>

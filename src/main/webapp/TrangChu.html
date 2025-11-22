@@ -7,17 +7,41 @@
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
 
+        html {
+            scroll-behavior: smooth;
+        }
+
         body {
             font-family: 'Segoe UI', sans-serif;
-            background: #f5f7fa;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* Custom scrollbar for body */
+        body::-webkit-scrollbar {
+            width: 12px;
+        }
+
+        body::-webkit-scrollbar-track {
+            background: rgba(0,0,0,0.1);
+        }
+
+        body::-webkit-scrollbar-thumb {
+            background: rgba(255,255,255,0.3);
+            border-radius: 10px;
+        }
+
+        body::-webkit-scrollbar-thumb:hover {
+            background: rgba(255,255,255,0.5);
         }
 
         .header {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
             color: white;
             padding: 20px 30px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
         }
 
         .header-content {
@@ -29,27 +53,48 @@
         }
 
         .header h1 {
-            font-size: 24px;
+            font-size: 28px;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 12px;
         }
 
         .user-info {
             display: flex;
             align-items: center;
             gap: 15px;
+            background: rgba(255,255,255,0.15);
+            padding: 10px 20px;
+            border-radius: 50px;
+        }
+
+        .user-avatar {
+            width: 36px;
+            height: 36px;
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            font-size: 16px;
         }
 
         .btn-logout {
-            padding: 8px 16px;
+            padding: 8px 20px;
             background: rgba(255,255,255,0.2);
-            border: 1px solid rgba(255,255,255,0.3);
+            border: 2px solid rgba(255,255,255,0.3);
             color: white;
-            border-radius: 6px;
+            border-radius: 25px;
             cursor: pointer;
             transition: all 0.3s;
+            font-weight: 500;
         }
 
         .btn-logout:hover {
             background: rgba(255,255,255,0.3);
+            transform: translateY(-2px);
         }
 
         .container {
@@ -60,98 +105,123 @@
 
         .toolbar {
             background: white;
-            padding: 20px;
-            border-radius: 12px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
-            margin-bottom: 20px;
+            padding: 25px;
+            border-radius: 20px;
+            box-shadow: 0 8px 30px rgba(0,0,0,0.12);
+            margin-bottom: 25px;
             display: flex;
             justify-content: space-between;
             align-items: center;
             flex-wrap: wrap;
-            gap: 15px;
+            gap: 20px;
         }
 
         .project-selector {
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 12px;
+        }
+
+        .project-selector label {
+            font-weight: 600;
+            color: #333;
         }
 
         .project-selector select {
-            padding: 10px 15px;
+            padding: 12px 18px;
             border: 2px solid #e0e0e0;
-            border-radius: 8px;
+            border-radius: 12px;
             font-size: 14px;
-            min-width: 200px;
+            min-width: 220px;
+            cursor: pointer;
+            transition: all 0.3s;
+            background: white;
+        }
+
+        .project-selector select:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
         }
 
         .view-modes {
             display: flex;
             gap: 10px;
+            background: #f5f5f5;
+            padding: 6px;
+            border-radius: 12px;
         }
 
         .view-btn {
             padding: 10px 20px;
-            background: #f5f5f5;
+            background: transparent;
             border: none;
             border-radius: 8px;
             cursor: pointer;
             font-size: 14px;
+            font-weight: 500;
             transition: all 0.3s;
             display: flex;
             align-items: center;
             gap: 8px;
+            color: #666;
         }
 
         .view-btn.active {
-            background: #667eea;
-            color: white;
+            background: white;
+            color: #667eea;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
         }
 
         .btn-add {
-            padding: 10px 20px;
-            background: #667eea;
+            padding: 12px 28px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
             border: none;
-            border-radius: 8px;
+            border-radius: 12px;
             cursor: pointer;
             font-weight: 600;
             transition: all 0.3s;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
         }
 
         .btn-add:hover {
-            background: #5568d3;
-            transform: translateY(-2px);
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.5);
         }
 
         .list-view {
             background: white;
-            border-radius: 12px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
-            padding: 20px;
+            border-radius: 20px;
+            box-shadow: 0 8px 30px rgba(0,0,0,0.12);
+            padding: 25px;
         }
 
         .task-item {
             display: flex;
             align-items: center;
-            padding: 16px;
+            padding: 20px;
             border-bottom: 1px solid #f0f0f0;
-            transition: background 0.2s;
+            transition: all 0.3s;
+            border-radius: 12px;
+            margin-bottom: 8px;
         }
 
         .task-item:hover {
-            background: #f9f9f9;
-        }
-
-        .task-item:last-child {
-            border-bottom: none;
+            background: linear-gradient(135deg, #f5f7fa 0%, #e8edf3 100%);
+            transform: translateX(5px);
         }
 
         .task-checkbox {
-            width: 20px;
-            height: 20px;
-            margin-right: 15px;
+            width: 22px;
+            height: 22px;
+            margin-right: 18px;
             cursor: pointer;
+            accent-color: #667eea;
         }
 
         .task-content {
@@ -161,7 +231,8 @@
         .task-title {
             font-size: 16px;
             color: #333;
-            margin-bottom: 4px;
+            margin-bottom: 6px;
+            font-weight: 500;
         }
 
         .task-title.completed {
@@ -170,38 +241,51 @@
         }
 
         .task-meta {
-            font-size: 12px;
+            font-size: 13px;
             color: #999;
+            display: flex;
+            align-items: center;
+            gap: 12px;
         }
 
         .task-priority {
-            padding: 4px 12px;
-            border-radius: 12px;
+            padding: 4px 14px;
+            border-radius: 20px;
             font-size: 12px;
-            font-weight: 500;
-            margin-right: 10px;
+            font-weight: 600;
         }
 
-        .priority-high { background: #fee; color: #c33; }
-        .priority-medium { background: #fef3cd; color: #856404; }
-        .priority-low { background: #d4edda; color: #155724; }
+        .priority-high {
+            background: linear-gradient(135deg, #ff6b6b 0%, #ee5a6f 100%);
+            color: white;
+        }
+        .priority-medium {
+            background: linear-gradient(135deg, #ffa726 0%, #fb8c00 100%);
+            color: white;
+        }
+        .priority-low {
+            background: linear-gradient(135deg, #66bb6a 0%, #43a047 100%);
+            color: white;
+        }
 
         .task-actions {
             display: flex;
-            gap: 8px;
+            gap: 10px;
         }
 
         .btn-icon {
-            padding: 6px 12px;
+            padding: 8px 14px;
             background: #f5f5f5;
             border: none;
-            border-radius: 6px;
+            border-radius: 10px;
             cursor: pointer;
-            transition: all 0.2s;
+            transition: all 0.3s;
+            font-size: 16px;
         }
 
         .btn-icon:hover {
             background: #e0e0e0;
+            transform: translateY(-2px);
         }
 
         .btn-delete {
@@ -218,52 +302,102 @@
             gap: 20px;
             overflow-x: auto;
             padding-bottom: 20px;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        /* Custom scrollbar for kanban */
+        .kanban-view::-webkit-scrollbar {
+            height: 10px;
+        }
+
+        .kanban-view::-webkit-scrollbar-track {
+            background: rgba(255,255,255,0.3);
+            border-radius: 10px;
+        }
+
+        .kanban-view::-webkit-scrollbar-thumb {
+            background: rgba(255,255,255,0.6);
+            border-radius: 10px;
+        }
+
+        .kanban-view::-webkit-scrollbar-thumb:hover {
+            background: rgba(255,255,255,0.8);
         }
 
         .kanban-column {
-            min-width: 320px;
+            min-width: 350px;
             flex: 1;
             background: white;
-            border-radius: 12px;
-            padding: 20px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            border-radius: 20px;
+            padding: 25px;
+            box-shadow: 0 8px 30px rgba(0,0,0,0.12);
         }
 
         .kanban-header {
-            font-weight: 600;
+            font-weight: 700;
             color: #333;
-            margin-bottom: 15px;
+            margin-bottom: 20px;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            font-size: 16px;
+            font-size: 18px;
+            padding-bottom: 15px;
+            border-bottom: 3px solid #f0f0f0;
         }
 
         .kanban-count {
-            background: #f0f0f0;
-            padding: 4px 10px;
-            border-radius: 12px;
-            font-size: 12px;
-            font-weight: 500;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 600;
         }
 
         .kanban-cards {
-            min-height: 200px;
+            min-height: 250px;
+            max-height: 600px;
+            overflow-y: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        /* Custom scrollbar for kanban cards */
+        .kanban-cards::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .kanban-cards::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 10px;
+        }
+
+        .kanban-cards::-webkit-scrollbar-thumb {
+            background: #ccc;
+            border-radius: 10px;
+        }
+
+        .kanban-cards::-webkit-scrollbar-thumb:hover {
+            background: #999;
         }
 
         .kanban-card {
-            background: #f9f9f9;
-            padding: 15px;
-            border-radius: 8px;
-            margin-bottom: 12px;
-            cursor: pointer;
-            transition: all 0.2s;
-            border-left: 4px solid #667eea;
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            padding: 18px;
+            border-radius: 12px;
+            margin-bottom: 15px;
+            cursor: move;
+            transition: all 0.3s;
+            border-left: 5px solid #667eea;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
         }
 
         .kanban-card:hover {
-            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+            transform: translateY(-3px) scale(1.02);
+        }
+
+        .kanban-card.dragging {
+            opacity: 0.5;
         }
 
         .kanban-card.priority-high {
@@ -279,10 +413,10 @@
         }
 
         .kanban-card-title {
-            font-weight: 500;
+            font-weight: 600;
             color: #333;
-            margin-bottom: 8px;
-            font-size: 14px;
+            margin-bottom: 10px;
+            font-size: 15px;
         }
 
         .kanban-card-meta {
@@ -291,78 +425,83 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            gap: 8px;
+            gap: 10px;
         }
 
         .kanban-card-project {
-            background: #e3f2fd;
+            background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%);
             color: #1976d2;
-            padding: 2px 8px;
-            border-radius: 4px;
+            padding: 4px 10px;
+            border-radius: 6px;
             font-size: 11px;
+            font-weight: 600;
         }
 
         .calendar-view {
             background: white;
-            border-radius: 12px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
-            padding: 20px;
+            border-radius: 20px;
+            box-shadow: 0 8px 30px rgba(0,0,0,0.12);
+            padding: 30px;
         }
 
         .calendar-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 20px;
+            margin-bottom: 30px;
         }
 
         .calendar-header h2 {
-            font-size: 20px;
+            font-size: 24px;
             color: #333;
+            font-weight: 700;
         }
 
         .calendar-nav {
             display: flex;
-            gap: 10px;
+            gap: 12px;
         }
 
         .calendar-grid {
             display: grid;
             grid-template-columns: repeat(7, 1fr);
-            gap: 8px;
+            gap: 12px;
         }
 
         .calendar-day-header {
             text-align: center;
-            font-weight: 600;
-            color: #666;
-            padding: 12px;
+            font-weight: 700;
+            color: #667eea;
+            padding: 15px;
             font-size: 14px;
+            background: linear-gradient(135deg, #f5f7fa 0%, #e8edf3 100%);
+            border-radius: 10px;
         }
 
         .calendar-day {
-            min-height: 120px;
-            border: 1px solid #e0e0e0;
-            border-radius: 8px;
-            padding: 8px;
+            min-height: 130px;
+            border: 2px solid #e0e0e0;
+            border-radius: 12px;
+            padding: 10px;
             background: #fafafa;
-            transition: all 0.2s;
+            transition: all 0.3s;
         }
 
         .calendar-day:hover {
             background: #f5f5f5;
             border-color: #667eea;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.2);
         }
 
         .calendar-day-number {
-            font-weight: 600;
+            font-weight: 700;
             color: #333;
-            margin-bottom: 8px;
-            font-size: 14px;
+            margin-bottom: 10px;
+            font-size: 16px;
         }
 
         .calendar-day.today {
-            background: #e3f2fd;
+            background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%);
             border-color: #667eea;
         }
 
@@ -371,34 +510,35 @@
         }
 
         .calendar-task {
-            background: #667eea;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
-            padding: 4px 8px;
-            border-radius: 4px;
+            padding: 6px 10px;
+            border-radius: 6px;
             font-size: 11px;
-            margin-bottom: 4px;
+            margin-bottom: 6px;
             cursor: pointer;
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
-            transition: all 0.2s;
+            transition: all 0.3s;
+            font-weight: 500;
         }
 
         .calendar-task:hover {
-            background: #5568d3;
-            transform: translateX(2px);
+            transform: scale(1.05);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
         }
 
         .calendar-task.priority-high {
-            background: #ff5252;
+            background: linear-gradient(135deg, #ff6b6b 0%, #ee5a6f 100%);
         }
 
         .calendar-task.priority-medium {
-            background: #ffa726;
+            background: linear-gradient(135deg, #ffa726 0%, #fb8c00 100%);
         }
 
         .calendar-task.priority-low {
-            background: #66bb6a;
+            background: linear-gradient(135deg, #66bb6a 0%, #43a047 100%);
         }
 
         /* Modal */
@@ -409,7 +549,8 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(0,0,0,0.5);
+            background: rgba(0,0,0,0.6);
+            backdrop-filter: blur(5px);
             z-index: 1000;
             align-items: center;
             justify-content: center;
@@ -421,82 +562,192 @@
 
         .modal-content {
             background: white;
-            border-radius: 12px;
-            padding: 30px;
-            max-width: 500px;
+            border-radius: 20px;
+            padding: 35px;
+            max-width: 550px;
             width: 90%;
-            max-height: 80vh;
+            max-height: 85vh;
             overflow-y: auto;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            -webkit-overflow-scrolling: touch;
+        }
+
+        /* Custom scrollbar for modal */
+        .modal-content::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .modal-content::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 10px;
+        }
+
+        .modal-content::-webkit-scrollbar-thumb {
+            background: #667eea;
+            border-radius: 10px;
+        }
+
+        .modal-content::-webkit-scrollbar-thumb:hover {
+            background: #5568d3;
         }
 
         .modal-header {
-            font-size: 20px;
-            font-weight: 600;
-            margin-bottom: 20px;
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 25px;
+            color: #333;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
         }
 
         .form-group {
-            margin-bottom: 15px;
+            margin-bottom: 20px;
         }
 
         .form-group label {
             display: block;
-            font-weight: 500;
-            margin-bottom: 5px;
+            font-weight: 600;
+            margin-bottom: 8px;
             color: #333;
+            font-size: 14px;
         }
 
         .form-group input,
         .form-group textarea,
         .form-group select {
             width: 100%;
-            padding: 10px;
+            padding: 12px 15px;
             border: 2px solid #e0e0e0;
-            border-radius: 8px;
+            border-radius: 10px;
             font-size: 14px;
+            transition: all 0.3s;
+        }
+
+        .form-group input:focus,
+        .form-group textarea:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
         }
 
         .form-group textarea {
             resize: vertical;
-            min-height: 80px;
+            min-height: 100px;
+            font-family: 'Segoe UI', sans-serif;
         }
 
         .modal-actions {
             display: flex;
-            gap: 10px;
+            gap: 12px;
             justify-content: flex-end;
-            margin-top: 20px;
+            margin-top: 25px;
         }
 
         .btn-cancel {
-            padding: 10px 20px;
+            padding: 12px 24px;
             background: #f5f5f5;
             border: none;
-            border-radius: 8px;
+            border-radius: 10px;
             cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .btn-cancel:hover {
+            background: #e0e0e0;
         }
 
         .btn-submit {
-            padding: 10px 20px;
-            background: #667eea;
+            padding: 12px 24px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
             border: none;
-            border-radius: 8px;
+            border-radius: 10px;
             cursor: pointer;
             font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .btn-submit:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
         }
 
         .hidden { display: none !important; }
 
         .empty-state {
             text-align: center;
-            padding: 60px 20px;
+            padding: 80px 20px;
             color: #999;
         }
 
         .empty-state-icon {
-            font-size: 48px;
-            margin-bottom: 16px;
+            font-size: 64px;
+            margin-bottom: 20px;
+        }
+
+        .empty-state h3 {
+            font-size: 20px;
+            margin-bottom: 10px;
+            color: #666;
+        }
+
+        /* View modal for calendar tasks */
+        .detail-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 0;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .detail-row:last-child {
+            border-bottom: none;
+        }
+
+        .detail-label {
+            font-weight: 600;
+            color: #666;
+            font-size: 14px;
+        }
+
+        .detail-value {
+            color: #333;
+            font-size: 14px;
+            flex: 1;
+            text-align: right;
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            gap: 10px;
+        }
+
+        .edit-icon {
+            cursor: pointer;
+            padding: 6px;
+            border-radius: 6px;
+            transition: all 0.3s;
+        }
+
+        .edit-icon:hover {
+            background: #f0f0f0;
+        }
+
+        @media (max-width: 768px) {
+            .toolbar {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .kanban-view {
+                flex-direction: column;
+            }
+
+            .kanban-column {
+                min-width: 100%;
+            }
         }
     </style>
 </head>
@@ -505,6 +756,7 @@
     <div class="header-content">
         <h1>🎯 Quản Lý Công Việc</h1>
         <div class="user-info">
+            <div class="user-avatar" id="userAvatar">A</div>
             <span id="userName">Đang tải...</span>
             <button class="btn-logout" onclick="logout()">Đăng xuất</button>
         </div>
@@ -532,7 +784,9 @@
             </button>
         </div>
 
-        <button class="btn-add" onclick="showAddModal()">+ Thêm nhiệm vụ</button>
+        <button class="btn-add" onclick="showAddModal()">
+            <span>➕</span> Thêm nhiệm vụ
+        </button>
     </div>
 
     <div id="listView" class="list-view"></div>
@@ -540,17 +794,20 @@
     <div id="calendarView" class="calendar-view hidden"></div>
 </div>
 
+<!-- Modal thêm/sửa nhiệm vụ -->
 <div class="modal" id="taskModal">
     <div class="modal-content">
-        <div class="modal-header" id="modalTitle">Thêm Nhiệm Vụ Mới</div>
+        <div class="modal-header">
+            <span id="modalTitle">Thêm Nhiệm Vụ Mới</span>
+        </div>
         <form id="taskForm">
             <input type="hidden" id="editTaskId">
             <div class="form-group">
                 <label>Tên nhiệm vụ *</label>
-                <input type="text" id="taskTitle" required>
+                <input type="text" id="taskTitle" required placeholder="Nhập tên nhiệm vụ">
             </div>
             <div class="form-group">
-                <label>Dự án (Tùy chọn)</label>
+                <label>Dự án</label>
                 <select id="taskProject">
                     <option value="">Không thuộc dự án nào</option>
                 </select>
@@ -581,13 +838,26 @@
             </div>
             <div class="form-group">
                 <label>Ghi chú</label>
-                <textarea id="taskNote"></textarea>
+                <textarea id="taskNote" placeholder="Thêm ghi chú..."></textarea>
             </div>
             <div class="modal-actions">
                 <button type="button" class="btn-cancel" onclick="closeModal()">Hủy</button>
                 <button type="submit" class="btn-submit">Lưu</button>
             </div>
         </form>
+    </div>
+</div>
+
+<!-- Modal xem chi tiết nhiệm vụ -->
+<div class="modal" id="viewModal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <span>Chi tiết nhiệm vụ</span>
+        </div>
+        <div id="viewContent"></div>
+        <div class="modal-actions">
+            <button type="button" class="btn-cancel" onclick="closeViewModal()">Đóng</button>
+        </div>
     </div>
 </div>
 
@@ -598,6 +868,7 @@
     let currentYear = new Date().getFullYear();
     let tasks = [];
     let projects = [];
+    let draggedTask = null;
 
     const TASKS_KEY = 'taskManagerTasks';
     const PROJECTS_KEY = 'taskManagerProjects';
@@ -610,6 +881,8 @@
         }
         currentUser = JSON.parse(userStr);
         document.getElementById('userName').textContent = currentUser.ten;
+        const firstLetter = currentUser.ten.charAt(0).toUpperCase();
+        document.getElementById('userAvatar').textContent = firstLetter;
     }
 
     function logout() {
@@ -678,16 +951,6 @@
                     doUuTien: 4,
                     trangThai: 'done',
                     ghiChu: 'Kiểm thử và triển khai lên production'
-                },
-                {
-                    id: 5,
-                    ten: 'Họp team hàng tuần',
-                    duAnId: null,
-                    ngayBatDau: today.toISOString().split('T')[0],
-                    ngayKetThuc: today.toISOString().split('T')[0],
-                    doUuTien: 3,
-                    trangThai: 'inprogress',
-                    ghiChu: 'Daily standup meeting'
                 }
             ];
             localStorage.setItem(TASKS_KEY, JSON.stringify(tasks));
@@ -746,7 +1009,7 @@
             view.innerHTML = `
                 <div class="empty-state">
                     <div class="empty-state-icon">📝</div>
-                    <p>Chưa có nhiệm vụ nào</p>
+                    <h3>Chưa có nhiệm vụ nào</h3>
                     <p style="font-size: 14px; margin-top: 8px;">Nhấn "Thêm nhiệm vụ" để bắt đầu</p>
                 </div>
             `;
@@ -767,13 +1030,13 @@
                         <div class="task-title ${completed ? 'completed' : ''}">${t.ten}</div>
                         <div class="task-meta">
                             <span class="task-priority priority-${priority}">${priorityText}</span>
-                            ${project ? project.ten : 'Không thuộc dự án'}
-                            ${t.ngayKetThuc ? ' • ' + new Date(t.ngayKetThuc).toLocaleDateString('vi-VN') : ''}
+                            <span>${project ? project.ten : 'Không thuộc dự án'}</span>
+                            ${t.ngayKetThuc ? '<span>📅 ' + new Date(t.ngayKetThuc).toLocaleDateString('vi-VN') + '</span>' : ''}
                         </div>
                     </div>
                     <div class="task-actions">
-                        <button class="btn-icon" onclick="editTask(${t.id})">✏️</button>
-                        <button class="btn-icon btn-delete" onclick="deleteTask(${t.id})">🗑️</button>
+                        <button class="btn-icon" onclick="editTask(${t.id})" title="Sửa">✏️</button>
+                        <button class="btn-icon btn-delete" onclick="deleteTask(${t.id})" title="Xóa">🗑️</button>
                     </div>
                 </div>
             `;
@@ -793,21 +1056,25 @@
         view.innerHTML = columns.map(col => {
             const colTasks = taskList.filter(t => t.trangThai === col.status);
             return `
-                <div class="kanban-column">
+                <div class="kanban-column" data-status="${col.status}">
                     <div class="kanban-header">
                         <span>${col.title}</span>
                         <span class="kanban-count">${colTasks.length}</span>
                     </div>
-                    <div class="kanban-cards">
-                        ${colTasks.length === 0 ? '<p style="text-align:center;color:#999;padding:20px;">Không có nhiệm vụ</p>' : ''}
+                    <div class="kanban-cards" ondrop="drop(event)" ondragover="allowDrop(event)">
+                        ${colTasks.length === 0 ? '<p style="text-align:center;color:#999;padding:30px;">Kéo nhiệm vụ vào đây</p>' : ''}
                         ${colTasks.map(t => {
                 const priority = t.doUuTien >= 4 ? 'high' : t.doUuTien >= 3 ? 'medium' : 'low';
                 const project = t.duAnId ? projects.find(p => p.id === t.duAnId) : null;
                 return `
-                                <div class="kanban-card priority-${priority}" onclick="editTask(${t.id})">
+                                <div class="kanban-card priority-${priority}"
+                                     draggable="true"
+                                     ondragstart="drag(event)"
+                                     data-task-id="${t.id}"
+                                     onclick="editTask(${t.id})">
                                     <div class="kanban-card-title">${t.ten}</div>
                                     <div class="kanban-card-meta">
-                                        ${project ? `<span class="kanban-card-project">${project.ten}</span>` : '<span style="color:#999;">Không thuộc dự án</span>'}
+                                        ${project ? `<span class="kanban-card-project">${project.ten}</span>` : '<span style="color:#999;">Không có dự án</span>'}
                                         <span>${t.ngayKetThuc ? new Date(t.ngayKetThuc).toLocaleDateString('vi-VN') : ''}</span>
                                     </div>
                                 </div>
@@ -817,6 +1084,42 @@
                 </div>
             `;
         }).join('');
+    }
+
+    // Drag and drop functions
+    function allowDrop(ev) {
+        ev.preventDefault();
+    }
+
+    function drag(ev) {
+        const taskId = ev.target.dataset.taskId;
+        ev.dataTransfer.setData("taskId", taskId);
+        ev.target.classList.add('dragging');
+    }
+
+    function drop(ev) {
+        ev.preventDefault();
+        const taskId = ev.dataTransfer.getData("taskId");
+        const task = tasks.find(t => t.id == taskId);
+
+        if (!task) return;
+
+        // Find the column
+        let dropTarget = ev.target;
+        while (dropTarget && !dropTarget.classList.contains('kanban-column')) {
+            dropTarget = dropTarget.parentElement;
+        }
+
+        if (dropTarget) {
+            const newStatus = dropTarget.dataset.status;
+            task.trangThai = newStatus;
+            saveTasks();
+            loadTasks();
+        }
+
+        document.querySelectorAll('.kanban-card').forEach(card => {
+            card.classList.remove('dragging');
+        });
     }
 
     function renderCalendarView() {
@@ -864,7 +1167,7 @@
                             <div class="calendar-day-number">${day}</div>
                             ${dayTasks.map(t => {
                 const priority = t.doUuTien >= 4 ? 'high' : t.doUuTien >= 3 ? 'medium' : 'low';
-                return `<div class="calendar-task priority-${priority}" onclick="editTask(${t.id})" title="${t.ten}">${t.ten}</div>`;
+                return `<div class="calendar-task priority-${priority}" onclick="viewTaskDetail(${t.id})" title="${t.ten}">${t.ten}</div>`;
             }).join('')}
                         </div>
                     `;
@@ -889,6 +1192,74 @@
             }
         }
         renderCalendarView();
+    }
+
+    function viewTaskDetail(id) {
+        const task = tasks.find(t => t.id === id);
+        if (!task) return;
+
+        const priority = task.doUuTien >= 4 ? 'Cao' : task.doUuTien >= 3 ? 'Trung bình' : 'Thấp';
+        const status = task.trangThai === 'todo' ? 'Cần làm' :
+            task.trangThai === 'inprogress' ? 'Đang làm' : 'Hoàn thành';
+        const project = task.duAnId ? projects.find(p => p.id === task.duAnId) : null;
+
+        document.getElementById('viewContent').innerHTML = `
+            <div class="detail-row">
+                <span class="detail-label">Tên nhiệm vụ:</span>
+                <div class="detail-value">
+                    <span>${task.ten}</span>
+                    <span class="edit-icon" onclick="closeViewModal(); editTask(${task.id});" title="Sửa">✏️</span>
+                </div>
+            </div>
+            <div class="detail-row">
+                <span class="detail-label">Dự án:</span>
+                <div class="detail-value">
+                    <span>${project ? project.ten : 'Không thuộc dự án'}</span>
+                    <span class="edit-icon" onclick="closeViewModal(); editTask(${task.id});" title="Sửa">✏️</span>
+                </div>
+            </div>
+            <div class="detail-row">
+                <span class="detail-label">Ngày bắt đầu:</span>
+                <div class="detail-value">
+                    <span>${task.ngayBatDau ? new Date(task.ngayBatDau).toLocaleDateString('vi-VN') : 'Chưa có'}</span>
+                    <span class="edit-icon" onclick="closeViewModal(); editTask(${task.id});" title="Sửa">✏️</span>
+                </div>
+            </div>
+            <div class="detail-row">
+                <span class="detail-label">Ngày kết thúc:</span>
+                <div class="detail-value">
+                    <span>${task.ngayKetThuc ? new Date(task.ngayKetThuc).toLocaleDateString('vi-VN') : 'Chưa có'}</span>
+                    <span class="edit-icon" onclick="closeViewModal(); editTask(${task.id});" title="Sửa">✏️</span>
+                </div>
+            </div>
+            <div class="detail-row">
+                <span class="detail-label">Độ ưu tiên:</span>
+                <div class="detail-value">
+                    <span>${priority}</span>
+                    <span class="edit-icon" onclick="closeViewModal(); editTask(${task.id});" title="Sửa">✏️</span>
+                </div>
+            </div>
+            <div class="detail-row">
+                <span class="detail-label">Trạng thái:</span>
+                <div class="detail-value">
+                    <span>${status}</span>
+                    <span class="edit-icon" onclick="closeViewModal(); editTask(${task.id});" title="Sửa">✏️</span>
+                </div>
+            </div>
+            <div class="detail-row">
+                <span class="detail-label">Ghi chú:</span>
+                <div class="detail-value">
+                    <span>${task.ghiChu || 'Không có ghi chú'}</span>
+                    <span class="edit-icon" onclick="closeViewModal(); editTask(${task.id});" title="Sửa">✏️</span>
+                </div>
+            </div>
+        `;
+
+        document.getElementById('viewModal').classList.add('active');
+    }
+
+    function closeViewModal() {
+        document.getElementById('viewModal').classList.remove('active');
     }
 
     function toggleTask(id, checked) {

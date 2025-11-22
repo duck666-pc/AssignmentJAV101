@@ -11,6 +11,28 @@
             box-sizing: border-box;
         }
 
+        html {
+            scroll-behavior: smooth;
+        }
+
+        /* Custom scrollbar */
+        body::-webkit-scrollbar {
+            width: 12px;
+        }
+
+        body::-webkit-scrollbar-track {
+            background: rgba(0,0,0,0.1);
+        }
+
+        body::-webkit-scrollbar-thumb {
+            background: rgba(255,255,255,0.3);
+            border-radius: 10px;
+        }
+
+        body::-webkit-scrollbar-thumb:hover {
+            background: rgba(255,255,255,0.5);
+        }
+
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
@@ -18,143 +40,273 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            padding: 20px;
+            padding: 40px 20px;
+            position: relative;
+        }
+
+        /* Animated background elements */
+        body::before {
+            content: '';
+            position: absolute;
+            width: 500px;
+            height: 500px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+            top: -250px;
+            right: -250px;
+            animation: float 20s infinite;
+        }
+
+        body::after {
+            content: '';
+            position: absolute;
+            width: 400px;
+            height: 400px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+            bottom: -200px;
+            left: -200px;
+            animation: float 15s infinite reverse;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translate(0, 0) rotate(0deg); }
+            50% { transform: translate(30px, 30px) rotate(180deg); }
         }
 
         .auth-container {
             background: white;
-            border-radius: 20px;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
-            padding: 40px;
+            border-radius: 30px;
+            box-shadow: 0 30px 80px rgba(0,0,0,0.3);
+            padding: 50px;
             width: 100%;
-            max-width: 400px;
+            max-width: 450px;
+            position: relative;
+            z-index: 1;
+            animation: slideIn 0.5s ease-out;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
 
         .auth-header {
             text-align: center;
-            margin-bottom: 30px;
+            margin-bottom: 40px;
+        }
+
+        .auth-logo {
+            font-size: 56px;
+            margin-bottom: 15px;
+            animation: bounce 2s infinite;
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
         }
 
         .auth-header h1 {
             color: #333;
-            font-size: 28px;
+            font-size: 32px;
             margin-bottom: 10px;
+            font-weight: 700;
         }
 
         .auth-header p {
             color: #666;
-            font-size: 14px;
+            font-size: 15px;
         }
 
         .form-group {
-            margin-bottom: 20px;
+            margin-bottom: 25px;
         }
 
         .form-group label {
             display: block;
             color: #333;
-            font-weight: 500;
-            margin-bottom: 8px;
+            font-weight: 600;
+            margin-bottom: 10px;
             font-size: 14px;
+        }
+
+        .input-wrapper {
+            position: relative;
+        }
+
+        .input-icon {
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 18px;
+            color: #999;
         }
 
         .form-group input {
             width: 100%;
-            padding: 12px 15px;
+            padding: 15px 15px 15px 45px;
             border: 2px solid #e0e0e0;
-            border-radius: 10px;
-            font-size: 14px;
+            border-radius: 15px;
+            font-size: 15px;
             transition: all 0.3s;
         }
 
         .form-group input:focus {
             outline: none;
             border-color: #667eea;
-            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+            box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
         }
 
         .btn-primary {
             width: 100%;
-            padding: 14px;
+            padding: 16px;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
             border: none;
-            border-radius: 10px;
+            border-radius: 15px;
             font-size: 16px;
-            font-weight: 600;
+            font-weight: 700;
             cursor: pointer;
-            transition: transform 0.2s;
+            transition: all 0.3s;
             margin-top: 10px;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
         }
 
         .btn-primary:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
+            transform: translateY(-3px);
+            box-shadow: 0 6px 25px rgba(102, 126, 234, 0.5);
         }
 
         .btn-primary:active {
-            transform: translateY(0);
+            transform: translateY(-1px);
+        }
+
+        .btn-primary:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
         }
 
         .auth-footer {
             text-align: center;
-            margin-top: 25px;
-            padding-top: 25px;
-            border-top: 1px solid #e0e0e0;
+            margin-top: 30px;
+            padding-top: 30px;
+            border-top: 2px solid #f0f0f0;
         }
 
         .auth-footer a {
             color: #667eea;
             text-decoration: none;
-            font-weight: 500;
-            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s;
         }
 
         .auth-footer a:hover {
+            color: #764ba2;
             text-decoration: underline;
         }
 
         .error-message {
-            background: #fee;
+            background: linear-gradient(135deg, #fee 0%, #fdd 100%);
             color: #c33;
-            padding: 12px;
-            border-radius: 8px;
-            margin-bottom: 20px;
+            padding: 15px;
+            border-radius: 12px;
+            margin-bottom: 25px;
             font-size: 14px;
             display: none;
+            border-left: 4px solid #c33;
+            animation: shake 0.5s;
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-10px); }
+            75% { transform: translateX(10px); }
         }
 
         .success-message {
-            background: #efe;
+            background: linear-gradient(135deg, #efe 0%, #dfd 100%);
             color: #3c3;
-            padding: 12px;
-            border-radius: 8px;
-            margin-bottom: 20px;
+            padding: 15px;
+            border-radius: 12px;
+            margin-bottom: 25px;
             font-size: 14px;
             display: none;
+            border-left: 4px solid #3c3;
         }
 
-        .account-info {
-            background: #e3f2fd;
-            padding: 15px;
-            border-radius: 8px;
-            margin-bottom: 20px;
+        .demo-accounts {
+            background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%);
+            padding: 20px;
+            border-radius: 15px;
+            margin-bottom: 25px;
             font-size: 13px;
             color: #1565c0;
+            border-left: 4px solid #1976d2;
         }
 
-        .account-info strong {
+        .demo-accounts strong {
             display: block;
-            margin-bottom: 8px;
+            margin-bottom: 12px;
             color: #0d47a1;
+            font-size: 14px;
+        }
+
+        .demo-account {
+            background: white;
+            padding: 10px;
+            border-radius: 8px;
+            margin-bottom: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .demo-account:hover {
+            transform: translateX(5px);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .demo-account:last-child {
+            margin-bottom: 0;
+        }
+
+        @media (max-width: 480px) {
+            .auth-container {
+                padding: 35px 25px;
+            }
+
+            .auth-header h1 {
+                font-size: 26px;
+            }
         }
     </style>
 </head>
 <body>
 <div class="auth-container">
     <div class="auth-header">
-        <h1>🎯 Task Manager</h1>
+        <div class="auth-logo">🎯</div>
+        <h1>Chào mừng trở lại!</h1>
         <p>Đăng nhập để quản lý công việc của bạn</p>
+    </div>
+
+    <div class="demo-accounts">
+        <strong>🔑 Tài khoản demo - Nhấn để đăng nhập nhanh:</strong>
+        <div class="demo-account" onclick="fillLogin('admin@example.com', 'admin123')">
+            <div style="font-weight: 600; margin-bottom: 4px;">👤 Admin</div>
+            <div style="color: #666; font-size: 12px;">Email: admin@example.com | Mật khẩu: admin123</div>
+        </div>
+        <div class="demo-account" onclick="fillLogin('user1@example.com', '123456')">
+            <div style="font-weight: 600; margin-bottom: 4px;">👤 User Demo</div>
+            <div style="color: #666; font-size: 12px;">Email: user1@example.com | Mật khẩu: 123456</div>
+        </div>
     </div>
 
     <div class="error-message" id="errorMsg"></div>
@@ -163,19 +315,25 @@
     <form id="loginForm">
         <div class="form-group">
             <label for="email">Email</label>
-            <input type="email" id="email" name="email">
+            <div class="input-wrapper">
+                <span class="input-icon">📧</span>
+                <input type="email" id="email" name="email" placeholder="your@email.com" required>
+            </div>
         </div>
 
         <div class="form-group">
             <label for="password">Mật khẩu</label>
-            <input type="password" id="password" name="password">
+            <div class="input-wrapper">
+                <span class="input-icon">🔒</span>
+                <input type="password" id="password" name="password" placeholder="••••••••" required>
+            </div>
         </div>
 
-        <button type="submit" class="btn-primary">Đăng Nhập</button>
+        <button type="submit" class="btn-primary" id="submitBtn">Đăng Nhập</button>
     </form>
 
     <div class="auth-footer">
-        <p>Chưa có tài khoản? <a onclick="quickRegister()">Đăng ký nhanh</a></p>
+        <p>Chưa có tài khoản? <a href="DangKy.html">Đăng ký ngay</a></p>
     </div>
 </div>
 
@@ -193,15 +351,31 @@
                 matKhau: 'admin123',
                 vaiTro: 'admin'
             });
-            localStorage.setItem(ACCOUNTS_KEY, JSON.stringify(accounts));
         }
 
+        if (!accounts.find(a => a.email === 'user1@example.com')) {
+            accounts.push({
+                id: 2,
+                ten: 'Nguyễn Văn A',
+                email: 'user1@example.com',
+                matKhau: '123456',
+                vaiTro: 'user'
+            });
+        }
+
+        localStorage.setItem(ACCOUNTS_KEY, JSON.stringify(accounts));
         return accounts;
+    }
+
+    function fillLogin(email, password) {
+        document.getElementById('email').value = email;
+        document.getElementById('password').value = password;
     }
 
     const form = document.getElementById('loginForm');
     const errorMsg = document.getElementById('errorMsg');
     const successMsg = document.getElementById('successMsg');
+    const submitBtn = document.getElementById('submitBtn');
 
     form.addEventListener('submit', (e) => {
         e.preventDefault();
@@ -211,76 +385,43 @@
         const email = document.getElementById('email').value.trim();
         const password = document.getElementById('password').value;
 
-        const accounts = initAccounts();
-        const user = accounts.find(a => a.email === email && a.matKhau === password);
-
-        if (user) {
-            sessionStorage.setItem('currentUser', JSON.stringify({
-                id: user.id,
-                ten: user.ten,
-                email: user.email,
-                vaiTro: user.vaiTro
-            }));
-
-            successMsg.textContent = 'Đăng nhập thành công! Đang chuyển hướng...';
-            successMsg.style.display = 'block';
-
-            setTimeout(() => {
-                window.location.href = 'TrangChu.html';
-            }, 1000);
-        } else {
-            errorMsg.textContent = 'Email hoặc mật khẩu không đúng!';
+        if (!email || !password) {
+            errorMsg.textContent = 'Vui lòng nhập đầy đủ thông tin!';
             errorMsg.style.display = 'block';
-        }
-    });
-
-    function quickRegister() {
-        const name = prompt('Nhập họ tên của bạn:', 'Nguyễn Văn A');
-        if (!name) return;
-
-        const email = prompt('Nhập email:', 'user@example.com');
-        if (!email) return;
-
-        const password = prompt('Nhập mật khẩu (tối thiểu 6 ký tự):', '123456');
-        if (!password || password.length < 6) {
-            alert('Mật khẩu phải có ít nhất 6 ký tự!');
             return;
         }
 
-        const accounts = initAccounts();
-
-        if (accounts.find(a => a.email === email)) {
-            alert('Email đã được sử dụng!');
-            return;
-        }
-
-        const newId = accounts.length > 0 ? Math.max(...accounts.map(a => a.id)) + 1 : 1;
-        const newAccount = {
-            id: newId,
-            ten: name,
-            email: email,
-            matKhau: password,
-            vaiTro: 'user'
-        };
-
-        accounts.push(newAccount);
-        localStorage.setItem(ACCOUNTS_KEY, JSON.stringify(accounts));
-
-        sessionStorage.setItem('currentUser', JSON.stringify({
-            id: newAccount.id,
-            ten: newAccount.ten,
-            email: newAccount.email,
-            vaiTro: newAccount.vaiTro
-        }));
-
-        successMsg.textContent = 'Đăng ký thành công! Đang chuyển hướng...';
-        successMsg.style.display = 'block';
+        submitBtn.disabled = true;
+        submitBtn.textContent = 'Đang đăng nhập...';
 
         setTimeout(() => {
-            window.location.href = 'TrangChu.html';
-        }, 1000);
-    }
+            const accounts = initAccounts();
+            const user = accounts.find(a => a.email === email && a.matKhau === password);
 
+            if (user) {
+                sessionStorage.setItem('currentUser', JSON.stringify({
+                    id: user.id,
+                    ten: user.ten,
+                    email: user.email,
+                    vaiTro: user.vaiTro
+                }));
+
+                successMsg.textContent = '✅ Đăng nhập thành công! Đang chuyển hướng...';
+                successMsg.style.display = 'block';
+
+                setTimeout(() => {
+                    window.location.href = 'TrangChu.html';
+                }, 1000);
+            } else {
+                errorMsg.textContent = '❌ Email hoặc mật khẩu không đúng!';
+                errorMsg.style.display = 'block';
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'Đăng Nhập';
+            }
+        }, 500);
+    });
+
+    // Initialize accounts on page load
     initAccounts();
 </script>
 </body>
