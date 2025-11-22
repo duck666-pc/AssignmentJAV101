@@ -18,7 +18,6 @@
             overflow-x: hidden;
         }
 
-        /* Custom scrollbar for body */
         body::-webkit-scrollbar {
             width: 12px;
         }
@@ -246,6 +245,7 @@
             display: flex;
             align-items: center;
             gap: 12px;
+            flex-wrap: wrap;
         }
 
         .task-priority {
@@ -266,6 +266,15 @@
         .priority-low {
             background: linear-gradient(135deg, #66bb6a 0%, #43a047 100%);
             color: white;
+        }
+
+        .attachment-badge {
+            padding: 4px 10px;
+            background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%);
+            color: #1976d2;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: 600;
         }
 
         .task-actions {
@@ -305,7 +314,6 @@
             -webkit-overflow-scrolling: touch;
         }
 
-        /* Custom scrollbar for kanban */
         .kanban-view::-webkit-scrollbar {
             height: 10px;
         }
@@ -318,10 +326,6 @@
         .kanban-view::-webkit-scrollbar-thumb {
             background: rgba(255,255,255,0.6);
             border-radius: 10px;
-        }
-
-        .kanban-view::-webkit-scrollbar-thumb:hover {
-            background: rgba(255,255,255,0.8);
         }
 
         .kanban-column {
@@ -361,7 +365,6 @@
             -webkit-overflow-scrolling: touch;
         }
 
-        /* Custom scrollbar for kanban cards */
         .kanban-cards::-webkit-scrollbar {
             width: 6px;
         }
@@ -374,10 +377,6 @@
         .kanban-cards::-webkit-scrollbar-thumb {
             background: #ccc;
             border-radius: 10px;
-        }
-
-        .kanban-cards::-webkit-scrollbar-thumb:hover {
-            background: #999;
         }
 
         .kanban-card {
@@ -564,7 +563,7 @@
             background: white;
             border-radius: 20px;
             padding: 35px;
-            max-width: 550px;
+            max-width: 600px;
             width: 90%;
             max-height: 85vh;
             overflow-y: auto;
@@ -572,7 +571,6 @@
             -webkit-overflow-scrolling: touch;
         }
 
-        /* Custom scrollbar for modal */
         .modal-content::-webkit-scrollbar {
             width: 8px;
         }
@@ -587,18 +585,11 @@
             border-radius: 10px;
         }
 
-        .modal-content::-webkit-scrollbar-thumb:hover {
-            background: #5568d3;
-        }
-
         .modal-header {
             font-size: 24px;
             font-weight: 700;
             margin-bottom: 25px;
             color: #333;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
         }
 
         .form-group {
@@ -636,6 +627,79 @@
             resize: vertical;
             min-height: 100px;
             font-family: 'Segoe UI', sans-serif;
+        }
+
+        .file-upload-area {
+            border: 2px dashed #e0e0e0;
+            border-radius: 10px;
+            padding: 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .file-upload-area:hover {
+            border-color: #667eea;
+            background: #f8f9fa;
+        }
+
+        .file-upload-area.drag-over {
+            border-color: #667eea;
+            background: #e3f2fd;
+        }
+
+        .file-list {
+            margin-top: 15px;
+        }
+
+        .file-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 10px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            margin-bottom: 8px;
+        }
+
+        .file-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex: 1;
+        }
+
+        .file-icon {
+            font-size: 24px;
+        }
+
+        .file-details {
+            flex: 1;
+        }
+
+        .file-name {
+            font-weight: 500;
+            font-size: 14px;
+            color: #333;
+        }
+
+        .file-size {
+            font-size: 12px;
+            color: #999;
+        }
+
+        .btn-remove-file {
+            padding: 6px 12px;
+            background: #fee;
+            color: #c33;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 12px;
+        }
+
+        .btn-remove-file:hover {
+            background: #fdd;
         }
 
         .modal-actions {
@@ -694,7 +758,6 @@
             color: #666;
         }
 
-        /* View modal for calendar tasks */
         .detail-row {
             display: flex;
             justify-content: space-between;
@@ -733,6 +796,23 @@
 
         .edit-icon:hover {
             background: #f0f0f0;
+        }
+
+        .attachments-view {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .attachment-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 12px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            font-size: 13px;
         }
 
         @media (max-width: 768px) {
@@ -797,29 +877,33 @@
 <!-- Modal thêm/sửa nhiệm vụ -->
 <div class="modal" id="taskModal">
     <div class="modal-content">
-        <div class="modal-header">
-            <span id="modalTitle">Thêm Nhiệm Vụ Mới</span>
-        </div>
+        <div class="modal-header" id="modalTitle">Thêm Nhiệm Vụ Mới</div>
         <form id="taskForm">
             <input type="hidden" id="editTaskId">
+            <input type="hidden" id="attachments" value="[]">
+
             <div class="form-group">
                 <label>Tên nhiệm vụ *</label>
                 <input type="text" id="taskTitle" required placeholder="Nhập tên nhiệm vụ">
             </div>
+
             <div class="form-group">
                 <label>Dự án</label>
                 <select id="taskProject">
                     <option value="">Không thuộc dự án nào</option>
                 </select>
             </div>
+
             <div class="form-group">
                 <label>Ngày bắt đầu</label>
                 <input type="date" id="taskStartDate">
             </div>
+
             <div class="form-group">
                 <label>Ngày kết thúc</label>
                 <input type="date" id="taskEndDate">
             </div>
+
             <div class="form-group">
                 <label>Độ ưu tiên</label>
                 <select id="taskPriority">
@@ -828,6 +912,7 @@
                     <option value="5">Cao</option>
                 </select>
             </div>
+
             <div class="form-group">
                 <label>Trạng thái</label>
                 <select id="taskStatus">
@@ -836,10 +921,24 @@
                     <option value="done">Hoàn thành</option>
                 </select>
             </div>
+
             <div class="form-group">
                 <label>Ghi chú</label>
                 <textarea id="taskNote" placeholder="Thêm ghi chú..."></textarea>
             </div>
+
+            <div class="form-group">
+                <label>Đính kèm (File, Ảnh, Video, Ghi âm)</label>
+                <div class="file-upload-area" id="fileUploadArea" onclick="document.getElementById('fileInput').click()">
+                    <div>📎 Nhấn để chọn file hoặc kéo thả vào đây</div>
+                    <div style="font-size: 12px; color: #999; margin-top: 8px;">
+                        Hỗ trợ: Hình ảnh, Video, Audio, PDF, Documents
+                    </div>
+                </div>
+                <input type="file" id="fileInput" multiple accept="image/*,video/*,audio/*,.pdf,.doc,.docx,.xls,.xlsx,.txt" style="display: none;" onchange="handleFileSelect(event)">
+                <div class="file-list" id="fileList"></div>
+            </div>
+
             <div class="modal-actions">
                 <button type="button" class="btn-cancel" onclick="closeModal()">Hủy</button>
                 <button type="submit" class="btn-submit">Lưu</button>
@@ -851,9 +950,7 @@
 <!-- Modal xem chi tiết nhiệm vụ -->
 <div class="modal" id="viewModal">
     <div class="modal-content">
-        <div class="modal-header">
-            <span>Chi tiết nhiệm vụ</span>
-        </div>
+        <div class="modal-header">Chi tiết nhiệm vụ</div>
         <div id="viewContent"></div>
         <div class="modal-actions">
             <button type="button" class="btn-cancel" onclick="closeViewModal()">Đóng</button>
@@ -868,7 +965,7 @@
     let currentYear = new Date().getFullYear();
     let tasks = [];
     let projects = [];
-    let draggedTask = null;
+    let currentAttachments = [];
 
     const TASKS_KEY = 'taskManagerTasks';
     const PROJECTS_KEY = 'taskManagerProjects';
@@ -903,59 +1000,19 @@
             projects = JSON.parse(savedProjects);
         }
 
+        // Load tasks - chỉ lấy nhiệm vụ của user hiện tại hoặc được chia sẻ
         let savedTasks = localStorage.getItem(TASKS_KEY);
         if (!savedTasks) {
-            const today = new Date();
-            const tomorrow = new Date(today);
-            tomorrow.setDate(tomorrow.getDate() + 1);
-            const nextWeek = new Date(today);
-            nextWeek.setDate(nextWeek.getDate() + 7);
-
-            tasks = [
-                {
-                    id: 1,
-                    ten: 'Thiết kế giao diện trang chủ',
-                    duAnId: 1,
-                    ngayBatDau: today.toISOString().split('T')[0],
-                    ngayKetThuc: tomorrow.toISOString().split('T')[0],
-                    doUuTien: 5,
-                    trangThai: 'todo',
-                    ghiChu: 'Thiết kế UI/UX cho trang chủ website'
-                },
-                {
-                    id: 2,
-                    ten: 'Phát triển Backend API',
-                    duAnId: 1,
-                    ngayBatDau: today.toISOString().split('T')[0],
-                    ngayKetThuc: nextWeek.toISOString().split('T')[0],
-                    doUuTien: 5,
-                    trangThai: 'inprogress',
-                    ghiChu: 'Xây dựng REST API với Spring Boot'
-                },
-                {
-                    id: 3,
-                    ten: 'Viết tài liệu hướng dẫn',
-                    duAnId: null,
-                    ngayBatDau: today.toISOString().split('T')[0],
-                    ngayKetThuc: null,
-                    doUuTien: 3,
-                    trangThai: 'todo',
-                    ghiChu: 'Tài liệu cho người dùng'
-                },
-                {
-                    id: 4,
-                    ten: 'Testing và Deploy',
-                    duAnId: 2,
-                    ngayBatDau: today.toISOString().split('T')[0],
-                    ngayKetThuc: tomorrow.toISOString().split('T')[0],
-                    doUuTien: 4,
-                    trangThai: 'done',
-                    ghiChu: 'Kiểm thử và triển khai lên production'
-                }
-            ];
+            tasks = [];
             localStorage.setItem(TASKS_KEY, JSON.stringify(tasks));
         } else {
-            tasks = JSON.parse(savedTasks);
+            const allTasks = JSON.parse(savedTasks);
+            // Lọc nhiệm vụ: chỉ hiển thị nhiệm vụ do user tạo hoặc được giao cho user
+            tasks = allTasks.filter(t =>
+                t.nguoiTaoId === currentUser.id ||
+                t.nguoiThucHienId === currentUser.id ||
+                currentUser.vaiTro === 'admin'
+            );
         }
     }
 
@@ -1021,6 +1078,7 @@
             const priorityText = t.doUuTien >= 4 ? 'Cao' : t.doUuTien >= 3 ? 'TB' : 'Thấp';
             const project = t.duAnId ? projects.find(p => p.id === t.duAnId) : null;
             const completed = t.trangThai === 'done';
+            const hasAttachments = t.attachments && t.attachments.length > 0;
 
             return `
                 <div class="task-item">
@@ -1032,6 +1090,7 @@
                             <span class="task-priority priority-${priority}">${priorityText}</span>
                             <span>${project ? project.ten : 'Không thuộc dự án'}</span>
                             ${t.ngayKetThuc ? '<span>📅 ' + new Date(t.ngayKetThuc).toLocaleDateString('vi-VN') + '</span>' : ''}
+                            ${hasAttachments ? `<span class="attachment-badge">📎 ${t.attachments.length} file</span>` : ''}
                         </div>
                     </div>
                     <div class="task-actions">
@@ -1066,6 +1125,7 @@
                         ${colTasks.map(t => {
                 const priority = t.doUuTien >= 4 ? 'high' : t.doUuTien >= 3 ? 'medium' : 'low';
                 const project = t.duAnId ? projects.find(p => p.id === t.duAnId) : null;
+                const hasAttachments = t.attachments && t.attachments.length > 0;
                 return `
                                 <div class="kanban-card priority-${priority}"
                                      draggable="true"
@@ -1077,6 +1137,7 @@
                                         ${project ? `<span class="kanban-card-project">${project.ten}</span>` : '<span style="color:#999;">Không có dự án</span>'}
                                         <span>${t.ngayKetThuc ? new Date(t.ngayKetThuc).toLocaleDateString('vi-VN') : ''}</span>
                                     </div>
+                                    ${hasAttachments ? `<div style="margin-top: 8px; font-size: 11px; color: #1976d2;">📎 ${t.attachments.length} file</div>` : ''}
                                 </div>
                             `;
             }).join('')}
@@ -1086,7 +1147,6 @@
         }).join('');
     }
 
-    // Drag and drop functions
     function allowDrop(ev) {
         ev.preventDefault();
     }
@@ -1104,7 +1164,6 @@
 
         if (!task) return;
 
-        // Find the column
         let dropTarget = ev.target;
         while (dropTarget && !dropTarget.classList.contains('kanban-column')) {
             dropTarget = dropTarget.parentElement;
@@ -1127,8 +1186,7 @@
         view.classList.remove('hidden');
 
         const firstDay = new Date(currentYear, currentMonth, 1);
-        const lastDay = new Date(currentYear, currentMonth + 1, 0);
-        const daysInMonth = lastDay.getDate();
+        const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
         const startDay = firstDay.getDay();
 
         const monthNames = ['Tháng 1', 'Tháng 2', 'Tháng 3', 'Tháng 4', 'Tháng 5', 'Tháng 6',
@@ -1203,6 +1261,27 @@
             task.trangThai === 'inprogress' ? 'Đang làm' : 'Hoàn thành';
         const project = task.duAnId ? projects.find(p => p.id === task.duAnId) : null;
 
+        let attachmentsHtml = '';
+        if (task.attachments && task.attachments.length > 0) {
+            attachmentsHtml = `
+                <div class="detail-row">
+                    <span class="detail-label">File đính kèm:</span>
+                    <div class="detail-value" style="flex-direction: column; align-items: flex-end;">
+                        <div class="attachments-view">
+                            ${task.attachments.map(att => `
+                                <div class="attachment-item">
+                                    <span>${getFileIcon(att.type)}</span>
+                                    <span>${att.name}</span>
+                                    <span style="color: #999;">(${formatFileSize(att.size)})</span>
+                                </div>
+                            `).join('')}
+                        </div>
+                        <span class="edit-icon" onclick="closeViewModal(); editTask(${task.id});" title="Sửa">✏️</span>
+                    </div>
+                </div>
+            `;
+        }
+
         document.getElementById('viewContent').innerHTML = `
             <div class="detail-row">
                 <span class="detail-label">Tên nhiệm vụ:</span>
@@ -1253,6 +1332,7 @@
                     <span class="edit-icon" onclick="closeViewModal(); editTask(${task.id});" title="Sửa">✏️</span>
                 </div>
             </div>
+            ${attachmentsHtml}
         `;
 
         document.getElementById('viewModal').classList.add('active');
@@ -1273,8 +1353,15 @@
 
     function deleteTask(id) {
         if (!confirm('Bạn có chắc muốn xóa nhiệm vụ này?')) return;
+
+        // Xóa khỏi danh sách local
         tasks = tasks.filter(t => t.id !== id);
-        saveTasks();
+
+        // Xóa khỏi localStorage (tất cả tasks)
+        let allTasks = JSON.parse(localStorage.getItem(TASKS_KEY) || '[]');
+        allTasks = allTasks.filter(t => t.id !== id);
+        localStorage.setItem(TASKS_KEY, JSON.stringify(allTasks));
+
         loadTasks();
     }
 
@@ -1292,6 +1379,9 @@
         document.getElementById('taskStatus').value = task.trangThai;
         document.getElementById('taskNote').value = task.ghiChu || '';
 
+        currentAttachments = task.attachments || [];
+        displayFileList();
+
         document.getElementById('taskModal').classList.add('active');
     }
 
@@ -1300,13 +1390,103 @@
         document.getElementById('taskForm').reset();
         document.getElementById('editTaskId').value = '';
         document.getElementById('taskStatus').value = 'todo';
+        currentAttachments = [];
+        displayFileList();
         document.getElementById('taskModal').classList.add('active');
     }
 
     function closeModal() {
         document.getElementById('taskModal').classList.remove('active');
         document.getElementById('taskForm').reset();
+        currentAttachments = [];
     }
+
+    // File handling functions
+    function handleFileSelect(event) {
+        const files = event.target.files;
+        for (let file of files) {
+            const fileData = {
+                name: file.name,
+                size: file.size,
+                type: file.type,
+                lastModified: file.lastModified
+            };
+            currentAttachments.push(fileData);
+        }
+        displayFileList();
+        event.target.value = ''; // Reset input
+    }
+
+    function displayFileList() {
+        const fileList = document.getElementById('fileList');
+        if (currentAttachments.length === 0) {
+            fileList.innerHTML = '';
+            return;
+        }
+
+        fileList.innerHTML = currentAttachments.map((file, index) => `
+            <div class="file-item">
+                <div class="file-info">
+                    <span class="file-icon">${getFileIcon(file.type)}</span>
+                    <div class="file-details">
+                        <div class="file-name">${file.name}</div>
+                        <div class="file-size">${formatFileSize(file.size)}</div>
+                    </div>
+                </div>
+                <button type="button" class="btn-remove-file" onclick="removeFile(${index})">Xóa</button>
+            </div>
+        `).join('');
+    }
+
+    function removeFile(index) {
+        currentAttachments.splice(index, 1);
+        displayFileList();
+    }
+
+    function getFileIcon(type) {
+        if (type.startsWith('image/')) return '🖼️';
+        if (type.startsWith('video/')) return '🎥';
+        if (type.startsWith('audio/')) return '🎵';
+        if (type.includes('pdf')) return '📄';
+        if (type.includes('word') || type.includes('document')) return '📝';
+        if (type.includes('excel') || type.includes('spreadsheet')) return '📊';
+        return '📎';
+    }
+
+    function formatFileSize(bytes) {
+        if (bytes === 0) return '0 Bytes';
+        const k = 1024;
+        const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+        const i = Math.floor(Math.log(bytes) / Math.log(k));
+        return Math.round(bytes / Math.pow(k, i) * 100) / 100 + ' ' + sizes[i];
+    }
+
+    // Drag and drop for file upload
+    const fileUploadArea = document.getElementById('fileUploadArea');
+    fileUploadArea.addEventListener('dragover', (e) => {
+        e.preventDefault();
+        fileUploadArea.classList.add('drag-over');
+    });
+
+    fileUploadArea.addEventListener('dragleave', () => {
+        fileUploadArea.classList.remove('drag-over');
+    });
+
+    fileUploadArea.addEventListener('drop', (e) => {
+        e.preventDefault();
+        fileUploadArea.classList.remove('drag-over');
+        const files = e.dataTransfer.files;
+        for (let file of files) {
+            const fileData = {
+                name: file.name,
+                size: file.size,
+                type: file.type,
+                lastModified: file.lastModified
+            };
+            currentAttachments.push(fileData);
+        }
+        displayFileList();
+    });
 
     document.getElementById('taskForm').addEventListener('submit', (e) => {
         e.preventDefault();
@@ -1321,26 +1501,47 @@
             ngayKetThuc: document.getElementById('taskEndDate').value || null,
             doUuTien: parseInt(document.getElementById('taskPriority').value),
             trangThai: document.getElementById('taskStatus').value,
-            ghiChu: document.getElementById('taskNote').value
+            ghiChu: document.getElementById('taskNote').value,
+            attachments: currentAttachments,
+            nguoiTaoId: currentUser.id,
+            nguoiThucHienId: currentUser.id
         };
 
+        let allTasks = JSON.parse(localStorage.getItem(TASKS_KEY) || '[]');
+
         if (editId) {
-            const task = tasks.find(t => t.id == editId);
-            if (task) {
-                Object.assign(task, taskData);
+            const taskIndex = allTasks.findIndex(t => t.id == editId);
+            if (taskIndex !== -1) {
+                allTasks[taskIndex] = { ...allTasks[taskIndex], ...taskData };
+            }
+            const localIndex = tasks.findIndex(t => t.id == editId);
+            if (localIndex !== -1) {
+                tasks[localIndex] = { ...tasks[localIndex], ...taskData };
             }
         } else {
-            const newId = tasks.length > 0 ? Math.max(...tasks.map(t => t.id)) + 1 : 1;
-            tasks.push({ id: newId, ...taskData });
+            const newId = allTasks.length > 0 ? Math.max(...allTasks.map(t => t.id)) + 1 : 1;
+            const newTask = { id: newId, ...taskData };
+            allTasks.push(newTask);
+            tasks.push(newTask);
         }
 
-        saveTasks();
+        localStorage.setItem(TASKS_KEY, JSON.stringify(allTasks));
         closeModal();
         loadTasks();
     });
 
     function saveTasks() {
-        localStorage.setItem(TASKS_KEY, JSON.stringify(tasks));
+        // Cập nhật lại toàn bộ tasks trong localStorage
+        let allTasks = JSON.parse(localStorage.getItem(TASKS_KEY) || '[]');
+
+        tasks.forEach(updatedTask => {
+            const index = allTasks.findIndex(t => t.id === updatedTask.id);
+            if (index !== -1) {
+                allTasks[index] = updatedTask;
+            }
+        });
+
+        localStorage.setItem(TASKS_KEY, JSON.stringify(allTasks));
     }
 
     function init() {
