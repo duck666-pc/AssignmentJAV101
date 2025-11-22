@@ -2,276 +2,752 @@
 <html lang="vi">
 <head>
     <meta charset="utf-8" />
-    <title>Quản lý công việc</title>
+    <title>Quản lý Công Việc</title>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
 
         body {
             font-family: 'Segoe UI', sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: #f5f7fa;
             min-height: 100vh;
-            padding: 20px;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px 30px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .header-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .header h1 {
+            font-size: 24px;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .btn-logout {
+            padding: 8px 16px;
+            background: rgba(255,255,255,0.2);
+            border: 1px solid rgba(255,255,255,0.3);
+            color: white;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .btn-logout:hover {
+            background: rgba(255,255,255,0.3);
         }
 
         .container {
-            max-width: 600px;
-            margin: 0 auto;
+            max-width: 1400px;
+            margin: 30px auto;
+            padding: 0 30px;
+        }
+
+        .toolbar {
             background: white;
-            border-radius: 16px;
-            padding: 30px;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
-        }
-
-        h1 {
-            color: #333;
-            margin-bottom: 24px;
-            font-size: 28px;
-        }
-
-        #addForm {
-            display: flex;
-            gap: 8px;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
             margin-bottom: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
         }
 
-        #addForm input {
-            flex: 1;
-            padding: 12px;
+        .project-selector {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .project-selector select {
+            padding: 10px 15px;
             border: 2px solid #e0e0e0;
             border-radius: 8px;
             font-size: 14px;
-            transition: border 0.3s;
+            min-width: 200px;
         }
 
-        #addForm input:focus {
-            outline: none;
-            border-color: #667eea;
+        .view-modes {
+            display: flex;
+            gap: 10px;
         }
 
-        #addForm button {
-            padding: 12px 24px;
+        .view-btn {
+            padding: 10px 20px;
+            background: #f5f5f5;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .view-btn.active {
+            background: #667eea;
+            color: white;
+        }
+
+        .btn-add {
+            padding: 10px 20px;
             background: #667eea;
             color: white;
             border: none;
             border-radius: 8px;
             cursor: pointer;
             font-weight: 600;
-            transition: background 0.3s;
-        }
-
-        #addForm button:hover {
-            background: #5568d3;
-        }
-
-        .filters {
-            display: flex;
-            gap: 12px;
-            margin-bottom: 20px;
-            padding: 12px;
-            background: #f5f5f5;
-            border-radius: 8px;
-        }
-
-        .filters label {
-            cursor: pointer;
-            padding: 6px 12px;
-            border-radius: 6px;
             transition: all 0.3s;
         }
 
-        .filters input[type="radio"] {
-            margin-right: 4px;
+        .btn-add:hover {
+            background: #5568d3;
+            transform: translateY(-2px);
         }
 
-        .filters label:has(input:checked) {
-            background: #667eea;
-            color: white;
+        /* List View */
+        .list-view {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            padding: 20px;
         }
 
-        .task {
+        .task-item {
             display: flex;
             align-items: center;
             padding: 16px;
-            border-bottom: 1px solid #eee;
+            border-bottom: 1px solid #f0f0f0;
             transition: background 0.2s;
         }
 
-        .task:hover {
+        .task-item:hover {
             background: #f9f9f9;
         }
 
-        .task input[type="checkbox"] {
+        .task-item:last-child {
+            border-bottom: none;
+        }
+
+        .task-checkbox {
             width: 20px;
             height: 20px;
+            margin-right: 15px;
             cursor: pointer;
-            margin-right: 12px;
         }
 
         .task-content {
             flex: 1;
         }
 
-        .task input[type="text"] {
-            width: 100%;
-            border: none;
-            background: transparent;
+        .task-title {
             font-size: 16px;
-            padding: 4px;
+            color: #333;
+            margin-bottom: 4px;
         }
 
-        .task input[type="text"]:focus {
-            outline: none;
-            background: #f0f0f0;
-            border-radius: 4px;
-        }
-
-        .task.done input[type="text"] {
-            text-decoration: line-through;
+        .task-meta {
+            font-size: 12px;
             color: #999;
         }
 
-        .task-due {
+        .task-priority {
+            padding: 4px 12px;
+            border-radius: 12px;
             font-size: 12px;
-            color: #666;
-            margin-top: 4px;
+            font-weight: 500;
+            margin-right: 10px;
         }
 
-        .task button {
+        .priority-high { background: #fee; color: #c33; }
+        .priority-medium { background: #fef3cd; color: #856404; }
+        .priority-low { background: #d4edda; color: #155724; }
+
+        .task-actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        .btn-icon {
             padding: 6px 12px;
-            background: #ff5252;
-            color: white;
+            background: #f5f5f5;
             border: none;
             border-radius: 6px;
             cursor: pointer;
-            font-size: 13px;
-            transition: background 0.3s;
+            transition: all 0.2s;
         }
 
-        .task button:hover {
-            background: #d32f2f;
+        .btn-icon:hover {
+            background: #e0e0e0;
         }
 
-        .empty {
-            text-align: center;
-            padding: 40px;
+        .btn-delete {
+            background: #fee;
+            color: #c33;
+        }
+
+        .btn-delete:hover {
+            background: #fdd;
+        }
+
+        /* Kanban View */
+        .kanban-view {
+            display: flex;
+            gap: 20px;
+            overflow-x: auto;
+            padding-bottom: 20px;
+        }
+
+        .kanban-column {
+            min-width: 300px;
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        }
+
+        .kanban-header {
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .kanban-count {
+            background: #f0f0f0;
+            padding: 2px 8px;
+            border-radius: 10px;
+            font-size: 12px;
+        }
+
+        .kanban-card {
+            background: #f9f9f9;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            cursor: move;
+            transition: all 0.2s;
+        }
+
+        .kanban-card:hover {
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            transform: translateY(-2px);
+        }
+
+        .kanban-card-title {
+            font-weight: 500;
+            color: #333;
+            margin-bottom: 8px;
+        }
+
+        .kanban-card-meta {
+            font-size: 12px;
             color: #999;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
         }
+
+        .calendar-view {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            padding: 20px;
+        }
+
+        .calendar-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .calendar-nav {
+            display: flex;
+            gap: 10px;
+        }
+
+        .calendar-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 10px;
+        }
+
+        .calendar-day-header {
+            text-align: center;
+            font-weight: 600;
+            color: #666;
+            padding: 10px;
+        }
+
+        .calendar-day {
+            min-height: 100px;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            padding: 8px;
+            background: #fafafa;
+        }
+
+        .calendar-day-number {
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 5px;
+        }
+
+        .calendar-day.today {
+            background: #e3f2fd;
+            border-color: #667eea;
+        }
+
+        .calendar-task {
+            background: #667eea;
+            color: white;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 11px;
+            margin-bottom: 4px;
+            cursor: pointer;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+            max-width: 500px;
+            width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+
+        .modal-header {
+            font-size: 20px;
+            font-weight: 600;
+            margin-bottom: 20px;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            font-weight: 500;
+            margin-bottom: 5px;
+            color: #333;
+        }
+
+        .form-group input,
+        .form-group textarea,
+        .form-group select {
+            width: 100%;
+            padding: 10px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 14px;
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+
+        .modal-actions {
+            display: flex;
+            gap: 10px;
+            justify-content: flex-end;
+            margin-top: 20px;
+        }
+
+        .btn-cancel {
+            padding: 10px 20px;
+            background: #f5f5f5;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+
+        .btn-submit {
+            padding: 10px 20px;
+            background: #667eea;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+        }
+
+        .hidden { display: none !important; }
     </style>
 </head>
 <body>
-<div class="container">YourTasks
-    <h1></h1>
+<div class="header">
+    <div class="header-content">
+        <h1>🎯 Quản Lý Công Việc</h1>
+        <div class="user-info">
+            <span id="userName">Đang tải...</span>
+            <button class="btn-logout" onclick="logout()">Đăng xuất</button>
+        </div>
+    </div>
+</div>
 
-    <div id="addForm">
-        <input id="title" placeholder="Thêm công việc mới...">
-        <input id="due" type="date">
-        <button id="addBtn">Thêm</button>
+<div class="container">
+    <div class="toolbar">
+        <div class="project-selector">
+            <label>Dự án:</label>
+            <select id="projectSelect">
+                <option value="">Tất cả dự án</option>
+            </select>
+        </div>
+
+        <div class="view-modes">
+            <button class="view-btn active" onclick="changeView('list')">
+                📋 Danh sách
+            </button>
+            <button class="view-btn" onclick="changeView('kanban')">
+                📊 Kanban
+            </button>
+            <button class="view-btn" onclick="changeView('calendar')">
+                📅 Lịch
+            </button>
+        </div>
+
+        <button class="btn-add" onclick="showAddModal()">+ Thêm nhiệm vụ</button>
     </div>
 
-    <div class="filters">
-        <label><input type="radio" name="filter" value="all" checked> Tất cả</label>
-        <label><input type="radio" name="filter" value="todo"> Chưa xong</label>
-        <label><input type="radio" name="filter" value="done"> Đã xong</label>
-    </div>
+    <div id="listView" class="list-view"></div>
 
-    <div id="tasksList"></div>
+    <div id="kanbanView" class="kanban-view hidden"></div>
+
+    <div id="calendarView" class="calendar-view hidden"></div>
+</div>
+
+<div class="modal" id="taskModal">
+    <div class="modal-content">
+        <div class="modal-header">Thêm Nhiệm Vụ Mới</div>
+        <form id="taskForm">
+            <div class="form-group">
+                <label>Tên nhiệm vụ *</label>
+                <input type="text" id="taskTitle" required>
+            </div>
+            <div class="form-group">
+                <label>Dự án</label>
+                <select id="taskProject"></select>
+            </div>
+            <div class="form-group">
+                <label>Ngày bắt đầu</label>
+                <input type="date" id="taskStartDate">
+            </div>
+            <div class="form-group">
+                <label>Ngày kết thúc</label>
+                <input type="date" id="taskEndDate">
+            </div>
+            <div class="form-group">
+                <label>Độ ưu tiên</label>
+                <select id="taskPriority">
+                    <option value="3">Trung bình</option>
+                    <option value="5">Cao</option>
+                    <option value="1">Thấp</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Ghi chú</label>
+                <textarea id="taskNote"></textarea>
+            </div>
+            <div class="modal-actions">
+                <button type="button" class="btn-cancel" onclick="closeModal()">Hủy</button>
+                <button type="submit" class="btn-submit">Thêm</button>
+            </div>
+        </form>
+    </div>
 </div>
 
 <script>
-    const API = 'tasks';
+    let currentView = 'list';
     let tasks = [];
+    let projects = [];
+    let currentUser = null;
 
-    // Gọi API
-    async function get() {
-        const r = await fetch(API);
-        return r.json();
+    async function checkAuth() {
+        try {
+            const response = await fetch('/auth');
+            if (response.ok) {
+                currentUser = await response.json();
+                document.getElementById('userName').textContent = currentUser.ten;
+            } else {
+                window.location.href = 'DangNhap.html';
+            }
+        } catch (error) {
+            window.location.href = 'DangNhap.html';
+        }
     }
 
-    async function add(data) {
-        const r = await fetch(API, {
+    async function logout() {
+        await fetch('/auth/logout', { method: 'POST' });
+        window.location.href = 'DangNhap.html';
+    }
+
+    async function loadProjects() {
+        const response = await fetch('/projects');
+        projects = await response.json();
+
+        const selects = [document.getElementById('projectSelect'), document.getElementById('taskProject')];
+        selects.forEach(select => {
+            const options = projects.map(p =>
+                `<option value="${p.id}">${p.ten}</option>`
+            ).join('');
+            if (select.id === 'projectSelect') {
+                select.innerHTML = '<option value="">Tất cả dự án</option>' + options;
+            } else {
+                select.innerHTML = options;
+            }
+        });
+    }
+
+    async function loadTasks() {
+        const projectId = document.getElementById('projectSelect').value;
+        const url = projectId ? `/nhiemvu?duAnId=${projectId}` : '/nhiemvu';
+        const response = await fetch(url);
+        tasks = await response.json();
+        renderView();
+    }
+
+    function changeView(view) {
+        currentView = view;
+
+        document.querySelectorAll('.view-btn').forEach(btn => btn.classList.remove('active'));
+        event.target.closest('.view-btn').classList.add('active');
+
+        document.getElementById('listView').classList.add('hidden');
+        document.getElementById('kanbanView').classList.add('hidden');
+        document.getElementById('calendarView').classList.add('hidden');
+
+        renderView();
+    }
+
+    function renderView() {
+        if (currentView === 'list') renderListView();
+        else if (currentView === 'kanban') renderKanbanView();
+        else if (currentView === 'calendar') renderCalendarView();
+    }
+
+    function renderListView() {
+        const view = document.getElementById('listView');
+        view.classList.remove('hidden');
+
+        if (tasks.length === 0) {
+            view.innerHTML = '<p style="text-align:center;padding:40px;color:#999">Chưa có nhiệm vụ nào</p>';
+            return;
+        }
+
+        view.innerHTML = tasks.map(t => {
+            const priority = t.doUuTien >= 4 ? 'high' : t.doUuTien >= 3 ? 'medium' : 'low';
+            const priorityText = t.doUuTien >= 4 ? 'Cao' : t.doUuTien >= 3 ? 'TB' : 'Thấp';
+            const project = projects.find(p => p.id === t.duAnId);
+
+            return `
+                    <div class="task-item">
+                        <input type="checkbox" class="task-checkbox" ${t.trangThai === 'done' ? 'checked' : ''}
+                               onchange="toggleTask(${t.id}, this.checked)">
+                        <div class="task-content">
+                            <div class="task-title">${t.ten}</div>
+                            <div class="task-meta">
+                                <span class="task-priority priority-${priority}">${priorityText}</span>
+                                ${project ? project.ten : ''}
+                                ${t.ngayKetThuc ? ' • ' + new Date(t.ngayKetThuc).toLocaleDateString('vi-VN') : ''}
+                            </div>
+                        </div>
+                        <div class="task-actions">
+                            <button class="btn-icon" onclick="editTask(${t.id})">✏️</button>
+                            <button class="btn-icon btn-delete" onclick="deleteTask(${t.id})">🗑️</button>
+                        </div>
+                    </div>
+                `;
+        }).join('');
+    }
+
+    function renderKanbanView() {
+        const view = document.getElementById('kanbanView');
+        view.classList.remove('hidden');
+
+        const columns = [
+            { status: 'todo', title: 'Cần làm', color: '#667eea' },
+            { status: 'inprogress', title: 'Đang làm', color: '#ffa726' },
+            { status: 'done', title: 'Hoàn thành', color: '#66bb6a' }
+        ];
+
+        view.innerHTML = columns.map(col => {
+            const colTasks = tasks.filter(t => t.trangThai === col.status);
+            return `
+                    <div class="kanban-column">
+                        <div class="kanban-header">
+                            <span>${col.title}</span>
+                            <span class="kanban-count">${colTasks.length}</span>
+                        </div>
+                        ${colTasks.map(t => {
+                const project = projects.find(p => p.id === t.duAnId);
+                return `
+                                <div class="kanban-card" draggable="true" data-task-id="${t.id}">
+                                    <div class="kanban-card-title">${t.ten}</div>
+                                    <div class="kanban-card-meta">
+                                        <span>${project ? project.ten : ''}</span>
+                                        <span>${t.ngayKetThuc ? new Date(t.ngayKetThuc).toLocaleDateString('vi-VN') : ''}</span>
+                                    </div>
+                                </div>
+                            `;
+            }).join('')}
+                    </div>
+                `;
+        }).join('');
+    }
+
+    function renderCalendarView() {
+        const view = document.getElementById('calendarView');
+        view.classList.remove('hidden');
+
+        const today = new Date();
+        const year = today.getFullYear();
+        const month = today.getMonth();
+
+        const firstDay = new Date(year, month, 1);
+        const lastDay = new Date(year, month + 1, 0);
+        const daysInMonth = lastDay.getDate();
+
+        const monthNames = ['Tháng 1', 'Tháng 2', 'Tháng 3', 'Tháng 4', 'Tháng 5', 'Tháng 6',
+            'Tháng 7', 'Tháng 8', 'Tháng 9', 'Tháng 10', 'Tháng 11', 'Tháng 12'];
+
+        view.innerHTML = `
+                <div class="calendar-header">
+                    <h2>${monthNames[month]} ${year}</h2>
+                    <div class="calendar-nav">
+                        <button class="btn-icon">◀</button>
+                        <button class="btn-icon">▶</button>
+                    </div>
+                </div>
+                <div class="calendar-grid">
+                    ${['CN', 'T2', 'T3', 'T4', 'T5', 'T6', 'T7'].map(day =>
+            `<div class="calendar-day-header">${day}</div>`
+        ).join('')}
+                    ${Array.from({length: daysInMonth}, (_, i) => {
+            const day = i + 1;
+            const date = new Date(year, month, day);
+            const isToday = date.toDateString() === today.toDateString();
+            const dayTasks = tasks.filter(t => {
+                if (!t.ngayKetThuc) return false;
+                const taskDate = new Date(t.ngayKetThuc);
+                return taskDate.toDateString() === date.toDateString();
+            });
+
+            return `
+                            <div class="calendar-day ${isToday ? 'today' : ''}">
+                                <div class="calendar-day-number">${day}</div>
+                                ${dayTasks.map(t =>
+                `<div class="calendar-task" title="${t.ten}">${t.ten}</div>`
+            ).join('')}
+                            </div>
+                        `;
+        }).join('')}
+                </div>
+            `;
+    }
+
+    async function toggleTask(id, checked) {
+        await fetch(`/nhiemvu?id=${id}`, {
+            method: 'PUT',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({ trangThai: checked ? 'done' : 'todo' })
+        });
+        loadTasks();
+    }
+
+    async function deleteTask(id) {
+        if (!confirm('Xóa nhiệm vụ này?')) return;
+        await fetch(`/nhiemvu?id=${id}`, { method: 'DELETE' });
+        loadTasks();
+    }
+
+    function showAddModal() {
+        document.getElementById('taskModal').classList.add('active');
+    }
+
+    function closeModal() {
+        document.getElementById('taskModal').classList.remove('active');
+        document.getElementById('taskForm').reset();
+    }
+
+    document.getElementById('taskForm').addEventListener('submit', async (e) => {
+        e.preventDefault();
+
+        const data = {
+            ten: document.getElementById('taskTitle').value,
+            duAnId: parseInt(document.getElementById('taskProject').value) || 1,
+            nguoiTao: currentUser.ten,
+            ngayBatDau: document.getElementById('taskStartDate').value || null,
+            ngayKetThuc: document.getElementById('taskEndDate').value || null,
+            doUuTien: parseInt(document.getElementById('taskPriority').value),
+            ghiChu: document.getElementById('taskNote').value
+        };
+
+        await fetch('/nhiemvu', {
             method: 'POST',
             headers: {'Content-Type': 'application/json'},
             body: JSON.stringify(data)
         });
-        return r.json();
-    }
 
-    async function update(id, data) {
-        await fetch(`${API}?id=${id}`, {
-            method: 'PUT',
-            headers: {'Content-Type': 'application/json'},
-            body: JSON.stringify(data)
-        });
-    }
-
-    async function remove(id) {
-        await fetch(`${API}?id=${id}`, {method: 'DELETE'});
-    }
-
-    function show() {
-        const filter = document.querySelector('input[name="filter"]:checked').value;
-        const list = document.getElementById('tasksList');
-        const filtered = tasks.filter(t => filter === 'all' || t.status === filter);
-
-        if (filtered.length === 0) {
-            list.innerHTML = '<div class="empty">Không có công việc nào</div>';
-            return;
-        }
-
-        list.innerHTML = filtered.map(t => `
-        <div class="task ${t.status}">
-          <input type="checkbox" ${t.status === 'done' ? 'checked' : ''}
-                 onchange="toggleDone(${t.id}, this.checked)">
-          <div class="task-content">
-            <input type="text" value="${t.title}"
-                   onblur="editTitle(${t.id}, this.value)">
-            ${t.dueDate ? `<div class="task-due">📅 ${t.dueDate}</div>` : ''}
-          </div>
-          <button onclick="deleteTask(${t.id})">Xóa</button>
-        </div>
-      `).join('');
-    }
-
-    async function load() {
-        tasks = await get();
-        show();
-    }
-
-    document.getElementById('addBtn').onclick = async () => {
-        const title = document.getElementById('title').value.trim();
-        if (!title) return alert('Nhập tên công việc!');
-
-        const due = document.getElementById('due').value;
-        await add({title, dueDate: due || null});
-
-        document.getElementById('title').value = '';
-        document.getElementById('due').value = '';
-        load();
-    };
-
-    window.toggleDone = async (id, checked) => {
-        await update(id, {status: checked ? 'done' : 'todo'});
-        load();
-    };
-
-    window.editTitle = async (id, newTitle) => {
-        if (!newTitle.trim()) return load();
-        await update(id, {title: newTitle});
-        load();
-    };
-
-    window.deleteTask = async (id) => {
-        if (!confirm('Xóa công việc này?')) return;
-        await remove(id);
-        load();
-    };
-
-    document.querySelectorAll('input[name="filter"]').forEach(r => {
-        r.onchange = show;
+        closeModal();
+        loadTasks();
     });
 
-    load();
+    document.getElementById('projectSelect').addEventListener('change', loadTasks);
+
+    async function init() {
+        await checkAuth();
+        await loadProjects();
+        await loadTasks();
+    }
+
+    init();
 </script>
 </body>
 </html>

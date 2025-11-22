@@ -20,9 +20,9 @@ public class NhiemVuServlet extends HttpServlet {
 
     static {
         // Nhiệm vụ mẫu
-        nhiemVuList.add(new NhiemVu(nextId++, "Thiết kế giao diện", 1, "Admin", new Date(), null, "Thiết kế UI/UX", "todo", 3));
-        nhiemVuList.add(new NhiemVu(nextId++, "Phát triển Backend", 1, "Admin", new Date(), null, "API REST", "inprogress", 5));
-        nhiemVuList.add(new NhiemVu(nextId++, "Testing", 1, "Admin", new Date(), null, "Kiểm thử chức năng", "done", 4));
+        nhiemVuList.add(new NhiemVu(nextId++, "Thiết kế giao diện", 1, 1, 2, new Date(), null, "Thiết kế UI/UX", "todo", 3));
+        nhiemVuList.add(new NhiemVu(nextId++, "Phát triển Backend", 1, 1, 1, new Date(), null, "API REST", "inprogress", 5));
+        nhiemVuList.add(new NhiemVu(nextId++, "Testing", 1, 1, 3, new Date(), null, "Kiểm thử chức năng", "done", 4));
     }
 
     @Override
@@ -30,15 +30,25 @@ public class NhiemVuServlet extends HttpServlet {
         resp.setContentType("application/json; charset=UTF-8");
 
         String duAnIdParam = req.getParameter("duAnId");
+        String nguoiThucHienIdParam = req.getParameter("nguoiThucHienId");
+
+        List<NhiemVu> filtered = nhiemVuList;
+
         if (duAnIdParam != null) {
             int duAnId = Integer.parseInt(duAnIdParam);
-            List<NhiemVu> filtered = nhiemVuList.stream()
+            filtered = filtered.stream()
                     .filter(nv -> nv.getDuAnId() == duAnId)
                     .collect(Collectors.toList());
-            resp.getWriter().write(gson.toJson(filtered));
-        } else {
-            resp.getWriter().write(gson.toJson(nhiemVuList));
         }
+
+        if (nguoiThucHienIdParam != null) {
+            int nguoiThucHienId = Integer.parseInt(nguoiThucHienIdParam);
+            filtered = filtered.stream()
+                    .filter(nv -> nv.getNguoiThucHienId() == nguoiThucHienId)
+                    .collect(Collectors.toList());
+        }
+
+        resp.getWriter().write(gson.toJson(filtered));
     }
 
     @Override
@@ -78,6 +88,7 @@ public class NhiemVuServlet extends HttpServlet {
                 if (update.getNgayKetThuc() != null) nv.setNgayKetThuc(update.getNgayKetThuc());
                 if (update.getGhiChu() != null) nv.setGhiChu(update.getGhiChu());
                 if (update.getDoUuTien() > 0) nv.setDoUuTien(update.getDoUuTien());
+                if (update.getNguoiThucHienId() > 0) nv.setNguoiThucHienId(update.getNguoiThucHienId());
 
                 resp.getWriter().write(gson.toJson(nv));
                 return;

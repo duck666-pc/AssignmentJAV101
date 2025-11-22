@@ -63,6 +63,14 @@ public class NhiemVu {
         this.nguoiTaoId = nguoiTaoId;
     }
 
+    public int getNguoiThucHienId() {
+        return nguoiThucHienId;
+    }
+
+    public void setNguoiThucHienId(int nguoiThucHienId) {
+        this.nguoiThucHienId = nguoiThucHienId;
+    }
+
     public Date getNgayBatDau() {
         return ngayBatDau;
     }
