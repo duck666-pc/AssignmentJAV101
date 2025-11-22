@@ -3,12 +3,41 @@ package Controller;
 import java.util.Date;
 
 public class NhiemVu {
+    private int id;
     private String ten;
-    private String duAn;
-    private String nguoiTao;
+    private int duAnId; // ID của dự án
+    private int nguoiTaoId; // ID người tạo
+    private int nguoiThucHienId; // ID người được giao việc
     private Date ngayBatDau;
     private Date ngayKetThuc;
     private String ghiChu;
+    private String trangThai; // todo, inprogress, done
+    private int doUuTien; // 1-5 (1: thấp, 5: cao)
+
+    public NhiemVu() {}
+
+    public NhiemVu(int id, String ten, int duAnId, int nguoiTaoId, int nguoiThucHienId,
+                   Date ngayBatDau, Date ngayKetThuc, String ghiChu, String trangThai, int doUuTien) {
+        this.id = id;
+        this.ten = ten;
+        this.duAnId = duAnId;
+        this.nguoiTaoId = nguoiTaoId;
+        this.nguoiThucHienId = nguoiThucHienId;
+        this.ngayBatDau = ngayBatDau;
+        this.ngayKetThuc = ngayKetThuc;
+        this.ghiChu = ghiChu;
+        this.trangThai = trangThai;
+        this.doUuTien = doUuTien;
+    }
+
+    // Getters và Setters
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
 
     public String getTen() {
         return ten;
@@ -18,20 +47,20 @@ public class NhiemVu {
         this.ten = ten;
     }
 
-    public String getDuAn() {
-        return duAn;
+    public int getDuAnId() {
+        return duAnId;
     }
 
-    public void setDuAn(String duAn) {
-        this.duAn = duAn;
+    public void setDuAnId(int duAnId) {
+        this.duAnId = duAnId;
     }
 
-    public String getNguoiThucHien() {
-        return nguoiTao;
+    public Integer getNguoiTaoId() {
+        return nguoiTaoId;
     }
 
-    public void setNguoiThucHien(String nguoiThucHien) {
-        this.nguoiTao = nguoiTao;
+    public void setNguoiTaoId(Integer nguoiTaoId) {
+        this.nguoiTaoId = nguoiTaoId;
     }
 
     public Date getNgayBatDau() {
@@ -56,5 +85,21 @@ public class NhiemVu {
 
     public void setGhiChu(String ghiChu) {
         this.ghiChu = ghiChu;
+    }
+
+    public String getTrangThai() {
+        return trangThai;
+    }
+
+    public void setTrangThai(String trangThai) {
+        this.trangThai = trangThai;
+    }
+
+    public int getDoUuTien() {
+        return doUuTien;
+    }
+
+    public void setDoUuTien(int doUuTien) {
+        this.doUuTien = doUuTien;
     }
 }
