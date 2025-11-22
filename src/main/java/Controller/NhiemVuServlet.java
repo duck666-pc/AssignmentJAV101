@@ -19,9 +19,6 @@ public class NhiemVuServlet extends HttpServlet {
     private static int nextId = 1;
 
     static {
-        nhiemVuList.add(new NhiemVu(nextId++, "Thiết kế giao diện", 1, 1, 2, new Date(), null, "Thiết kế UI/UX", "todo", 3));
-        nhiemVuList.add(new NhiemVu(nextId++, "Phát triển Backend", 1, 1, 1, new Date(), null, "API REST", "inprogress", 5));
-        nhiemVuList.add(new NhiemVu(nextId++, "Testing", 1, 1, 3, new Date(), null, "Kiểm thử chức năng", "done", 4));
     }
 
     @Override

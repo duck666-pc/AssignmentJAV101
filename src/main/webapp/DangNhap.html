@@ -13,6 +13,18 @@
 
         html {
             scroll-behavior: smooth;
+            height: 100%;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            position: relative;
         }
 
         /* Custom scrollbar */
@@ -33,17 +45,6 @@
             background: rgba(255,255,255,0.5);
         }
 
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 40px 20px;
-            position: relative;
-        }
-
         /* Animated background elements */
         body::before {
             content: '';
@@ -55,6 +56,7 @@
             top: -250px;
             right: -250px;
             animation: float 20s infinite;
+            pointer-events: none;
         }
 
         body::after {
@@ -67,6 +69,7 @@
             bottom: -200px;
             left: -200px;
             animation: float 15s infinite reverse;
+            pointer-events: none;
         }
 
         @keyframes float {
@@ -84,6 +87,22 @@
             position: relative;
             z-index: 1;
             animation: slideIn 0.5s ease-out;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .auth-container::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .auth-container::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 10px;
+        }
+
+        .auth-container::-webkit-scrollbar-thumb {
+            background: #667eea;
+            border-radius: 10px;
         }
 
         @keyframes slideIn {
@@ -243,41 +262,6 @@
             border-left: 4px solid #3c3;
         }
 
-        .demo-accounts {
-            background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%);
-            padding: 20px;
-            border-radius: 15px;
-            margin-bottom: 25px;
-            font-size: 13px;
-            color: #1565c0;
-            border-left: 4px solid #1976d2;
-        }
-
-        .demo-accounts strong {
-            display: block;
-            margin-bottom: 12px;
-            color: #0d47a1;
-            font-size: 14px;
-        }
-
-        .demo-account {
-            background: white;
-            padding: 10px;
-            border-radius: 8px;
-            margin-bottom: 8px;
-            cursor: pointer;
-            transition: all 0.3s;
-        }
-
-        .demo-account:hover {
-            transform: translateX(5px);
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-        }
-
-        .demo-account:last-child {
-            margin-bottom: 0;
-        }
-
         @media (max-width: 480px) {
             .auth-container {
                 padding: 35px 25px;
@@ -295,18 +279,6 @@
         <div class="auth-logo">🎯</div>
         <h1>Chào mừng trở lại!</h1>
         <p>Đăng nhập để quản lý công việc của bạn</p>
-    </div>
-
-    <div class="demo-accounts">
-        <strong>🔑 Tài khoản demo - Nhấn để đăng nhập nhanh:</strong>
-        <div class="demo-account" onclick="fillLogin('admin@example.com', 'admin123')">
-            <div style="font-weight: 600; margin-bottom: 4px;">👤 Admin</div>
-            <div style="color: #666; font-size: 12px;">Email: admin@example.com | Mật khẩu: admin123</div>
-        </div>
-        <div class="demo-account" onclick="fillLogin('user1@example.com', '123456')">
-            <div style="font-weight: 600; margin-bottom: 4px;">👤 User Demo</div>
-            <div style="color: #666; font-size: 12px;">Email: user1@example.com | Mật khẩu: 123456</div>
-        </div>
     </div>
 
     <div class="error-message" id="errorMsg"></div>
@@ -367,11 +339,6 @@
         return accounts;
     }
 
-    function fillLogin(email, password) {
-        document.getElementById('email').value = email;
-        document.getElementById('password').value = password;
-    }
-
     const form = document.getElementById('loginForm');
     const errorMsg = document.getElementById('errorMsg');
     const successMsg = document.getElementById('successMsg');
@@ -386,7 +353,7 @@
         const password = document.getElementById('password').value;
 
         if (!email || !password) {
-            errorMsg.textContent = 'Vui lòng nhập đầy đủ thông tin!';
+            errorMsg.textContent = '❌ Vui lòng nhập đầy đủ thông tin!';
             errorMsg.style.display = 'block';
             return;
         }
