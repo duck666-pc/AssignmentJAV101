@@ -110,15 +110,6 @@
             margin-bottom: 4px;
         }
 
-        .profile-role {
-            font-size: 14px;
-            color: var(--text-secondary);
-            padding: 4px 12px;
-            background: var(--bg-secondary);
-            border-radius: 12px;
-            display: inline-block;
-        }
-
         .info-group {
             margin-bottom: 24px;
         }
@@ -277,7 +268,6 @@
             <div class="profile-avatar" id="profileAvatar">A</div>
             <div class="profile-info">
                 <h2 id="profileName">Đang tải...</h2>
-                <span class="profile-role" id="profileRole">user</span>
             </div>
         </div>
 
@@ -285,11 +275,6 @@
             <div class="info-group">
                 <div class="info-label">Email</div>
                 <div class="info-value" id="viewEmail">-</div>
-            </div>
-
-            <div class="info-group">
-                <div class="info-label">Vai trò</div>
-                <div class="info-value" id="viewRole">-</div>
             </div>
 
             <button class="btn-edit" onclick="showEditForm()">Chỉnh sửa</button>
@@ -315,28 +300,6 @@
                 <button type="submit" class="btn-edit">Lưu thay đổi</button>
                 <button type="button" class="btn-cancel" onclick="cancelEdit()">Hủy</button>
             </form>
-        </div>
-    </div>
-
-    <div class="profile-card">
-        <h3 style="margin-bottom: 16px;">Thống kê</h3>
-        <div class="stats-grid">
-            <div class="stat-card">
-                <div class="stat-value" id="statTotal">0</div>
-                <div class="stat-label">Tổng nhiệm vụ</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-value" id="statDone">0</div>
-                <div class="stat-label">Hoàn thành</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-value" id="statInProgress">0</div>
-                <div class="stat-label">Đang làm</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-value" id="statTodo">0</div>
-                <div class="stat-label">Cần làm</div>
-            </div>
         </div>
     </div>
 </div>
@@ -365,9 +328,7 @@
     function loadProfile() {
         document.getElementById('profileAvatar').textContent = currentUser.ten.charAt(0).toUpperCase();
         document.getElementById('profileName').textContent = currentUser.ten;
-        document.getElementById('profileRole').textContent = currentUser.vaiTro === 'admin' ? 'Quản trị viên' : 'Người dùng';
         document.getElementById('viewEmail').textContent = currentUser.email;
-        document.getElementById('viewRole').textContent = currentUser.vaiTro === 'admin' ? 'Quản trị viên' : 'Người dùng';
     }
 
     function loadStats() {
@@ -424,7 +385,6 @@
             return;
         }
 
-        // Check if email is taken by another user
         const emailTaken = accounts.find(a => a.email === newEmail && a.id !== currentUser.id);
         if (emailTaken) {
             errorMsg.textContent = 'Email đã được sử dụng';

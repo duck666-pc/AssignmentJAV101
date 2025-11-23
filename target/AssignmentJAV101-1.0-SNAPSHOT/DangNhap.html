@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Đăng Nhập - Task Manager</title>
+    <title>Đăng Nhập</title>
     <style>
         * {
             margin: 0;
@@ -11,274 +11,195 @@
             box-sizing: border-box;
         }
 
-        html {
-            scroll-behavior: smooth;
-            height: 100%;
+        :root {
+            --bg-primary: #ffffff;
+            --bg-secondary: #f8f9fa;
+            --text-primary: #1a1a1a;
+            --text-secondary: #666;
+            --border-color: #e5e5e5;
+            --hover-bg: #f5f5f5;
+        }
+
+        [data-theme="dark"] {
+            --bg-primary: #1a1a1a;
+            --bg-secondary: #2a2a2a;
+            --text-primary: #ffffff;
+            --text-secondary: #999;
+            --border-color: #3a3a3a;
+            --hover-bg: #333;
         }
 
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100%;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: var(--bg-secondary);
+            min-height: 100vh;
             display: flex;
             align-items: center;
             justify-content: center;
             padding: 20px;
-            position: relative;
+            color: var(--text-primary);
+            transition: background 0.3s, color 0.3s;
         }
 
-        /* Custom scrollbar */
-        body::-webkit-scrollbar {
-            width: 12px;
-        }
-
-        body::-webkit-scrollbar-track {
-            background: rgba(0,0,0,0.1);
-        }
-
-        body::-webkit-scrollbar-thumb {
-            background: rgba(255,255,255,0.3);
-            border-radius: 10px;
-        }
-
-        body::-webkit-scrollbar-thumb:hover {
-            background: rgba(255,255,255,0.5);
-        }
-
-        /* Animated background elements */
-        body::before {
-            content: '';
-            position: absolute;
-            width: 500px;
-            height: 500px;
-            background: rgba(255, 255, 255, 0.1);
+        .theme-toggle {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            width: 40px;
+            height: 40px;
+            background: var(--bg-primary);
+            border: 1px solid var(--border-color);
             border-radius: 50%;
-            top: -250px;
-            right: -250px;
-            animation: float 20s infinite;
-            pointer-events: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            transition: all 0.2s;
+            z-index: 100;
         }
 
-        body::after {
-            content: '';
-            position: absolute;
-            width: 400px;
-            height: 400px;
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 50%;
-            bottom: -200px;
-            left: -200px;
-            animation: float 15s infinite reverse;
-            pointer-events: none;
-        }
-
-        @keyframes float {
-            0%, 100% { transform: translate(0, 0) rotate(0deg); }
-            50% { transform: translate(30px, 30px) rotate(180deg); }
+        .theme-toggle:hover {
+            background: var(--hover-bg);
         }
 
         .auth-container {
-            background: white;
-            border-radius: 30px;
-            box-shadow: 0 30px 80px rgba(0,0,0,0.3);
-            padding: 50px;
+            background: var(--bg-primary);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 40px;
             width: 100%;
-            max-width: 450px;
-            position: relative;
-            z-index: 1;
-            animation: slideIn 0.5s ease-out;
-            max-height: 90vh;
-            overflow-y: auto;
-        }
-
-        .auth-container::-webkit-scrollbar {
-            width: 8px;
-        }
-
-        .auth-container::-webkit-scrollbar-track {
-            background: #f1f1f1;
-            border-radius: 10px;
-        }
-
-        .auth-container::-webkit-scrollbar-thumb {
-            background: #667eea;
-            border-radius: 10px;
-        }
-
-        @keyframes slideIn {
-            from {
-                opacity: 0;
-                transform: translateY(30px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
+            max-width: 400px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
         }
 
         .auth-header {
             text-align: center;
-            margin-bottom: 40px;
-        }
-
-        .auth-logo {
-            font-size: 56px;
-            margin-bottom: 15px;
-            animation: bounce 2s infinite;
-        }
-
-        @keyframes bounce {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-10px); }
+            margin-bottom: 32px;
         }
 
         .auth-header h1 {
-            color: #333;
-            font-size: 32px;
-            margin-bottom: 10px;
-            font-weight: 700;
+            font-size: 24px;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: var(--text-primary);
         }
 
         .auth-header p {
-            color: #666;
-            font-size: 15px;
+            font-size: 14px;
+            color: var(--text-secondary);
         }
 
         .form-group {
-            margin-bottom: 25px;
+            margin-bottom: 20px;
         }
 
         .form-group label {
             display: block;
-            color: #333;
-            font-weight: 600;
-            margin-bottom: 10px;
             font-size: 14px;
-        }
-
-        .input-wrapper {
-            position: relative;
-        }
-
-        .input-icon {
-            position: absolute;
-            left: 15px;
-            top: 50%;
-            transform: translateY(-50%);
-            font-size: 18px;
-            color: #999;
+            font-weight: 500;
+            margin-bottom: 6px;
+            color: var(--text-primary);
         }
 
         .form-group input {
             width: 100%;
-            padding: 15px 15px 15px 45px;
-            border: 2px solid #e0e0e0;
-            border-radius: 15px;
-            font-size: 15px;
-            transition: all 0.3s;
+            padding: 10px 12px;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            font-size: 14px;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            transition: all 0.2s;
         }
 
         .form-group input:focus {
             outline: none;
-            border-color: #667eea;
-            box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
+            border-color: var(--text-primary);
         }
 
         .btn-primary {
             width: 100%;
-            padding: 16px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
+            padding: 10px;
+            background: var(--text-primary);
+            color: var(--bg-primary);
             border: none;
-            border-radius: 15px;
-            font-size: 16px;
-            font-weight: 700;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: 500;
             cursor: pointer;
-            transition: all 0.3s;
-            margin-top: 10px;
-            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+            transition: all 0.2s;
+            margin-top: 8px;
         }
 
         .btn-primary:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 6px 25px rgba(102, 126, 234, 0.5);
-        }
-
-        .btn-primary:active {
-            transform: translateY(-1px);
+            opacity: 0.9;
         }
 
         .btn-primary:disabled {
-            opacity: 0.6;
+            opacity: 0.5;
             cursor: not-allowed;
-            transform: none;
         }
 
         .auth-footer {
             text-align: center;
-            margin-top: 30px;
-            padding-top: 30px;
-            border-top: 2px solid #f0f0f0;
+            margin-top: 24px;
+            padding-top: 24px;
+            border-top: 1px solid var(--border-color);
+            font-size: 14px;
+            color: var(--text-secondary);
         }
 
         .auth-footer a {
-            color: #667eea;
+            color: var(--text-primary);
             text-decoration: none;
-            font-weight: 600;
-            transition: all 0.3s;
+            font-weight: 500;
         }
 
         .auth-footer a:hover {
-            color: #764ba2;
             text-decoration: underline;
         }
 
-        .error-message {
-            background: linear-gradient(135deg, #fee 0%, #fdd 100%);
-            color: #c33;
-            padding: 15px;
-            border-radius: 12px;
-            margin-bottom: 25px;
+        .message {
+            padding: 12px;
+            border-radius: 6px;
+            margin-bottom: 20px;
             font-size: 14px;
             display: none;
-            border-left: 4px solid #c33;
-            animation: shake 0.5s;
         }
 
-        @keyframes shake {
-            0%, 100% { transform: translateX(0); }
-            25% { transform: translateX(-10px); }
-            75% { transform: translateX(10px); }
+        .error-message {
+            background: #fee;
+            color: #c33;
+            border: 1px solid #fdd;
         }
 
         .success-message {
-            background: linear-gradient(135deg, #efe 0%, #dfd 100%);
+            background: #efe;
             color: #3c3;
-            padding: 15px;
-            border-radius: 12px;
-            margin-bottom: 25px;
-            font-size: 14px;
-            display: none;
-            border-left: 4px solid #3c3;
+            border: 1px solid #dfd;
         }
 
-        @media (max-width: 480px) {
-            .auth-container {
-                padding: 35px 25px;
-            }
+        [data-theme="dark"] .error-message {
+            background: #4a2020;
+            color: #ff6b6b;
+            border: 1px solid #5a2020;
+        }
 
-            .auth-header h1 {
-                font-size: 26px;
-            }
+        [data-theme="dark"] .success-message {
+            background: #204a20;
+            color: #66bb6a;
+            border: 1px solid #205a20;
         }
     </style>
 </head>
 <body>
+<button class="theme-toggle" onclick="toggleTheme()" id="themeToggle">🌙</button>
+
 <div class="auth-container">
     <div class="auth-header">
-        <div class="auth-logo">🎯</div>
-        <h1>Chào mừng trở lại!</h1>
-        <p>Đăng nhập để quản lý công việc của bạn</p>
+        <h1>Đăng Nhập</h1>
+        <p>Chào mừng trở lại</p>
     </div>
 
     <div class="error-message" id="errorMsg"></div>
@@ -287,30 +208,43 @@
     <form id="loginForm">
         <div class="form-group">
             <label for="email">Email</label>
-            <div class="input-wrapper">
-                <span class="input-icon">📧</span>
-                <input type="email" id="email" name="email" placeholder="your@email.com" required>
-            </div>
+            <input type="email" id="email" name="email" placeholder="your@email.com" required>
         </div>
 
         <div class="form-group">
             <label for="password">Mật khẩu</label>
-            <div class="input-wrapper">
-                <span class="input-icon">🔒</span>
-                <input type="password" id="password" name="password" placeholder="••••••••" required>
-            </div>
+            <input type="password" id="password" name="password" placeholder="••••••••" required>
         </div>
 
         <button type="submit" class="btn-primary" id="submitBtn">Đăng Nhập</button>
     </form>
 
     <div class="auth-footer">
-        <p>Chưa có tài khoản? <a href="DangKy.html">Đăng ký ngay</a></p>
+        <p>Chưa có tài khoản? <a href="DangKy.html">Đăng ký</a></p>
     </div>
 </div>
 
 <script>
     const ACCOUNTS_KEY = 'taskManagerAccounts';
+
+    // Theme handling
+    function toggleTheme() {
+        const html = document.documentElement;
+        const currentTheme = html.getAttribute('data-theme');
+        const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+
+        html.setAttribute('data-theme', newTheme);
+        localStorage.setItem('theme', newTheme);
+
+        document.getElementById('themeToggle').textContent = newTheme === 'dark' ? '☀️' : '🌙';
+    }
+
+    // Load saved theme
+    function loadTheme() {
+        const savedTheme = localStorage.getItem('theme') || 'light';
+        document.documentElement.setAttribute('data-theme', savedTheme);
+        document.getElementById('themeToggle').textContent = savedTheme === 'dark' ? '☀️' : '🌙';
+    }
 
     function initAccounts() {
         let accounts = JSON.parse(localStorage.getItem(ACCOUNTS_KEY) || '[]');
@@ -353,13 +287,13 @@
         const password = document.getElementById('password').value;
 
         if (!email || !password) {
-            errorMsg.textContent = '❌ Vui lòng nhập đầy đủ thông tin!';
+            errorMsg.textContent = 'Vui lòng nhập đầy đủ thông tin';
             errorMsg.style.display = 'block';
             return;
         }
 
         submitBtn.disabled = true;
-        submitBtn.textContent = 'Đang đăng nhập...';
+        submitBtn.textContent = 'Đang xử lý...';
 
         setTimeout(() => {
             const accounts = initAccounts();
@@ -373,22 +307,22 @@
                     vaiTro: user.vaiTro
                 }));
 
-                successMsg.textContent = '✅ Đăng nhập thành công! Đang chuyển hướng...';
+                successMsg.textContent = 'Đăng nhập thành công';
                 successMsg.style.display = 'block';
 
                 setTimeout(() => {
                     window.location.href = 'TrangChu.html';
-                }, 1000);
+                }, 500);
             } else {
-                errorMsg.textContent = '❌ Email hoặc mật khẩu không đúng!';
+                errorMsg.textContent = 'Email hoặc mật khẩu không đúng';
                 errorMsg.style.display = 'block';
                 submitBtn.disabled = false;
                 submitBtn.textContent = 'Đăng Nhập';
             }
-        }, 500);
+        }, 300);
     });
 
-    // Initialize accounts on page load
+    loadTheme();
     initAccounts();
 </script>
 </body>
