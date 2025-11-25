@@ -249,13 +249,258 @@
             font-size: 14px;
             color: var(--text-secondary);
         }
+
+        .notification-wrapper {
+            position: relative;
+        }
+
+        .notification-btn {
+            width: 40px;
+            height: 40px;
+            background: var(--bg-primary);
+            border: 1px solid var(--border-color);
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            transition: all 0.2s;
+            position: relative;
+        }
+
+        .notification-btn:hover {
+            background: var(--hover-bg);
+        }
+
+        .notification-badge {
+            position: absolute;
+            top: -4px;
+            right: -4px;
+            background: #c33;
+            color: white;
+            border-radius: 10px;
+            padding: 2px 6px;
+            font-size: 10px;
+            font-weight: 600;
+            min-width: 18px;
+            text-align: center;
+            display: none;
+        }
+
+        .notification-badge.active {
+            display: block;
+        }
+
+        .notification-dropdown {
+            display: none;
+            position: absolute;
+            top: calc(100% + 8px);
+            right: 0;
+            background: var(--bg-primary);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            width: 360px;
+            max-height: 480px;
+            z-index: 1000;
+            overflow: hidden;
+        }
+
+        .notification-dropdown.active {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .notification-header {
+            padding: 12px 16px;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: var(--bg-secondary);
+        }
+
+        .notification-header strong {
+            font-size: 14px;
+            color: var(--text-primary);
+        }
+
+        .btn-clear-notifications {
+            padding: 4px 8px;
+            background: transparent;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 12px;
+            color: var(--text-secondary);
+            transition: all 0.2s;
+        }
+
+        .btn-clear-notifications:hover {
+            background: var(--hover-bg);
+            color: var(--text-primary);
+        }
+
+        .notification-list {
+            overflow-y: auto;
+            max-height: 420px;
+        }
+
+        .notification-item {
+            padding: 12px 16px;
+            border-bottom: 1px solid var(--border-color);
+            cursor: pointer;
+            transition: all 0.2s;
+            background: var(--bg-primary);
+        }
+
+        .notification-item:hover {
+            background: var(--hover-bg);
+        }
+
+        .notification-item.unread {
+            background: rgba(37, 99, 235, 0.05);
+            border-left: 3px solid #2563eb;
+        }
+
+        .notification-item-title {
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--text-primary);
+            margin-bottom: 4px;
+        }
+
+        .notification-item-desc {
+            font-size: 12px;
+            color: var(--text-secondary);
+            margin-bottom: 4px;
+        }
+
+        .notification-item-time {
+            font-size: 11px;
+            color: var(--text-secondary);
+        }
+
+        .notification-empty {
+            padding: 40px 20px;
+            text-align: center;
+            color: var(--text-secondary);
+        }
+
+        .notification-empty-icon {
+            font-size: 32px;
+            margin-bottom: 8px;
+        }
+
+        .settings-section {
+            background: var(--bg-primary);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 24px;
+            margin-bottom: 24px;
+        }
+
+        .settings-section h3 {
+            font-size: 18px;
+            margin-bottom: 16px;
+            color: var(--text-primary);
+        }
+
+        .setting-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 0;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .setting-item:last-child {
+            border-bottom: none;
+        }
+
+        .setting-label {
+            font-size: 14px;
+            color: var(--text-primary);
+        }
+
+        .setting-description {
+            font-size: 12px;
+            color: var(--text-secondary);
+            margin-top: 4px;
+        }
+
+        .setting-control input {
+            padding: 6px 12px;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            font-size: 14px;
+            width: 80px;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+        }
+
+        .setting-control input:focus {
+            outline: none;
+            border-color: var(--text-primary);
+        }
     </style>
 </head>
 <body>
 <div class="header">
     <div class="header-content">
         <h1>Thông Tin Tài Khoản</h1>
-        <a href="TrangChu.html" class="btn-back">← Quay lại</a>
+        <div style="display: flex; align-items: center; gap: 12px;">
+            <div class="notification-wrapper">
+                <button class="notification-btn" onclick="toggleNotifications()" id="notificationBtn">
+                    🔔
+                    <span class="notification-badge" id="notificationBadge">0</span>
+                </button>
+                <div class="notification-dropdown" id="notificationDropdown">
+                    <div class="notification-header">
+                        <strong>Thông báo</strong>
+                        <button class="btn-clear-notifications" onclick="markAllAsRead()">Đánh dấu đã đọc</button>
+                    </div>
+                    <div class="notification-list" id="notificationList"></div>
+                </div>
+            </div>
+            <a href="TrangChu.html" class="btn-back">← Quay lại</a>
+        </div>
+    </div>
+</div>
+
+<div class="settings-section">
+    <h3>Cài đặt thông báo</h3>
+    <div class="setting-item">
+        <div>
+            <div class="setting-label">Thời gian cảnh báo</div>
+            <div class="setting-description">Số ngày trước khi nhiệm vụ đến hạn</div>
+        </div>
+        <div class="setting-control">
+            <input type="number" id="notificationDays" min="1" max="30" value="7" onchange="saveNotificationSettings()">
+        </div>
+    </div>
+</div>
+
+<div class="profile-card">
+    <h3 style="margin-bottom: 20px; font-size: 18px;">Thống kê</h3>
+    <div class="stats-grid">
+        <div class="stat-card">
+            <div class="stat-value" id="statTotalProjects">0</div>
+            <div class="stat-label">Dự án</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-value" id="statTotal">0</div>
+            <div class="stat-label">Tổng nhiệm vụ</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-value" id="statDone">0</div>
+            <div class="stat-label">Hoàn thành</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-value" id="statInProgress">0</div>
+            <div class="stat-label">Đang làm</div>
+        </div>
     </div>
 </div>
 
@@ -308,6 +553,8 @@
     const ACCOUNTS_KEY = 'taskManagerAccounts';
     const TASKS_KEY = 'taskManagerTasks';
     let currentUser = null;
+    const TASKS_KEY = 'taskManagerTasks';
+    const PROJECTS_KEY = 'taskManagerProjects';
 
     function loadTheme() {
         const savedTheme = localStorage.getItem('theme') || 'light';
@@ -333,15 +580,22 @@
 
     function loadStats() {
         const allTasks = JSON.parse(localStorage.getItem(TASKS_KEY) || '[]');
+        const allProjects = JSON.parse(localStorage.getItem(PROJECTS_KEY) || '[]');
+
         const userTasks = allTasks.filter(t =>
             t.nguoiTaoId === currentUser.id ||
             t.nguoiThucHienId === currentUser.id
         );
 
+        const userProjects = allProjects.filter(p =>
+            p.nguoiTaoId === currentUser.id ||
+            currentUser.vaiTro === 'admin'
+        );
+
+        document.getElementById('statTotalProjects').textContent = userProjects.length;
         document.getElementById('statTotal').textContent = userTasks.length;
         document.getElementById('statDone').textContent = userTasks.filter(t => t.trangThai === 'done').length;
         document.getElementById('statInProgress').textContent = userTasks.filter(t => t.trangThai === 'inprogress').length;
-        document.getElementById('statTodo').textContent = userTasks.filter(t => t.trangThai === 'todo').length;
     }
 
     function showEditForm() {
@@ -415,8 +669,121 @@
         }, 3000);
     });
 
+    function loadNotifications() {
+        const notificationDays = parseInt(localStorage.getItem('notificationDays') || '7');
+        document.getElementById('notificationDays').value = notificationDays;
+
+        const today = new Date();
+        const futureDate = new Date(today);
+        futureDate.setDate(today.getDate() + notificationDays);
+
+        const allTasks = JSON.parse(localStorage.getItem(TASKS_KEY) || '[]');
+        const userTasks = allTasks.filter(t =>
+            (t.nguoiTaoId === currentUser.id || t.nguoiThucHienId === currentUser.id) &&
+            t.ngayKetThuc && t.trangThai !== 'done'
+        );
+
+        const allProjects = JSON.parse(localStorage.getItem(PROJECTS_KEY) || '[]');
+
+        const upcomingTasks = userTasks.filter(t => {
+            const dueDate = new Date(t.ngayKetThuc);
+            return dueDate >= today && dueDate <= futureDate;
+        });
+
+        const readNotifications = JSON.parse(localStorage.getItem('readNotifications') || '[]');
+
+        const notificationList = document.getElementById('notificationList');
+        const badge = document.getElementById('notificationBadge');
+
+        if (upcomingTasks.length === 0) {
+            notificationList.innerHTML = `
+            <div class="notification-empty">
+                <div class="notification-empty-icon">✅</div>
+                <div>Không có thông báo mới</div>
+            </div>
+        `;
+            badge.classList.remove('active');
+            badge.textContent = '0';
+            return;
+        }
+
+        const unreadCount = upcomingTasks.filter(t => !readNotifications.includes(t.id)).length;
+        if (unreadCount > 0) {
+            badge.classList.add('active');
+            badge.textContent = unreadCount;
+        } else {
+            badge.classList.remove('active');
+        }
+
+        notificationList.innerHTML = upcomingTasks.map(t => {
+            const dueDate = new Date(t.ngayKetThuc);
+            const daysLeft = Math.ceil((dueDate - today) / (1000 * 60 * 60 * 24));
+            const project = t.duAnId ? allProjects.find(p => p.id === t.duAnId) : null;
+            const isUnread = !readNotifications.includes(t.id);
+
+            return `
+            <div class="notification-item ${isUnread ? 'unread' : ''}" onclick="openTaskFromNotification(${t.id})">
+                <div class="notification-item-title">${t.ten}</div>
+                <div class="notification-item-desc">
+                    ${project ? project.ten : 'Không có dự án'} •
+                    ${daysLeft === 0 ? 'Hết hạn hôm nay' : daysLeft === 1 ? 'Hết hạn ngày mai' : `Còn ${daysLeft} ngày`}
+                </div>
+                <div class="notification-item-time">
+                    Hạn: ${dueDate.toLocaleDateString('vi-VN')}
+                </div>
+            </div>
+        `;
+        }).join('');
+    }
+
+    function toggleNotifications() {
+        const dropdown = document.getElementById('notificationDropdown');
+        dropdown.classList.toggle('active');
+
+        if (dropdown.classList.contains('active')) {
+            setTimeout(() => {
+                document.addEventListener('click', closeNotificationOnClickOutside);
+            }, 0);
+        }
+    }
+
+    function closeNotificationOnClickOutside(e) {
+        const dropdown = document.getElementById('notificationDropdown');
+        const btn = document.getElementById('notificationBtn');
+
+        if (!dropdown.contains(e.target) && !btn.contains(e.target)) {
+            dropdown.classList.remove('active');
+            document.removeEventListener('click', closeNotificationOnClickOutside);
+        }
+    }
+
+    function openTaskFromNotification(taskId) {
+        let readNotifications = JSON.parse(localStorage.getItem('readNotifications') || '[]');
+        if (!readNotifications.includes(taskId)) {
+            readNotifications.push(taskId);
+            localStorage.setItem('readNotifications', JSON.stringify(readNotifications));
+        }
+
+        document.getElementById('notificationDropdown').classList.remove('active');
+        window.location.href = 'TrangChu.html';
+    }
+
+    function markAllAsRead() {
+        const allTasks = JSON.parse(localStorage.getItem(TASKS_KEY) || '[]');
+        const taskIds = allTasks.map(t => t.id);
+        localStorage.setItem('readNotifications', JSON.stringify(taskIds));
+        loadNotifications();
+    }
+
+    function saveNotificationSettings() {
+        const days = document.getElementById('notificationDays').value;
+        localStorage.setItem('notificationDays', days);
+        loadNotifications();
+    }
+
     loadTheme();
     checkAuth();
+    loadNotifications();
 </script>
 </body>
 </html>
