@@ -444,6 +444,152 @@
             outline: none;
             border-color: var(--text-primary);
         }
+
+        .project-item {
+            display: flex;
+            align-items: center;
+            padding: 16px;
+            border-bottom: 1px solid var(--border-color);
+            transition: all 0.2s;
+        }
+
+        .project-item:last-child {
+            border-bottom: none;
+        }
+
+        .project-item:hover {
+            background: var(--hover-bg);
+        }
+
+        .project-color-indicator {
+            width: 4px;
+            height: 48px;
+            border-radius: 2px;
+            margin-right: 16px;
+        }
+
+        .project-content {
+            flex: 1;
+        }
+
+        .project-title {
+            font-size: 16px;
+            font-weight: 500;
+            color: var(--text-primary);
+            margin-bottom: 6px;
+        }
+
+        .project-meta {
+            font-size: 13px;
+            color: var(--text-secondary);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .project-actions {
+            display: flex;
+            gap: 4px;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 40px 20px;
+            color: var(--text-secondary);
+        }
+
+        .empty-state-icon {
+            font-size: 48px;
+            margin-bottom: 12px;
+            opacity: 0.5;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: var(--bg-primary);
+            border-radius: 8px;
+            padding: 24px;
+            max-width: 500px;
+            width: 90%;
+            max-height: 85vh;
+            overflow-y: auto;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+        }
+
+        .modal-header {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 20px;
+            color: var(--text-primary);
+        }
+
+        .modal-actions {
+            display: flex;
+            gap: 8px;
+            justify-content: flex-end;
+            margin-top: 20px;
+        }
+
+        .btn-submit {
+            padding: 8px 16px;
+            background: var(--text-primary);
+            color: var(--bg-primary);
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.2s;
+        }
+
+        .btn-submit:hover {
+            opacity: 0.9;
+        }
+
+        .color-picker-group {
+            display: flex;
+            gap: 8px;
+            margin-top: 8px;
+        }
+
+        .color-option {
+            width: 36px;
+            height: 36px;
+            border-radius: 6px;
+            cursor: pointer;
+            border: 2px solid transparent;
+            transition: all 0.2s;
+        }
+
+        .color-option:hover {
+            transform: scale(1.05);
+        }
+
+        .color-option.selected {
+            border-color: var(--text-primary);
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            min-height: 80px;
+            font-family: inherit;
+        }
     </style>
 </head>
 <body>
@@ -469,60 +615,22 @@
     </div>
 </div>
 
-<div class="settings-section">
-    <h3>Cài đặt thông báo</h3>
-    <div class="setting-item">
-        <div>
-            <div class="setting-label">Thời gian cảnh báo</div>
-            <div class="setting-description">Số ngày trước khi nhiệm vụ đến hạn</div>
-        </div>
-        <div class="setting-control">
-            <input type="number" id="notificationDays" min="1" max="30" value="7" onchange="saveNotificationSettings()">
-        </div>
-    </div>
-</div>
-
-<div class="profile-card">
-    <h3 style="margin-bottom: 20px; font-size: 18px;">Thống kê</h3>
-    <div class="stats-grid">
-        <div class="stat-card">
-            <div class="stat-value" id="statTotalProjects">0</div>
-            <div class="stat-label">Dự án</div>
-        </div>
-        <div class="stat-card">
-            <div class="stat-value" id="statTotal">0</div>
-            <div class="stat-label">Tổng nhiệm vụ</div>
-        </div>
-        <div class="stat-card">
-            <div class="stat-value" id="statDone">0</div>
-            <div class="stat-label">Hoàn thành</div>
-        </div>
-        <div class="stat-card">
-            <div class="stat-value" id="statInProgress">0</div>
-            <div class="stat-label">Đang làm</div>
-        </div>
-    </div>
-</div>
-
 <div class="container">
     <div class="success-message" id="successMsg"></div>
     <div class="error-message" id="errorMsg"></div>
 
+    <!-- Profile Card -->
     <div class="profile-card">
         <div class="profile-header">
             <div class="profile-avatar" id="profileAvatar">A</div>
             <div class="profile-info">
                 <h2 id="profileName">Đang tải...</h2>
+                <p style="color: var(--text-secondary); font-size: 14px; margin-top: 4px;" id="viewEmail">-</p>
             </div>
         </div>
 
         <div id="viewMode">
-            <div class="info-group">
-                <div class="info-label">Email</div>
-                <div class="info-value" id="viewEmail">-</div>
-            </div>
-
-            <button class="btn-edit" onclick="showEditForm()">Chỉnh sửa</button>
+            <button class="btn-edit" onclick="showEditForm()">Chỉnh sửa thông tin</button>
         </div>
 
         <div id="editMode" class="edit-form">
@@ -547,14 +655,114 @@
             </form>
         </div>
     </div>
+
+    <!-- Stats Grid -->
+    <div class="profile-card">
+        <h3 style="margin-bottom: 20px; font-size: 18px; font-weight: 600;">Thống kê</h3>
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-value" id="statTotalProjects">0</div>
+                <div class="stat-label">Dự án</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="statTotal">0</div>
+                <div class="stat-label">Tổng nhiệm vụ</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="statDone">0</div>
+                <div class="stat-label">Hoàn thành</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="statInProgress">0</div>
+                <div class="stat-label">Đang làm</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Notification Settings -->
+    <div class="settings-section">
+        <h3>Cài đặt thông báo</h3>
+        <div class="setting-item">
+            <div>
+                <div class="setting-label">Thời gian cảnh báo</div>
+                <div class="setting-description">Số ngày trước khi nhiệm vụ đến hạn</div>
+            </div>
+            <div class="setting-control">
+                <input type="number" id="notificationDays" min="1" max="30" value="7" onchange="saveNotificationSettings()">
+            </div>
+        </div>
+    </div>
+
+    <!-- Projects List -->
+    <div class="profile-card">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+            <h3 style="font-size: 18px; font-weight: 600;">Dự án của tôi</h3>
+            <button class="btn-edit" onclick="showAddProjectModal()">+ Thêm dự án</button>
+        </div>
+        <div id="projectsList"></div>
+    </div>
+</div>
+
+<!-- Modal dự án -->
+<div class="modal" id="projectModal">
+    <div class="modal-content">
+        <div class="modal-header" id="projectModalTitle">Thêm Dự Án</div>
+        <form id="projectForm">
+            <input type="hidden" id="editProjectId">
+
+            <div class="form-group">
+                <label>Tên dự án *</label>
+                <input type="text" id="projectName" required placeholder="Nhập tên dự án">
+            </div>
+
+            <div class="form-group">
+                <label>Người thực hiện</label>
+                <input type="text" id="projectPerson" placeholder="Tên người thực hiện">
+            </div>
+
+            <div class="form-group">
+                <label>Ngày bắt đầu</label>
+                <input type="date" id="projectStartDate">
+            </div>
+
+            <div class="form-group">
+                <label>Ngày kết thúc</label>
+                <input type="date" id="projectEndDate">
+            </div>
+
+            <div class="form-group">
+                <label>Ghi chú</label>
+                <textarea id="projectNote" placeholder="Mô tả dự án..."></textarea>
+            </div>
+
+            <div class="form-group">
+                <label>Màu sắc</label>
+                <div class="color-picker-group">
+                    <div class="color-option" style="background: #1a1a1a;" data-color="#1a1a1a" onclick="selectColor(this)"></div>
+                    <div class="color-option" style="background: #c33;" data-color="#c33" onclick="selectColor(this)"></div>
+                    <div class="color-option" style="background: #d97706;" data-color="#d97706" onclick="selectColor(this)"></div>
+                    <div class="color-option" style="background: #3c3;" data-color="#3c3" onclick="selectColor(this)"></div>
+                    <div class="color-option" style="background: #2563eb;" data-color="#2563eb" onclick="selectColor(this)"></div>
+                    <div class="color-option" style="background: #7c3aed;" data-color="#7c3aed" onclick="selectColor(this)"></div>
+                </div>
+                <input type="hidden" id="projectColor" value="#1a1a1a">
+            </div>
+
+            <div class="modal-actions">
+                <button type="button" class="btn-cancel" onclick="closeProjectModal()">Hủy</button>
+                <button type="submit" class="btn-submit">Lưu</button>
+            </div>
+        </form>
+    </div>
 </div>
 
 <script>
     const ACCOUNTS_KEY = 'taskManagerAccounts';
-    const TASKS_KEY = 'taskManagerTasks';
-    let currentUser = null;
+    const ACCOUNTS_KEY = 'taskManagerAccounts';
     const TASKS_KEY = 'taskManagerTasks';
     const PROJECTS_KEY = 'taskManagerProjects';
+    let currentUser = null;
+    let selectedProjectColor = '#1a1a1a';
 
     function loadTheme() {
         const savedTheme = localStorage.getItem('theme') || 'light';
@@ -570,6 +778,8 @@
         currentUser = JSON.parse(userStr);
         loadProfile();
         loadStats();
+        loadProjects();
+        loadNotifications();
     }
 
     function loadProfile() {
@@ -596,6 +806,52 @@
         document.getElementById('statTotal').textContent = userTasks.length;
         document.getElementById('statDone').textContent = userTasks.filter(t => t.trangThai === 'done').length;
         document.getElementById('statInProgress').textContent = userTasks.filter(t => t.trangThai === 'inprogress').length;
+    }
+
+    function loadProjects() {
+        const allProjects = JSON.parse(localStorage.getItem(PROJECTS_KEY) || '[]');
+        const userProjects = allProjects.filter(p =>
+            p.nguoiTaoId === currentUser.id ||
+            currentUser.vaiTro === 'admin'
+        );
+
+        const projectsList = document.getElementById('projectsList');
+
+        if (userProjects.length === 0) {
+            projectsList.innerHTML = `
+            <div class="empty-state">
+                <div class="empty-state-icon">📁</div>
+                <div>Chưa có dự án nào</div>
+            </div>
+        `;
+            return;
+        }
+
+        const allTasks = JSON.parse(localStorage.getItem(TASKS_KEY) || '[]');
+
+        projectsList.innerHTML = userProjects.map(p => {
+            const projectTasks = allTasks.filter(t => t.duAnId === p.id);
+            const completedTasks = projectTasks.filter(t => t.trangThai === 'done').length;
+
+            return `
+            <div class="project-item">
+                <div class="project-color-indicator" style="background: ${p.mauSac || '#1a1a1a'};"></div>
+                <div class="project-content">
+                    <div class="project-title">${p.ten}</div>
+                    <div class="project-meta">
+                        <span>👤 ${p.nguoiThucHien || 'Chưa phân công'}</span>
+                        <span>📝 ${projectTasks.length} nhiệm vụ</span>
+                        <span>✅ ${completedTasks} hoàn thành</span>
+                        ${p.ngayKetThuc ? '<span>📅 ' + new Date(p.ngayKetThuc).toLocaleDateString('vi-VN') + '</span>' : ''}
+                    </div>
+                </div>
+                <div class="project-actions">
+                    <button class="btn-icon" onclick="editProject(${p.id})" title="Sửa">✏️</button>
+                    <button class="btn-icon btn-delete" onclick="deleteProject(${p.id})" title="Xóa">🗑️</button>
+                </div>
+            </div>
+        `;
+        }).join('');
     }
 
     function showEditForm() {
@@ -674,6 +930,7 @@
         document.getElementById('notificationDays').value = notificationDays;
 
         const today = new Date();
+        today.setHours(0, 0, 0, 0);
         const futureDate = new Date(today);
         futureDate.setDate(today.getDate() + notificationDays);
 
@@ -687,6 +944,7 @@
 
         const upcomingTasks = userTasks.filter(t => {
             const dueDate = new Date(t.ngayKetThuc);
+            dueDate.setHours(0, 0, 0, 0);
             return dueDate >= today && dueDate <= futureDate;
         });
 
@@ -717,6 +975,7 @@
 
         notificationList.innerHTML = upcomingTasks.map(t => {
             const dueDate = new Date(t.ngayKetThuc);
+            dueDate.setHours(0, 0, 0, 0);
             const daysLeft = Math.ceil((dueDate - today) / (1000 * 60 * 60 * 24));
             const project = t.duAnId ? allProjects.find(p => p.id === t.duAnId) : null;
             const isUnread = !readNotifications.includes(t.id);
@@ -781,9 +1040,107 @@
         loadNotifications();
     }
 
+    function showAddProjectModal() {
+        document.getElementById('projectModalTitle').textContent = 'Thêm Dự Án';
+        document.getElementById('projectForm').reset();
+        document.getElementById('editProjectId').value = '';
+        selectedProjectColor = '#1a1a1a';
+        document.getElementById('projectColor').value = '#1a1a1a';
+        document.querySelectorAll('.color-option').forEach(opt => opt.classList.remove('selected'));
+        document.querySelector('.color-option[data-color="#1a1a1a"]').classList.add('selected');
+        document.getElementById('projectModal').classList.add('active');
+    }
+
+    function closeProjectModal() {
+        document.getElementById('projectModal').classList.remove('active');
+    }
+
+    function selectColor(element) {
+        document.querySelectorAll('.color-option').forEach(opt => opt.classList.remove('selected'));
+        element.classList.add('selected');
+        selectedProjectColor = element.dataset.color;
+        document.getElementById('projectColor').value = selectedProjectColor;
+    }
+
+    function editProject(id) {
+        const allProjects = JSON.parse(localStorage.getItem(PROJECTS_KEY) || '[]');
+        const project = allProjects.find(p => p.id === id);
+        if (!project) return;
+
+        document.getElementById('projectModalTitle').textContent = 'Sửa Dự Án';
+        document.getElementById('editProjectId').value = project.id;
+        document.getElementById('projectName').value = project.ten;
+        document.getElementById('projectPerson').value = project.nguoiThucHien || '';
+        document.getElementById('projectStartDate').value = project.ngayBatDau || '';
+        document.getElementById('projectEndDate').value = project.ngayKetThuc || '';
+        document.getElementById('projectNote').value = project.ghiChu || '';
+
+        selectedProjectColor = project.mauSac || '#1a1a1a';
+        document.getElementById('projectColor').value = selectedProjectColor;
+        document.querySelectorAll('.color-option').forEach(opt => opt.classList.remove('selected'));
+        const selectedOpt = document.querySelector(`.color-option[data-color="${selectedProjectColor}"]`);
+        if (selectedOpt) selectedOpt.classList.add('selected');
+
+        document.getElementById('projectModal').classList.add('active');
+    }
+
+    function deleteProject(id) {
+        if (!confirm('Xóa dự án này? Tất cả nhiệm vụ liên quan sẽ không thuộc dự án nào.')) return;
+
+        let allProjects = JSON.parse(localStorage.getItem(PROJECTS_KEY) || '[]');
+        allProjects = allProjects.filter(p => p.id !== id);
+        localStorage.setItem(PROJECTS_KEY, JSON.stringify(allProjects));
+
+        // Cập nhật tasks: remove duAnId
+        let allTasks = JSON.parse(localStorage.getItem(TASKS_KEY) || '[]');
+        allTasks = allTasks.map(t => {
+            if (t.duAnId === id) {
+                t.duAnId = null;
+            }
+            return t;
+        });
+        localStorage.setItem(TASKS_KEY, JSON.stringify(allTasks));
+
+        loadProjects();
+        loadStats();
+    }
+
+    document.getElementById('projectForm').addEventListener('submit', (e) => {
+        e.preventDefault();
+
+        const editId = document.getElementById('editProjectId').value;
+
+        const projectData = {
+            ten: document.getElementById('projectName').value,
+            nguoiThucHien: document.getElementById('projectPerson').value || currentUser.ten,
+            ngayBatDau: document.getElementById('projectStartDate').value || null,
+            ngayKetThuc: document.getElementById('projectEndDate').value || null,
+            ghiChu: document.getElementById('projectNote').value || '',
+            mauSac: document.getElementById('projectColor').value,
+            nguoiTaoId: currentUser.id
+        };
+
+        let allProjects = JSON.parse(localStorage.getItem(PROJECTS_KEY) || '[]');
+
+        if (editId) {
+            const projectIndex = allProjects.findIndex(p => p.id == editId);
+            if (projectIndex !== -1) {
+                allProjects[projectIndex] = { ...allProjects[projectIndex], ...projectData };
+            }
+        } else {
+            const newId = allProjects.length > 0 ? Math.max(...allProjects.map(p => p.id)) + 1 : 1;
+            const newProject = { id: newId, ...projectData };
+            allProjects.push(newProject);
+        }
+
+        localStorage.setItem(PROJECTS_KEY, JSON.stringify(allProjects));
+        closeProjectModal();
+        loadProjects();
+        loadStats();
+    });
+
     loadTheme();
     checkAuth();
-    loadNotifications();
 </script>
 </body>
 </html>

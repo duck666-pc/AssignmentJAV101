@@ -1169,12 +1169,14 @@
     function loadNotifications() {
         const notificationDays = parseInt(localStorage.getItem('notificationDays') || '7');
         const today = new Date();
+        today.setHours(0, 0, 0, 0);
         const futureDate = new Date(today);
         futureDate.setDate(today.getDate() + notificationDays);
 
         const upcomingTasks = tasks.filter(t => {
             if (!t.ngayKetThuc || t.trangThai === 'done') return false;
             const dueDate = new Date(t.ngayKetThuc);
+            dueDate.setHours(0, 0, 0, 0);
             return dueDate >= today && dueDate <= futureDate;
         });
 
@@ -1205,6 +1207,7 @@
 
         notificationList.innerHTML = upcomingTasks.map(t => {
             const dueDate = new Date(t.ngayKetThuc);
+            dueDate.setHours(0, 0, 0, 0);
             const daysLeft = Math.ceil((dueDate - today) / (1000 * 60 * 60 * 24));
             const project = t.duAnId ? projects.find(p => p.id === t.duAnId) : null;
             const isUnread = !readNotifications.includes(t.id);
@@ -1785,6 +1788,7 @@
         localStorage.setItem(TASKS_KEY, JSON.stringify(allTasks));
         closeModal();
         loadTasks();
+        refreshNotifications();
     });
 
     document.getElementById('projectForm').addEventListener('submit', (e) => {
@@ -1828,6 +1832,11 @@
             }
         });
         localStorage.setItem(TASKS_KEY, JSON.stringify(allTasks));
+    }
+
+    function refreshNotifications() {
+        initData();
+        loadNotifications();
     }
 
     function init() {
