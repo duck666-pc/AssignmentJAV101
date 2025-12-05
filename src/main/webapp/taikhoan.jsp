@@ -256,7 +256,7 @@
 <div class="header">
     <div class="header-content">
         <h1>Thông Tin Tài Khoản</h1>
-        <a href="TrangChu.jsp" class="btn-back">← Quay lại</a>
+        <a href="trangchu.jsp" class="btn-back">← Quay lại</a>
     </div>
 </div>
 
