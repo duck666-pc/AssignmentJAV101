@@ -1,13 +1,12 @@
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
-<!DOCTYPE html>
-<html>
-<head>
-    <title>JSP - Hello World</title>
-</head>
-<body>
-<h1><%= "Hello World!" %>
-</h1>
-<br/>
-<a href="hello-servlet">Hello Servlet</a>
-</body>
-</html>
+<%
+    // Kiểm tra session
+    Object currentUser = session.getAttribute("userId");
+    if (currentUser != null) {
+        // Đã đăng nhập, chuyển đến trang chủ
+        response.sendRedirect(request.getContextPath() + "/TrangChu.jsp");
+    } else {
+        // Chưa đăng nhập, chuyển đến trang đăng nhập
+        response.sendRedirect(request.getContextPath() + "/DangNhap.jsp");
+    }
+%>

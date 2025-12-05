@@ -7,9 +7,8 @@
     <display-name>Task Manager Application</display-name>
 
     <welcome-file-list>
-        <welcome-file>DangNhap.html</welcome-file>
-        <welcome-file>index.html</welcome-file>
         <welcome-file>index.jsp</welcome-file>
+        <welcome-file>DangNhap.jsp</welcome-file>
     </welcome-file-list>
 
     <session-config>
