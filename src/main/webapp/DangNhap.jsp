@@ -67,7 +67,7 @@
     <div class="auth-footer">
         <p>
             <fmt:message key="login.no_account"/>
-            <a href="${pageContext.request.contextPath}/dangky.jsp">
+            <a href="${pageContext.request.contextPath}/DangKy.jsp">
                 <fmt:message key="login.register"/>
             </a>
         </p>

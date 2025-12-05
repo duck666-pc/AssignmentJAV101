@@ -1,3 +1,4 @@
+<%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <!DOCTYPE html>
 <html lang="vi">
 <head>
@@ -255,7 +256,7 @@
 <div class="header">
     <div class="header-content">
         <h1>Thông Tin Tài Khoản</h1>
-        <a href="TrangChu.html" class="btn-back">← Quay lại</a>
+        <a href="TrangChu.jsp" class="btn-back">← Quay lại</a>
     </div>
 </div>
 

@@ -98,7 +98,7 @@
     <div class="auth-footer">
         <p>
             <fmt:message key="register.have_account"/>
-            <a href="${pageContext.request.contextPath}/dangnhap.jsp">
+            <a href="${pageContext.request.contextPath}/DangNhap.jsp">
                 <fmt:message key="register.login"/>
             </a>
         </p>

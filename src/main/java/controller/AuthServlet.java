@@ -88,11 +88,11 @@ public class AuthServlet extends HttpServlet {
         try {
             conn = DatabaseConfig.getConnection();
 
-            // Check if email exists
+            // Check if email exists - FIX: Thêm executeQuery()
             String checkSql = "SELECT id FROM tai_khoan WHERE email = ?";
             PreparedStatement checkStmt = conn.prepareStatement(checkSql);
             checkStmt.setString(1, email);
-            ResultSet rs = checkStmt.getResultSet();
+            ResultSet rs = checkStmt.executeQuery(); // FIX: Thêm dòng này
 
             if (rs.next()) {
                 req.setAttribute("error", "Email đã được sử dụng");
@@ -100,12 +100,12 @@ public class AuthServlet extends HttpServlet {
                 return;
             }
 
-            // Insert new account
+            // Insert new account - FIX: Dùng NVARCHAR cho tiếng Việt
             String insertSql = "INSERT INTO tai_khoan (ten, email, mat_khau, vai_tro) VALUES (?, ?, ?, 'user')";
             PreparedStatement insertStmt = conn.prepareStatement(insertSql, Statement.RETURN_GENERATED_KEYS);
             insertStmt.setString(1, ten);
             insertStmt.setString(2, email);
-            insertStmt.setString(3, matKhau); // In production, use password hashing!
+            insertStmt.setString(3, matKhau); // TODO: In production, use BCrypt password hashing!
             insertStmt.executeUpdate();
 
             ResultSet generatedKeys = insertStmt.getGeneratedKeys();
@@ -130,10 +130,9 @@ public class AuthServlet extends HttpServlet {
                     resp.addCookie(emailCookie);
                 }
 
-                // Send welcome email
+                // Send welcome email (async)
                 new Thread(() -> EmailUtil.sendWelcomeEmail(email, ten)).start();
 
-                req.setAttribute("success", "Đăng ký thành công");
                 resp.sendRedirect(req.getContextPath() + "/trangchu.jsp");
             }
 
@@ -160,14 +159,22 @@ public class AuthServlet extends HttpServlet {
         try {
             conn = DatabaseConfig.getConnection();
 
-            String sql = "SELECT id, ten, email, vai_tro FROM tai_khoan WHERE email = ? AND mat_khau = ?";
+            String sql = "SELECT id, ten, email, vai_tro, trang_thai FROM tai_khoan WHERE email = ? AND mat_khau = ?";
             PreparedStatement stmt = conn.prepareStatement(sql);
             stmt.setString(1, email);
-            stmt.setString(2, matKhau); // In production, use password hashing!
+            stmt.setString(2, matKhau); // TODO: In production, use BCrypt verification!
 
             ResultSet rs = stmt.executeQuery();
 
             if (rs.next()) {
+                String trangThai = rs.getString("trang_thai");
+
+                if (!"active".equals(trangThai)) {
+                    req.setAttribute("error", "Tài khoản đã bị khóa hoặc vô hiệu hóa");
+                    req.getRequestDispatcher("/dangnhap.jsp").forward(req, resp);
+                    return;
+                }
+
                 HttpSession session = req.getSession(true);
                 Map<String, Object> user = new HashMap<>();
                 user.put("id", rs.getInt("id"));
