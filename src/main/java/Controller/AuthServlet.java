@@ -1,57 +1,39 @@
-package Controller;
+package controller;
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
-import jakarta.servlet.http.HttpServlet;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
-import jakarta.servlet.http.HttpSession;
+import jakarta.servlet.http.*;
 import com.google.gson.Gson;
+import util.DatabaseConfig;
+import util.EmailUtil;
+
 import java.io.*;
+import java.sql.*;
 import java.util.*;
 
-@WebServlet(name = "AuthServlet", urlPatterns = {"/auth", "/auth/register", "/auth/login", "/auth/logout"})
+@WebServlet(name = "AuthServlet", urlPatterns = {"/auth"})
 public class AuthServlet extends HttpServlet {
-
     private Gson gson = new Gson();
 
-    // Danh sách tài khoản lưu trong bộ nhớ
-    private static List<Map<String, Object>> accounts = new ArrayList<>();
-    private static int nextId = 1;
+    @Override
+    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException, ServletException {
+        String action = req.getParameter("action");
 
-    static {
-        // Tạo tài khoản admin mặc định
-        Map<String, Object> admin = new HashMap<>();
-        admin.put("id", nextId++);
-        admin.put("ten", "Admin");
-        admin.put("email", "admin@example.com");
-        admin.put("matKhau", "admin123");
-        admin.put("vaiTro", "admin");
-        accounts.add(admin);
-
-        // Tài khoản user mẫu
-        Map<String, Object> user1 = new HashMap<>();
-        user1.put("id", nextId++);
-        user1.put("ten", "Nguyễn Văn A");
-        user1.put("email", "user1@example.com");
-        user1.put("matKhau", "123456");
-        user1.put("vaiTro", "user");
-        accounts.add(user1);
+        if ("check".equals(action)) {
+            checkSession(req, resp);
+        } else if ("logout".equals(action)) {
+            handleLogout(req, resp);
+        } else {
+            resp.sendRedirect(req.getContextPath() + "/dangnhap.jsp");
+        }
     }
 
-    @Override
-    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
+    private void checkSession(HttpServletRequest req, HttpServletResponse resp) throws IOException {
         resp.setContentType("application/json; charset=UTF-8");
-        resp.setCharacterEncoding("UTF-8");
-
-        // Kiểm tra session hiện tại
         HttpSession session = req.getSession(false);
 
-        if (session != null && session.getAttribute("userId") != null) {
-            Map<String, Object> user = new HashMap<>();
-            user.put("id", session.getAttribute("userId"));
-            user.put("ten", session.getAttribute("userName"));
-            user.put("vaiTro", session.getAttribute("userRole"));
+        if (session != null && session.getAttribute("user") != null) {
+            Map<String, Object> user = (Map<String, Object>) session.getAttribute("user");
             resp.getWriter().write(gson.toJson(user));
         } else {
             resp.setStatus(401);
@@ -60,138 +42,167 @@ public class AuthServlet extends HttpServlet {
     }
 
     @Override
-    protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws IOException {
-        resp.setContentType("application/json; charset=UTF-8");
-        resp.setCharacterEncoding("UTF-8");
+    protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws IOException, ServletException {
         req.setCharacterEncoding("UTF-8");
+        resp.setContentType("application/json; charset=UTF-8");
 
-        String pathInfo = req.getRequestURI();
+        String action = req.getParameter("action");
 
-        if (pathInfo.endsWith("/register")) {
+        if ("register".equals(action)) {
             handleRegister(req, resp);
-        } else if (pathInfo.endsWith("/login")) {
+        } else if ("login".equals(action)) {
             handleLogin(req, resp);
-        } else if (pathInfo.endsWith("/logout")) {
+        } else if ("logout".equals(action)) {
             handleLogout(req, resp);
+        } else {
+            resp.setStatus(400);
+            resp.getWriter().write("{\"error\":\"Invalid action\"}");
         }
     }
 
-    private void handleRegister(HttpServletRequest req, HttpServletResponse resp) throws IOException {
+    private void handleRegister(HttpServletRequest req, HttpServletResponse resp) throws IOException, ServletException {
+        String ten = req.getParameter("ten");
+        String email = req.getParameter("email");
+        String matKhau = req.getParameter("matKhau");
+
+        // Validate
+        if (ten == null || ten.trim().isEmpty()) {
+            req.setAttribute("error", "Vui lòng nhập họ tên");
+            req.getRequestDispatcher("/dangky.jsp").forward(req, resp);
+            return;
+        }
+
+        if (email == null || email.trim().isEmpty()) {
+            req.setAttribute("error", "Vui lòng nhập email");
+            req.getRequestDispatcher("/dangky.jsp").forward(req, resp);
+            return;
+        }
+
+        if (matKhau == null || matKhau.length() < 6) {
+            req.setAttribute("error", "Mật khẩu phải có ít nhất 6 ký tự");
+            req.getRequestDispatcher("/dangky.jsp").forward(req, resp);
+            return;
+        }
+
+        Connection conn = null;
         try {
-            // Đọc dữ liệu JSON từ request
-            BufferedReader reader = req.getReader();
-            Map<String, String> data = gson.fromJson(reader, Map.class);
+            conn = DatabaseConfig.getConnection();
 
-            String ten = data.get("ten");
-            String email = data.get("email");
-            String matKhau = data.get("matKhau");
+            // Check if email exists
+            String checkSql = "SELECT id FROM tai_khoan WHERE email = ?";
+            PreparedStatement checkStmt = conn.prepareStatement(checkSql);
+            checkStmt.setString(1, email);
+            ResultSet rs = checkStmt.getResultSet();
 
-            // Validate dữ liệu
-            if (ten == null || ten.trim().isEmpty()) {
-                resp.setStatus(400);
-                resp.getWriter().write("{\"error\":\"Vui lòng nhập họ tên\"}");
+            if (rs.next()) {
+                req.setAttribute("error", "Email đã được sử dụng");
+                req.getRequestDispatcher("/dangky.jsp").forward(req, resp);
                 return;
             }
 
-            if (email == null || email.trim().isEmpty()) {
-                resp.setStatus(400);
-                resp.getWriter().write("{\"error\":\"Vui lòng nhập email\"}");
-                return;
-            }
+            // Insert new account
+            String insertSql = "INSERT INTO tai_khoan (ten, email, mat_khau, vai_tro) VALUES (?, ?, ?, 'user')";
+            PreparedStatement insertStmt = conn.prepareStatement(insertSql, Statement.RETURN_GENERATED_KEYS);
+            insertStmt.setString(1, ten);
+            insertStmt.setString(2, email);
+            insertStmt.setString(3, matKhau); // In production, use password hashing!
+            insertStmt.executeUpdate();
 
-            if (matKhau == null || matKhau.length() < 6) {
-                resp.setStatus(400);
-                resp.getWriter().write("{\"error\":\"Mật khẩu phải có ít nhất 6 ký tự\"}");
-                return;
-            }
+            ResultSet generatedKeys = insertStmt.getGeneratedKeys();
+            if (generatedKeys.next()) {
+                int userId = generatedKeys.getInt(1);
 
-            // Kiểm tra email đã tồn tại
-            for (Map<String, Object> account : accounts) {
-                if (account.get("email").equals(email)) {
-                    resp.setStatus(400);
-                    resp.getWriter().write("{\"error\":\"Email đã được sử dụng\"}");
-                    return;
+                // Create session
+                HttpSession session = req.getSession(true);
+                Map<String, Object> user = new HashMap<>();
+                user.put("id", userId);
+                user.put("ten", ten);
+                user.put("email", email);
+                user.put("vaiTro", "user");
+                session.setAttribute("user", user);
+
+                // Remember me cookie if checked
+                String rememberMe = req.getParameter("rememberMe");
+                if ("true".equals(rememberMe)) {
+                    Cookie emailCookie = new Cookie("rememberedEmail", email);
+                    emailCookie.setMaxAge(30 * 24 * 60 * 60); // 30 days
+                    emailCookie.setPath("/");
+                    resp.addCookie(emailCookie);
                 }
+
+                // Send welcome email
+                new Thread(() -> EmailUtil.sendWelcomeEmail(email, ten)).start();
+
+                req.setAttribute("success", "Đăng ký thành công");
+                resp.sendRedirect(req.getContextPath() + "/trangchu.jsp");
             }
 
-            // Tạo tài khoản mới
-            Map<String, Object> newAccount = new HashMap<>();
-            newAccount.put("id", nextId++);
-            newAccount.put("ten", ten);
-            newAccount.put("email", email);
-            newAccount.put("matKhau", matKhau);
-            newAccount.put("vaiTro", "user");
-            accounts.add(newAccount);
-
-            // Tạo session tự động đăng nhập
-            HttpSession session = req.getSession(true);
-            session.setAttribute("userId", newAccount.get("id"));
-            session.setAttribute("userName", newAccount.get("ten"));
-            session.setAttribute("userRole", newAccount.get("vaiTro"));
-
-            // Trả về kết quả
-            Map<String, Object> result = new HashMap<>();
-            result.put("success", true);
-
-            Map<String, Object> userInfo = new HashMap<>();
-            userInfo.put("id", newAccount.get("id"));
-            userInfo.put("ten", newAccount.get("ten"));
-            userInfo.put("email", newAccount.get("email"));
-            userInfo.put("vaiTro", newAccount.get("vaiTro"));
-            result.put("user", userInfo);
-
-            resp.getWriter().write(gson.toJson(result));
-
-        } catch (Exception e) {
+        } catch (SQLException e) {
             e.printStackTrace();
-            resp.setStatus(500);
-            resp.getWriter().write("{\"error\":\"Lỗi hệ thống: " + e.getMessage() + "\"}");
+            req.setAttribute("error", "Lỗi hệ thống: " + e.getMessage());
+            req.getRequestDispatcher("/dangky.jsp").forward(req, resp);
+        } finally {
+            DatabaseConfig.closeConnection(conn);
         }
     }
 
-    private void handleLogin(HttpServletRequest req, HttpServletResponse resp) throws IOException {
+    private void handleLogin(HttpServletRequest req, HttpServletResponse resp) throws IOException, ServletException {
+        String email = req.getParameter("email");
+        String matKhau = req.getParameter("matKhau");
+
+        if (email == null || matKhau == null) {
+            req.setAttribute("error", "Vui lòng nhập đầy đủ thông tin");
+            req.getRequestDispatcher("/dangnhap.jsp").forward(req, resp);
+            return;
+        }
+
+        Connection conn = null;
         try {
-            BufferedReader reader = req.getReader();
-            Map<String, String> credentials = gson.fromJson(reader, Map.class);
+            conn = DatabaseConfig.getConnection();
 
-            String email = credentials.get("email");
-            String matKhau = credentials.get("matKhau");
+            String sql = "SELECT id, ten, email, vai_tro FROM tai_khoan WHERE email = ? AND mat_khau = ?";
+            PreparedStatement stmt = conn.prepareStatement(sql);
+            stmt.setString(1, email);
+            stmt.setString(2, matKhau); // In production, use password hashing!
 
-            if (email == null || matKhau == null) {
-                resp.setStatus(400);
-                resp.getWriter().write("{\"error\":\"Vui lòng nhập đầy đủ thông tin\"}");
-                return;
-            }
+            ResultSet rs = stmt.executeQuery();
 
-            for (Map<String, Object> account : accounts) {
-                if (account.get("email").equals(email) && account.get("matKhau").equals(matKhau)) {
-                    HttpSession session = req.getSession(true);
-                    session.setAttribute("userId", account.get("id"));
-                    session.setAttribute("userName", account.get("ten"));
-                    session.setAttribute("userRole", account.get("vaiTro"));
+            if (rs.next()) {
+                HttpSession session = req.getSession(true);
+                Map<String, Object> user = new HashMap<>();
+                user.put("id", rs.getInt("id"));
+                user.put("ten", rs.getString("ten"));
+                user.put("email", rs.getString("email"));
+                user.put("vaiTro", rs.getString("vai_tro"));
+                session.setAttribute("user", user);
 
-                    Map<String, Object> result = new HashMap<>();
-                    result.put("success", true);
-
-                    Map<String, Object> userInfo = new HashMap<>();
-                    userInfo.put("id", account.get("id"));
-                    userInfo.put("ten", account.get("ten"));
-                    userInfo.put("email", account.get("email"));
-                    userInfo.put("vaiTro", account.get("vaiTro"));
-                    result.put("user", userInfo);
-
-                    resp.getWriter().write(gson.toJson(result));
-                    return;
+                // Remember me cookie
+                String rememberMe = req.getParameter("rememberMe");
+                if ("true".equals(rememberMe)) {
+                    Cookie emailCookie = new Cookie("rememberedEmail", email);
+                    emailCookie.setMaxAge(30 * 24 * 60 * 60);
+                    emailCookie.setPath("/");
+                    resp.addCookie(emailCookie);
+                } else {
+                    // Clear cookie
+                    Cookie emailCookie = new Cookie("rememberedEmail", "");
+                    emailCookie.setMaxAge(0);
+                    emailCookie.setPath("/");
+                    resp.addCookie(emailCookie);
                 }
+
+                resp.sendRedirect(req.getContextPath() + "/trangchu.jsp");
+            } else {
+                req.setAttribute("error", "Email hoặc mật khẩu không đúng");
+                req.getRequestDispatcher("/dangnhap.jsp").forward(req, resp);
             }
 
-            resp.setStatus(401);
-            resp.getWriter().write("{\"error\":\"Email hoặc mật khẩu không đúng\"}");
-
-        } catch (Exception e) {
+        } catch (SQLException e) {
             e.printStackTrace();
-            resp.setStatus(500);
-            resp.getWriter().write("{\"error\":\"Lỗi hệ thống: " + e.getMessage() + "\"}");
+            req.setAttribute("error", "Lỗi hệ thống: " + e.getMessage());
+            req.getRequestDispatcher("/dangnhap.jsp").forward(req, resp);
+        } finally {
+            DatabaseConfig.closeConnection(conn);
         }
     }
 
@@ -200,6 +211,6 @@ public class AuthServlet extends HttpServlet {
         if (session != null) {
             session.invalidate();
         }
-        resp.getWriter().write("{\"success\":true}");
+        resp.sendRedirect(req.getContextPath() + "/dangnhap.jsp");
     }
 }
