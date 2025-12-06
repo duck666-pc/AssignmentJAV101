@@ -84,7 +84,7 @@ public class EmailUtil {
         sendEmail(toEmail, subject, body);
     }
 
-    public static void sendTaskReminderEmail(String toEmail, String taskName, String dueDate) {
+    public static boolean sendTaskReminderEmail(String toEmail, String taskName, String dueDate) {
         String subject = "⏰ Nhắc nhở: Nhiệm vụ sắp đến hạn";
         String body = "<h3>Nhiệm vụ sắp đến hạn!</h3>" +
                 "<p><strong>Nhiệm vụ:</strong> " + taskName + "</p>" +
@@ -93,6 +93,7 @@ public class EmailUtil {
                 "<p><a href='http://localhost:8080/task-manager/trangchu.jsp' style='display: inline-block; padding: 10px 20px; background: #1a1a1a; color: white; text-decoration: none; border-radius: 6px;'>Xem chi tiết</a></p>";
 
         sendEmail(toEmail, subject, body);
+        return false;
     }
 
     public static void sendTaskAssignmentEmail(String toEmail, String taskName, String projectName, String assignedBy) {

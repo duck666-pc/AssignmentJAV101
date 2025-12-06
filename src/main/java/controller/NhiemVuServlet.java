@@ -37,26 +37,33 @@ public class NhiemVuServlet extends HttpServlet {
 
         String duAnIdParam = req.getParameter("duAnId");
         String trangThaiParam = req.getParameter("trangThai");
+        String tagIdParam = req.getParameter("tagId");
 
         Connection conn = null;
         try {
             conn = DatabaseConfig.getConnection();
             StringBuilder sql = new StringBuilder(
-                    "SELECT nv.*, tk.ten as nguoi_thuc_hien_ten, da.ten as du_an_ten " +
+                    "SELECT DISTINCT nv.*, tk.ten as nguoi_thuc_hien_ten, da.ten as du_an_ten " +
                             "FROM nhiem_vu nv " +
                             "LEFT JOIN tai_khoan tk ON nv.nguoi_thuc_hien_id = tk.id " +
-                            "LEFT JOIN du_an da ON nv.du_an_id = da.id " +
-                            "WHERE (nv.nguoi_tao_id = ? OR nv.nguoi_thuc_hien_id = ?"
+                            "LEFT JOIN du_an da ON nv.du_an_id = da.id "
             );
+
+            // Thêm join với tags nếu cần filter theo tag
+            if (tagIdParam != null && !tagIdParam.isEmpty()) {
+                sql.append("INNER JOIN nhiem_vu_tag nvt ON nv.id = nvt.nhiem_vu_id ");
+            }
+
+            sql.append("WHERE (nv.nguoi_tao_id = ? OR nv.nguoi_thuc_hien_id = ?");
+
+            List<Object> params = new ArrayList<>();
+            params.add(userId);
+            params.add(userId);
 
             if ("admin".equals(vaiTro)) {
                 sql.append(" OR 1=1");
             }
             sql.append(")");
-
-            List<Object> params = new ArrayList<>();
-            params.add(userId);
-            params.add(userId);
 
             if (duAnIdParam != null && !duAnIdParam.isEmpty()) {
                 sql.append(" AND nv.du_an_id = ?");
@@ -66,6 +73,11 @@ public class NhiemVuServlet extends HttpServlet {
             if (trangThaiParam != null && !trangThaiParam.isEmpty()) {
                 sql.append(" AND nv.trang_thai = ?");
                 params.add(trangThaiParam);
+            }
+
+            if (tagIdParam != null && !tagIdParam.isEmpty()) {
+                sql.append(" AND nvt.nhan_tag_id = ?");
+                params.add(Integer.parseInt(tagIdParam));
             }
 
             sql.append(" ORDER BY nv.ngay_cap_nhat DESC");
@@ -80,7 +92,9 @@ public class NhiemVuServlet extends HttpServlet {
 
             while (rs.next()) {
                 Map<String, Object> task = new HashMap<>();
-                task.put("id", rs.getInt("id"));
+                int taskId = rs.getInt("id");
+
+                task.put("id", taskId);
                 task.put("ten", rs.getString("ten"));
                 task.put("mo_ta", rs.getString("mo_ta"));
                 task.put("duAnId", rs.getObject("du_an_id"));
@@ -96,6 +110,10 @@ public class NhiemVuServlet extends HttpServlet {
                 task.put("thoiGianHoanThanh", rs.getTimestamp("thoi_gian_hoan_thanh"));
                 task.put("ngayTao", rs.getTimestamp("ngay_tao"));
                 task.put("ngayCapNhat", rs.getTimestamp("ngay_cap_nhat"));
+
+                // Lấy tags cho task này
+                task.put("tags", getTaskTags(conn, taskId));
+
                 tasks.add(task);
             }
 
@@ -108,6 +126,26 @@ public class NhiemVuServlet extends HttpServlet {
         } finally {
             DatabaseConfig.closeConnection(conn);
         }
+    }
+
+    private List<Map<String, Object>> getTaskTags(Connection conn, int taskId) throws SQLException {
+        List<Map<String, Object>> tags = new ArrayList<>();
+        String sql = "SELECT nt.* FROM nhan_tag nt " +
+                "INNER JOIN nhiem_vu_tag nvt ON nt.id = nvt.nhan_tag_id " +
+                "WHERE nvt.nhiem_vu_id = ?";
+        PreparedStatement stmt = conn.prepareStatement(sql);
+        stmt.setInt(1, taskId);
+        ResultSet rs = stmt.executeQuery();
+
+        while (rs.next()) {
+            Map<String, Object> tag = new HashMap<>();
+            tag.put("id", rs.getInt("id"));
+            tag.put("ten", rs.getString("ten"));
+            tag.put("mauSac", rs.getString("mau_sac"));
+            tags.add(tag);
+        }
+
+        return tags;
     }
 
     @Override
