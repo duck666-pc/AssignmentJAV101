@@ -184,7 +184,7 @@
     <div class="auth-footer">
         <p>
             Already have an account?
-            <a href="${pageContext.request.contextPath}/DangNhap.jsp">Login</a>
+            <a href="${pageContext.request.contextPath}/dangnhap.jsp">Login</a>
         </p>
     </div>
 

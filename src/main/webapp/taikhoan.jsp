@@ -4,7 +4,7 @@
 
 <%-- Kiểm tra đăng nhập --%>
 <c:if test="${empty sessionScope.user}">
-    <c:redirect url="/DangNhap.jsp"/>
+    <c:redirect url="/dangnhap.jsp"/>
 </c:if>
 
 <!DOCTYPE html>

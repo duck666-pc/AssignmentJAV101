@@ -7,6 +7,6 @@
         response.sendRedirect(request.getContextPath() + "/trangchu.jsp");
     } else {
         // Chưa đăng nhập, chuyển đến trang đăng nhập
-        response.sendRedirect(request.getContextPath() + "/DangNhap.jsp");
+        response.sendRedirect(request.getContextPath() + "/dangnhap.jsp");
     }
 %>

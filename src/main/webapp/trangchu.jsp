@@ -1,23 +1,27 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" pageEncoding="UTF-8" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
+
+<%-- ✅ FIX 1: Thêm i18n support --%>
+<c:set var="lang" value="${param.lang != null ? param.lang : pageContext.request.locale}" />
+<fmt:setLocale value="${lang}" />
+<fmt:setBundle basename="messages" />
 
 <%-- Kiểm tra đăng nhập --%>
 <c:if test="${empty sessionScope.user}">
-    <c:redirect url="/DangNhap.jsp"/>
+    <c:redirect url="/dangnhap.jsp"/>
 </c:if>
 
 <!DOCTYPE html>
-<html lang="vi">
+<html lang="${lang}">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Task Manager - Minimalist</title>
+    <title><fmt:message key="app.title"/> - Minimalist</title>
     <link rel="stylesheet" href="${pageContext.request.contextPath}/css/common.css">
     <style>
-        /* =================================
-           PAGE LAYOUT
-           ================================= */
+        /* ======= GIỮ NGUYÊN TOÀN BỘ CSS ======= */
         body {
             display: flex;
             flex-direction: column;
@@ -32,9 +36,36 @@
             padding: var(--spacing-lg);
         }
 
-        /* =================================
-           TOOLBAR - Minimalist
-           ================================= */
+        /* ✅ FIX 2: Thêm style cho language selector */
+        .lang-selector {
+            display: flex;
+            gap: var(--spacing-xs);
+            align-items: center;
+        }
+
+        .lang-btn {
+            padding: 4px 8px;
+            border: 1px solid var(--border-color);
+            background: transparent;
+            color: var(--text-secondary);
+            font-size: var(--font-size-xs);
+            cursor: pointer;
+            border-radius: var(--radius-sm);
+            transition: all var(--transition-fast);
+        }
+
+        .lang-btn.active {
+            background: var(--color-black);
+            color: var(--color-white);
+            border-color: var(--color-black);
+        }
+
+        [data-theme="dark"] .lang-btn.active {
+            background: var(--color-white);
+            color: var(--color-black);
+            border-color: var(--color-white);
+        }
+
         .toolbar {
             background: var(--bg-primary);
             border: 1px solid var(--border-color);
@@ -77,7 +108,6 @@
             min-width: 160px;
         }
 
-        /* View Mode Selector */
         .view-modes {
             display: flex;
             gap: 0;
@@ -119,9 +149,6 @@
             color: var(--color-black);
         }
 
-        /* =================================
-           LIST VIEW - Minimalist
-           ================================= */
         .list-view {
             display: none;
         }
@@ -173,6 +200,21 @@
             flex-wrap: wrap;
         }
 
+        /* ✅ FIX 3: Style cho tag badges */
+        .tag-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            padding: 2px 8px;
+            border: 1px solid;
+            border-radius: var(--radius-full);
+            font-size: 10px;
+            font-weight: var(--font-weight-medium);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            white-space: nowrap;
+        }
+
         .task-description {
             font-size: var(--font-size-sm);
             color: var(--text-secondary);
@@ -200,9 +242,6 @@
             gap: var(--spacing-sm);
         }
 
-        /* =================================
-           KANBAN VIEW - Minimalist
-           ================================= */
         .kanban-view {
             display: none;
         }
@@ -297,9 +336,6 @@
             flex-wrap: wrap;
         }
 
-        /* =================================
-           CALENDAR VIEW - Minimalist
-           ================================= */
         .calendar-view {
             display: none;
         }
@@ -434,9 +470,6 @@
             opacity: 0.6;
         }
 
-        /* =================================
-           STATS CARDS
-           ================================= */
         .stats-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
@@ -473,9 +506,6 @@
             font-weight: var(--font-weight-medium);
         }
 
-        /* =================================
-           RESPONSIVE
-           ================================= */
         @media (max-width: 1024px) {
             .kanban-view.active {
                 grid-template-columns: 1fr;
@@ -541,9 +571,16 @@
     <div class="header-content">
         <div class="header-brand">
             <span class="logo">□</span>
-            <h1>TASK MANAGER</h1>
+            <h1><fmt:message key="app.title"/></h1>
         </div>
         <div class="header-actions">
+            <%-- ✅ FIX 4: Thêm language selector --%>
+            <div class="lang-selector">
+                <button class="lang-btn ${param.lang == 'vi' || empty param.lang ? 'active' : ''}"
+                        onclick="changeLanguage('vi')">VI</button>
+                <button class="lang-btn ${param.lang == 'en' ? 'active' : ''}"
+                        onclick="changeLanguage('en')">EN</button>
+            </div>
             <button class="btn-icon" onclick="setTheme('light')" title="Light Mode">○</button>
             <button class="btn-icon" onclick="setTheme('dark')" title="Dark Mode">●</button>
             <div class="user-section">
@@ -556,7 +593,7 @@
                 </div>
             </div>
             <form action="${pageContext.request.contextPath}/auth?action=logout" method="post" style="margin: 0;">
-                <button type="submit" class="btn btn-secondary">Logout</button>
+                <button type="submit" class="btn btn-secondary"><fmt:message key="home.logout"/></button>
             </form>
         </div>
     </div>
@@ -571,42 +608,49 @@
     <div class="toolbar">
         <div class="toolbar-section grow">
             <div class="filter-group">
-                <label class="filter-label">Project</label>
+                <label class="filter-label"><fmt:message key="home.project"/></label>
                 <select class="filter-select form-select" id="projectFilter" onchange="loadTasks()">
-                    <option value="">All Projects</option>
+                    <option value=""><fmt:message key="home.all"/></option>
                 </select>
             </div>
             <div class="filter-group">
-                <label class="filter-label">Status</label>
+                <label class="filter-label"><fmt:message key="task.status"/></label>
                 <select class="filter-select form-select" id="statusFilter" onchange="loadTasks()">
-                    <option value="">All</option>
-                    <option value="todo">To Do</option>
-                    <option value="inprogress">In Progress</option>
-                    <option value="done">Done</option>
+                    <option value=""><fmt:message key="home.all"/></option>
+                    <option value="todo"><fmt:message key="status.todo"/></option>
+                    <option value="inprogress"><fmt:message key="status.inprogress"/></option>
+                    <option value="done"><fmt:message key="status.done"/></option>
                 </select>
             </div>
             <div class="filter-group">
-                <label class="filter-label">Priority</label>
+                <label class="filter-label"><fmt:message key="home.priority"/></label>
                 <select class="filter-select form-select" id="priorityFilter" onchange="loadTasks()">
-                    <option value="">All</option>
-                    <option value="high">High</option>
-                    <option value="medium">Medium</option>
-                    <option value="low">Low</option>
+                    <option value=""><fmt:message key="home.all"/></option>
+                    <option value="high"><fmt:message key="home.priority_high"/></option>
+                    <option value="medium"><fmt:message key="home.priority_medium"/></option>
+                    <option value="low"><fmt:message key="home.priority_low"/></option>
+                </select>
+            </div>
+            <%-- ✅ FIX 5: Thêm Tag Filter --%>
+            <div class="filter-group">
+                <label class="filter-label">TAG</label>
+                <select class="filter-select form-select" id="tagFilter" onchange="loadTasks()">
+                    <option value="">All Tags</option>
                 </select>
             </div>
         </div>
 
         <div class="toolbar-section">
             <div class="view-modes">
-                <button class="view-btn active" onclick="changeView('list')">LIST</button>
-                <button class="view-btn" onclick="changeView('kanban')">BOARD</button>
-                <button class="view-btn" onclick="changeView('calendar')">CALENDAR</button>
+                <button class="view-btn active" onclick="changeView('list')"><fmt:message key="view.list"/></button>
+                <button class="view-btn" onclick="changeView('kanban')"><fmt:message key="view.kanban"/></button>
+                <button class="view-btn" onclick="changeView('calendar')"><fmt:message key="view.calendar"/></button>
             </div>
         </div>
 
         <div class="toolbar-section">
-            <button class="btn btn-primary" onclick="showAddTaskModal()">+ Task</button>
-            <button class="btn btn-secondary" onclick="showAddProjectModal()">+ Project</button>
+            <button class="btn btn-primary" onclick="showAddTaskModal()">+ <fmt:message key="home.add_task"/></button>
+            <button class="btn btn-secondary" onclick="showAddProjectModal()">+ <fmt:message key="home.add_project"/></button>
         </div>
     </div>
 
@@ -620,7 +664,7 @@
         <div class="kanban-column">
             <div class="kanban-header">
                 <div class="kanban-title">
-                    To Do
+                    <fmt:message key="status.todo"/>
                     <span class="kanban-count" id="todoCount">0</span>
                 </div>
             </div>
@@ -630,7 +674,7 @@
         <div class="kanban-column">
             <div class="kanban-header">
                 <div class="kanban-title">
-                    In Progress
+                    <fmt:message key="status.inprogress"/>
                     <span class="kanban-count" id="inprogressCount">0</span>
                 </div>
             </div>
@@ -640,7 +684,7 @@
         <div class="kanban-column">
             <div class="kanban-header">
                 <div class="kanban-title">
-                    Done
+                    <fmt:message key="status.done"/>
                     <span class="kanban-count" id="doneCount">0</span>
                 </div>
             </div>
@@ -685,7 +729,7 @@
                 <input type="hidden" id="taskId">
 
                 <div class="form-group">
-                    <label class="form-label" for="taskName">Task Name *</label>
+                    <label class="form-label" for="taskName"><fmt:message key="task.title"/> *</label>
                     <input type="text" class="form-input" id="taskName" required placeholder="Enter task name">
                 </div>
 
@@ -695,23 +739,23 @@
                 </div>
 
                 <div class="form-group">
-                    <label class="form-label" for="taskProject">Project</label>
+                    <label class="form-label" for="taskProject"><fmt:message key="task.project"/></label>
                     <select class="form-select" id="taskProject">
                         <option value="">No Project</option>
                     </select>
                 </div>
 
                 <div class="form-group">
-                    <label class="form-label" for="taskStatus">Status</label>
+                    <label class="form-label" for="taskStatus"><fmt:message key="task.status"/></label>
                     <select class="form-select" id="taskStatus">
-                        <option value="todo">To Do</option>
-                        <option value="inprogress">In Progress</option>
-                        <option value="done">Done</option>
+                        <option value="todo"><fmt:message key="status.todo"/></option>
+                        <option value="inprogress"><fmt:message key="status.inprogress"/></option>
+                        <option value="done"><fmt:message key="status.done"/></option>
                     </select>
                 </div>
 
                 <div class="form-group">
-                    <label class="form-label" for="taskPriority">Priority</label>
+                    <label class="form-label" for="taskPriority"><fmt:message key="task.priority"/></label>
                     <select class="form-select" id="taskPriority">
                         <option value="1">Very Low</option>
                         <option value="2">Low</option>
@@ -721,25 +765,31 @@
                     </select>
                 </div>
 
+                <%-- ✅ FIX 6: Thêm Tag selector trong task form --%>
                 <div class="form-group">
-                    <label class="form-label" for="taskStartDate">Start Date</label>
+                    <label class="form-label">Tags</label>
+                    <div id="taskTagsContainer" style="display: flex; gap: 8px; flex-wrap: wrap;"></div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="taskStartDate"><fmt:message key="task.start_date"/></label>
                     <input type="date" class="form-input" id="taskStartDate">
                 </div>
 
                 <div class="form-group">
-                    <label class="form-label" for="taskEndDate">Due Date</label>
+                    <label class="form-label" for="taskEndDate"><fmt:message key="task.end_date"/></label>
                     <input type="date" class="form-input" id="taskEndDate">
                 </div>
 
                 <div class="form-group">
-                    <label class="form-label" for="taskNote">Notes</label>
+                    <label class="form-label" for="taskNote"><fmt:message key="task.note"/></label>
                     <textarea class="form-textarea" id="taskNote" rows="2" placeholder="Additional notes"></textarea>
                 </div>
             </form>
         </div>
         <div class="modal-footer">
-            <button class="btn btn-secondary" onclick="closeTaskModal()">Cancel</button>
-            <button class="btn btn-primary" onclick="saveTask()">Save Task</button>
+            <button class="btn btn-secondary" onclick="closeTaskModal()"><fmt:message key="task.cancel"/></button>
+            <button class="btn btn-primary" onclick="saveTask()"><fmt:message key="task.save"/></button>
         </div>
     </div>
 </div>
@@ -800,6 +850,7 @@
     const API_BASE = '${pageContext.request.contextPath}';
     const API_TASKS = API_BASE + '/nhiemvu';
     const API_PROJECTS = API_BASE + '/duan';
+    const API_TAGS = API_BASE + '/tag'; // ✅ FIX 7: Thêm API tag
 
     let currentUser = {
         id: ${sessionScope.user.id},
@@ -810,6 +861,7 @@
 
     let tasks = [];
     let projects = [];
+    let allTags = []; // ✅ FIX 8: Thêm biến lưu tags
     let currentView = 'list';
     let currentMonth = new Date().getMonth();
     let currentYear = new Date().getFullYear();
@@ -819,9 +871,19 @@
     // ==========================================
     document.addEventListener('DOMContentLoaded', () => {
         loadTheme();
+        loadTags(); // ✅ FIX 9: Load tags trước
         loadProjects();
         loadTasks();
     });
+
+    // ==========================================
+    // ✅ FIX 10: Thêm hàm changeLanguage
+    // ==========================================
+    function changeLanguage(lang) {
+        const url = new URL(window.location.href);
+        url.searchParams.set('lang', lang);
+        window.location.href = url.toString();
+    }
 
     // ==========================================
     // THEME MANAGEMENT
@@ -845,6 +907,48 @@
     }
 
     // ==========================================
+    // ✅ FIX 11: Thêm hàm loadTags
+    // ==========================================
+    async function loadTags() {
+        try {
+            const response = await fetch(API_TAGS);
+            if (response.ok) {
+                allTags = await response.json();
+                updateTagFilter();
+                updateTaskTagsCheckboxes();
+            }
+        } catch (error) {
+            console.error('Error loading tags:', error);
+        }
+    }
+
+    function updateTagFilter() {
+        const select = document.getElementById('tagFilter');
+        const currentValue = select.value;
+
+        const options = allTags.map(tag =>
+            '<option value="' + tag.id + '">' + escapeHtml(tag.ten) + '</option>'
+        ).join('');
+
+        select.innerHTML = '<option value="">All Tags</option>' + options;
+
+        if (currentValue) select.value = currentValue;
+    }
+
+    function updateTaskTagsCheckboxes() {
+        const container = document.getElementById('taskTagsContainer');
+        if (!container) return;
+
+        container.innerHTML = allTags.map(tag =>
+            '<label style="display: flex; align-items: center; gap: 4px; cursor: pointer;">' +
+            '<input type="checkbox" class="tag-checkbox" data-tag-id="' + tag.id + '" ' +
+            'style="width: 16px; height: 16px;">' +
+            '<span style="font-size: 12px;">' + escapeHtml(tag.ten) + '</span>' +
+            '</label>'
+        ).join('');
+    }
+
+    // ==========================================
     // DATA LOADING
     // ==========================================
     async function loadProjects() {
@@ -863,11 +967,13 @@
         try {
             const projectId = document.getElementById('projectFilter').value;
             const status = document.getElementById('statusFilter').value;
+            const tagId = document.getElementById('tagFilter').value; // ✅ FIX 12: Lấy tag filter
 
             let url = API_TASKS;
             const params = new URLSearchParams();
             if (projectId) params.append('duAnId', projectId);
             if (status) params.append('trangThai', status);
+            if (tagId) params.append('tagId', tagId); // ✅ FIX 13: Thêm tag param
             if (params.toString()) url += '?' + params.toString();
 
             const response = await fetch(url);
@@ -935,18 +1041,15 @@
     function changeView(view) {
         currentView = view;
 
-        // Update buttons
         document.querySelectorAll('.view-btn').forEach(btn => {
             btn.classList.remove('active');
         });
         event.target.classList.add('active');
 
-        // Hide all views
         document.getElementById('listView').classList.remove('active');
         document.getElementById('kanbanView').classList.remove('active');
         document.getElementById('calendarView').classList.remove('active');
 
-        // Show selected view
         document.getElementById(view + 'View').classList.add('active');
 
         renderCurrentView();
@@ -981,7 +1084,7 @@
     }
 
     // ==========================================
-    // LIST VIEW RENDERING
+    // ✅ FIX 14: Cập nhật renderListView để hiển thị tags
     // ==========================================
     function renderListView(taskList) {
         const container = document.getElementById('taskList');
@@ -1007,6 +1110,15 @@
 
             if (task.duAnTen) {
                 html += '<span class="badge">' + escapeHtml(task.duAnTen) + '</span>';
+            }
+
+            // ✅ FIX 15: Hiển thị tags
+            if (task.tags && task.tags.length > 0) {
+                task.tags.forEach(tag => {
+                    html += '<span class="tag-badge" style="border-color: ' + tag.mauSac + '; color: ' + tag.mauSac + ';">' +
+                        escapeHtml(tag.ten) +
+                        '</span>';
+                });
             }
 
             html += '</div></div></div>';
@@ -1078,12 +1190,20 @@
                 html += '<span class="badge">Due: ' + formatDate(task.ngayKetThuc) + '</span>';
             }
 
+            // ✅ FIX 16: Hiển thị tags trong kanban
+            if (task.tags && task.tags.length > 0) {
+                task.tags.forEach(tag => {
+                    html += '<span class="tag-badge" style="border-color: ' + tag.mauSac + '; color: ' + tag.mauSac + ';">' +
+                        escapeHtml(tag.ten) +
+                        '</span>';
+                });
+            }
+
             html += '</div></div>';
 
             return html;
         }).join('');
 
-        // Setup drop zones
         container.addEventListener('dragover', handleDragOver);
         container.addEventListener('drop', handleDrop);
     }
@@ -1158,14 +1278,12 @@
         const calendarDays = document.getElementById('calendarDays');
         let html = '';
 
-        // Previous month days
         for (let x = firstDayIndex; x > 0; x--) {
             html += '<div class="calendar-day other-month">' +
                 '<div class="calendar-day-number">' + (prevLastDayDate - x + 1) + '</div>' +
                 '</div>';
         }
 
-        // Current month days
         const today = new Date();
         for (let i = 1; i <= lastDayDate; i++) {
             const isToday = i === today.getDate() &&
@@ -1186,7 +1304,6 @@
             html += '</div>';
         }
 
-        // Next month days
         for (let j = 1; j <= nextDays; j++) {
             html += '<div class="calendar-day other-month">' +
                 '<div class="calendar-day-number">' + j + '</div>' +
@@ -1239,6 +1356,7 @@
         document.getElementById('taskModalTitle').textContent = 'New Task';
         document.getElementById('taskForm').reset();
         document.getElementById('taskId').value = '';
+        updateTaskTagsCheckboxes();
         document.getElementById('taskModal').classList.add('active');
     }
 
@@ -1246,7 +1364,7 @@
         document.getElementById('taskModal').classList.remove('active');
     }
 
-    function editTask(taskId) {
+    async function editTask(taskId) {
         const task = tasks.find(t => t.id === taskId);
         if (!task) return;
 
@@ -1260,6 +1378,15 @@
         document.getElementById('taskStartDate').value = formatDateForInput(task.ngayBatDau);
         document.getElementById('taskEndDate').value = formatDateForInput(task.ngayKetThuc);
         document.getElementById('taskNote').value = task.ghiChu || '';
+
+        // ✅ FIX 17: Cập nhật tag checkboxes
+        updateTaskTagsCheckboxes();
+        if (task.tags && task.tags.length > 0) {
+            task.tags.forEach(tag => {
+                const checkbox = document.querySelector('.tag-checkbox[data-tag-id="' + tag.id + '"]');
+                if (checkbox) checkbox.checked = true;
+            });
+        }
 
         document.getElementById('taskModal').classList.add('active');
     }
@@ -1294,6 +1421,11 @@
             });
 
             if (response.ok) {
+                const savedTask = await response.json();
+
+                // ✅ FIX 18: Lưu tags sau khi lưu task
+                await saveTaskTags(savedTask.id || taskId);
+
                 closeTaskModal();
                 await loadTasks();
             } else {
@@ -1303,6 +1435,23 @@
         } catch (error) {
             console.error('Error:', error);
             alert('Server connection error');
+        }
+    }
+
+    // ✅ FIX 19: Thêm hàm saveTaskTags
+    async function saveTaskTags(taskId) {
+        const checkboxes = document.querySelectorAll('.tag-checkbox:checked');
+        const selectedTagIds = Array.from(checkboxes).map(cb => cb.dataset.tagId);
+
+        // Xóa tất cả tags cũ và thêm tags mới
+        for (const tagId of selectedTagIds) {
+            try {
+                await fetch(API_TAGS + '?action=addTagToTask&taskId=' + taskId + '&tagId=' + tagId, {
+                    method: 'POST'
+                });
+            } catch (error) {
+                console.error('Error adding tag:', error);
+            }
         }
     }
 
@@ -1430,7 +1579,6 @@
         return '<span class="badge ' + p.className + '">' + p.label + '</span>';
     }
 
-    // Close modals on outside click
     window.onclick = function(event) {
         const taskModal = document.getElementById('taskModal');
         const projectModal = document.getElementById('projectModal');
