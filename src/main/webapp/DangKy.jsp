@@ -5,7 +5,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Đăng Ký - Task Manager</title>
+    <title>Register - Task Manager</title>
     <link rel="stylesheet" href="${pageContext.request.contextPath}/css/common.css">
     <style>
         body {
@@ -13,29 +13,17 @@
             align-items: center;
             justify-content: center;
             min-height: 100vh;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             padding: var(--spacing-lg);
         }
 
         .auth-container {
             background: var(--bg-primary);
+            border: 1px solid var(--border-color);
             border-radius: var(--radius-lg);
-            box-shadow: var(--shadow-lg);
             width: 100%;
-            max-width: 480px;
-            padding: var(--spacing-xl);
+            max-width: 460px;
+            padding: var(--spacing-2xl);
             animation: slideUp 0.5s ease;
-        }
-
-        @keyframes slideUp {
-            from {
-                opacity: 0;
-                transform: translateY(30px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
         }
 
         .auth-header {
@@ -44,74 +32,21 @@
         }
 
         .auth-logo {
-            font-size: 3rem;
-            margin-bottom: var(--spacing-md);
+            font-size: 4rem;
+            margin-bottom: var(--spacing-lg);
+            font-weight: var(--font-weight-bold);
         }
 
         .auth-header h1 {
-            font-size: 1.75rem;
-            font-weight: 700;
-            color: var(--text-primary);
+            font-size: var(--font-size-2xl);
+            font-weight: var(--font-weight-semibold);
             margin-bottom: var(--spacing-sm);
+            letter-spacing: -0.02em;
         }
 
         .auth-header p {
-            font-size: 0.875rem;
+            font-size: var(--font-size-sm);
             color: var(--text-secondary);
-        }
-
-        .alert {
-            padding: var(--spacing-md);
-            border-radius: var(--radius-md);
-            margin-bottom: var(--spacing-lg);
-            font-size: 0.875rem;
-            animation: slideDown 0.3s ease;
-        }
-
-        @keyframes slideDown {
-            from {
-                opacity: 0;
-                transform: translateY(-10px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        .alert-error {
-            background: rgba(239, 68, 68, 0.1);
-            color: var(--color-danger);
-            border: 1px solid rgba(239, 68, 68, 0.2);
-        }
-
-        .form-group {
-            margin-bottom: var(--spacing-lg);
-        }
-
-        .form-label {
-            display: block;
-            font-size: 0.875rem;
-            font-weight: 600;
-            color: var(--text-primary);
-            margin-bottom: var(--spacing-sm);
-        }
-
-        .form-input {
-            width: 100%;
-            padding: 12px 16px;
-            border: 1px solid var(--border-color);
-            border-radius: var(--radius-md);
-            font-size: 0.9375rem;
-            background: var(--bg-primary);
-            color: var(--text-primary);
-            transition: all var(--transition-fast);
-        }
-
-        .form-input:focus {
-            outline: none;
-            border-color: #667eea;
-            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
         }
 
         .password-strength {
@@ -119,7 +54,7 @@
         }
 
         .strength-bar {
-            height: 4px;
+            height: 3px;
             background: var(--border-color);
             border-radius: var(--radius-full);
             overflow: hidden;
@@ -134,50 +69,17 @@
         }
 
         .strength-text {
-            font-size: 0.75rem;
+            font-size: var(--font-size-xs);
             color: var(--text-secondary);
-            font-weight: 500;
-        }
-
-        .form-checkbox {
-            display: flex;
-            align-items: center;
-            gap: var(--spacing-sm);
-            margin-bottom: var(--spacing-lg);
-        }
-
-        .form-checkbox input {
-            width: 18px;
-            height: 18px;
-            cursor: pointer;
-        }
-
-        .form-checkbox label {
-            font-size: 0.875rem;
-            color: var(--text-secondary);
-            cursor: pointer;
+            font-weight: var(--font-weight-medium);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
         }
 
         .btn-submit {
             width: 100%;
             padding: 12px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            border: none;
-            border-radius: var(--radius-md);
-            font-size: 1rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all var(--transition-fast);
-        }
-
-        .btn-submit:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 20px rgba(102, 126, 234, 0.4);
-        }
-
-        .btn-submit:active {
-            transform: translateY(0);
+            margin-top: var(--spacing-md);
         }
 
         .auth-footer {
@@ -185,19 +87,13 @@
             margin-top: var(--spacing-xl);
             padding-top: var(--spacing-lg);
             border-top: 1px solid var(--border-color);
-            font-size: 0.875rem;
+            font-size: var(--font-size-sm);
             color: var(--text-secondary);
         }
 
         .auth-footer a {
-            color: #667eea;
-            text-decoration: none;
-            font-weight: 600;
-            transition: color var(--transition-fast);
-        }
-
-        .auth-footer a:hover {
-            color: #764ba2;
+            color: var(--text-primary);
+            font-weight: var(--font-weight-medium);
             text-decoration: underline;
         }
 
@@ -207,53 +103,30 @@
             gap: var(--spacing-sm);
             margin-top: var(--spacing-lg);
         }
-
-        .theme-btn {
-            width: 40px;
-            height: 40px;
-            border-radius: var(--radius-full);
-            border: 2px solid var(--border-color);
-            background: var(--bg-primary);
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.25rem;
-            transition: all var(--transition-fast);
-        }
-
-        .theme-btn:hover {
-            border-color: #667eea;
-            transform: scale(1.1);
-        }
-
-        [data-theme="dark"] body {
-            background: linear-gradient(135deg, #1a1a1a 0%, #2a2a2a 100%);
-        }
     </style>
 </head>
 <body>
 <div class="auth-container">
     <div class="auth-header">
-        <div class="auth-logo">📋</div>
-        <h1>Đăng Ký Tài Khoản</h1>
-        <p>Tạo tài khoản để bắt đầu quản lý công việc</p>
+        <div class="auth-logo">□</div>
+        <h1>REGISTER</h1>
+        <p>Create account to start managing tasks</p>
     </div>
 
     <c:if test="${not empty error}">
         <div class="alert alert-error">
-            ⚠️ ${error}
+                ${error}
         </div>
     </c:if>
 
     <form action="${pageContext.request.contextPath}/auth?action=register" method="post" id="registerForm" accept-charset="UTF-8">
         <div class="form-group">
-            <label class="form-label" for="ten">Họ và tên</label>
+            <label class="form-label" for="ten">Full Name</label>
             <input type="text"
                    class="form-input"
                    id="ten"
                    name="ten"
-                   placeholder="Nguyễn Văn A"
+                   placeholder="John Doe"
                    value="${param.ten}"
                    required>
         </div>
@@ -264,18 +137,18 @@
                    class="form-input"
                    id="email"
                    name="email"
-                   placeholder="email@example.com"
+                   placeholder="your@email.com"
                    value="${param.email}"
                    required>
         </div>
 
         <div class="form-group">
-            <label class="form-label" for="matKhau">Mật khẩu</label>
+            <label class="form-label" for="matKhau">Password</label>
             <input type="password"
                    class="form-input"
                    id="matKhau"
                    name="matKhau"
-                   placeholder="••••••••"
+                   placeholder="Minimum 6 characters"
                    minlength="6"
                    required>
             <div class="password-strength">
@@ -287,11 +160,11 @@
         </div>
 
         <div class="form-group">
-            <label class="form-label" for="confirmPassword">Xác nhận mật khẩu</label>
+            <label class="form-label" for="confirmPassword">Confirm Password</label>
             <input type="password"
                    class="form-input"
                    id="confirmPassword"
-                   placeholder="••••••••"
+                   placeholder="Re-enter password"
                    required>
         </div>
 
@@ -300,24 +173,24 @@
                    id="rememberMe"
                    name="rememberMe"
                    value="true">
-            <label for="rememberMe">Ghi nhớ đăng nhập</label>
+            <label for="rememberMe">Remember me</label>
         </div>
 
-        <button type="submit" class="btn-submit">
-            Đăng Ký
+        <button type="submit" class="btn btn-primary btn-submit">
+            Create Account
         </button>
     </form>
 
     <div class="auth-footer">
         <p>
-            Đã có tài khoản?
-            <a href="${pageContext.request.contextPath}/DangNhap.jsp">Đăng nhập ngay</a>
+            Already have an account?
+            <a href="${pageContext.request.contextPath}/DangNhap.jsp">Login</a>
         </p>
     </div>
 
     <div class="theme-selector">
-        <button class="theme-btn" onclick="setTheme('light')" title="Chế độ sáng">☀️</button>
-        <button class="theme-btn" onclick="setTheme('dark')" title="Chế độ tối">🌙</button>
+        <button class="btn-icon" onclick="setTheme('light')" title="Light Mode">○</button>
+        <button class="btn-icon" onclick="setTheme('dark')" title="Dark Mode">●</button>
     </div>
 </div>
 
@@ -328,7 +201,7 @@
     const strengthText = document.getElementById('strengthText');
     const form = document.getElementById('registerForm');
 
-    // Kiểm tra độ mạnh mật khẩu
+    // Password strength checker
     passwordInput.addEventListener('input', () => {
         const password = passwordInput.value;
         let strength = 0;
@@ -341,38 +214,38 @@
         strengthFill.style.width = strength + '%';
 
         if (strength <= 25) {
-            strengthFill.style.background = '#ef4444';
-            strengthText.textContent = 'Yếu';
-            strengthText.style.color = '#ef4444';
+            strengthFill.style.background = 'var(--color-black)';
+            strengthText.textContent = 'Weak';
+            strengthText.style.color = 'var(--color-black)';
         } else if (strength <= 50) {
-            strengthFill.style.background = '#f59e0b';
-            strengthText.textContent = 'Trung bình';
-            strengthText.style.color = '#f59e0b';
+            strengthFill.style.background = 'var(--color-gray-600)';
+            strengthText.textContent = 'Fair';
+            strengthText.style.color = 'var(--color-gray-600)';
         } else if (strength <= 75) {
-            strengthFill.style.background = '#3b82f6';
-            strengthText.textContent = 'Tốt';
-            strengthText.style.color = '#3b82f6';
+            strengthFill.style.background = 'var(--color-gray-500)';
+            strengthText.textContent = 'Good';
+            strengthText.style.color = 'var(--color-gray-500)';
         } else {
-            strengthFill.style.background = '#10b981';
-            strengthText.textContent = 'Rất mạnh';
-            strengthText.style.color = '#10b981';
+            strengthFill.style.background = 'var(--color-black)';
+            strengthText.textContent = 'Strong';
+            strengthText.style.color = 'var(--color-black)';
         }
     });
 
-    // Kiểm tra xác nhận mật khẩu
+    // Confirm password validation
     confirmPasswordInput.addEventListener('input', () => {
         if (confirmPasswordInput.value && passwordInput.value !== confirmPasswordInput.value) {
-            confirmPasswordInput.style.borderColor = '#ef4444';
+            confirmPasswordInput.style.borderColor = 'var(--color-danger)';
         } else {
             confirmPasswordInput.style.borderColor = 'var(--border-color)';
         }
     });
 
-    // Xác thực form
+    // Form validation
     form.addEventListener('submit', (e) => {
         if (passwordInput.value !== confirmPasswordInput.value) {
             e.preventDefault();
-            alert('Mật khẩu xác nhận không khớp!');
+            alert('Passwords do not match!');
             confirmPasswordInput.focus();
         }
     });
@@ -380,7 +253,7 @@
     function setTheme(theme) {
         document.documentElement.setAttribute('data-theme', theme);
         localStorage.setItem('theme', theme);
-        document.cookie = "theme=" + theme + "; path=/; max-age=31536000";
+        document.cookie = `theme=${theme}; path=/; max-age=31536000`;
     }
 
     function loadTheme() {

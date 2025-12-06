@@ -11,20 +11,28 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Trang Chủ - Task Manager</title>
+    <title>Task Manager - Minimalist</title>
     <link rel="stylesheet" href="${pageContext.request.contextPath}/css/common.css">
     <style>
         /* =================================
-           MAIN CONTAINER
+           PAGE LAYOUT
            ================================= */
+        body {
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
         .main-container {
+            flex: 1;
             max-width: 1400px;
+            width: 100%;
             margin: 0 auto;
             padding: var(--spacing-lg);
         }
 
         /* =================================
-           TOOLBAR
+           TOOLBAR - Minimalist
            ================================= */
         .toolbar {
             background: var(--bg-primary);
@@ -36,7 +44,6 @@
             gap: var(--spacing-lg);
             align-items: center;
             flex-wrap: wrap;
-            box-shadow: var(--shadow-sm);
         }
 
         .toolbar-section {
@@ -57,83 +64,62 @@
         }
 
         .filter-label {
-            font-size: 0.875rem;
-            font-weight: 600;
+            font-size: var(--font-size-xs);
+            font-weight: var(--font-weight-medium);
             color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
             white-space: nowrap;
         }
 
         .filter-select {
-            min-width: 180px;
-            padding: 8px 12px;
-            border: 1px solid var(--border-color);
-            border-radius: var(--radius-md);
-            background: var(--bg-primary);
-            color: var(--text-primary);
-            font-size: 0.875rem;
-            cursor: pointer;
-            transition: all var(--transition-fast);
+            min-width: 160px;
         }
 
-        .filter-select:focus {
-            outline: none;
-            border-color: var(--text-primary);
-            box-shadow: 0 0 0 3px rgba(0,0,0,0.05);
-        }
-
+        /* View Mode Selector */
         .view-modes {
             display: flex;
-            gap: var(--spacing-xs);
-            background: var(--bg-secondary);
-            padding: 4px;
+            gap: 0;
+            border: 1px solid var(--border-color);
             border-radius: var(--radius-md);
+            overflow: hidden;
         }
 
         .view-btn {
-            padding: 8px 16px;
+            padding: var(--spacing-sm) var(--spacing-md);
             border: none;
             background: transparent;
             color: var(--text-secondary);
-            font-size: 0.875rem;
-            font-weight: 600;
+            font-size: var(--font-size-xs);
+            font-weight: var(--font-weight-medium);
             cursor: pointer;
-            border-radius: var(--radius-sm);
             transition: all var(--transition-fast);
+            border-right: 1px solid var(--border-color);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .view-btn:last-child {
+            border-right: none;
         }
 
         .view-btn:hover {
-            background: var(--bg-primary);
+            background: var(--hover-bg);
             color: var(--text-primary);
         }
 
         .view-btn.active {
-            background: var(--bg-primary);
-            color: var(--text-primary);
-            box-shadow: var(--shadow-sm);
+            background: var(--color-black);
+            color: var(--color-white);
         }
 
-        .btn-add-new {
-            padding: 10px 20px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            border: none;
-            border-radius: var(--radius-md);
-            font-size: 0.875rem;
-            font-weight: 600;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            gap: var(--spacing-sm);
-            transition: all var(--transition-fast);
-        }
-
-        .btn-add-new:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 20px rgba(102, 126, 234, 0.4);
+        [data-theme="dark"] .view-btn.active {
+            background: var(--color-white);
+            color: var(--color-black);
         }
 
         /* =================================
-           LIST VIEW
+           LIST VIEW - Minimalist
            ================================= */
         .list-view {
             display: none;
@@ -159,9 +145,9 @@
         }
 
         .task-card:hover {
-            box-shadow: var(--shadow-md);
-            border-color: var(--border-hover);
+            border-color: var(--text-primary);
             transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
         }
 
         .task-card-header {
@@ -172,10 +158,11 @@
         }
 
         .task-title {
-            font-size: 1.125rem;
-            font-weight: 600;
+            font-size: var(--font-size-lg);
+            font-weight: var(--font-weight-semibold);
             color: var(--text-primary);
             margin-bottom: var(--spacing-sm);
+            letter-spacing: -0.01em;
         }
 
         .task-meta {
@@ -186,10 +173,10 @@
         }
 
         .task-description {
-            font-size: 0.875rem;
+            font-size: var(--font-size-sm);
             color: var(--text-secondary);
             margin-bottom: var(--spacing-md);
-            line-height: 1.6;
+            line-height: var(--line-height-relaxed);
         }
 
         .task-footer {
@@ -203,7 +190,7 @@
         .task-dates {
             display: flex;
             gap: var(--spacing-md);
-            font-size: 0.75rem;
+            font-size: var(--font-size-xs);
             color: var(--text-secondary);
         }
 
@@ -212,29 +199,8 @@
             gap: var(--spacing-sm);
         }
 
-        .task-action-btn {
-            padding: 6px 12px;
-            border: 1px solid var(--border-color);
-            background: transparent;
-            color: var(--text-primary);
-            border-radius: var(--radius-sm);
-            font-size: 0.75rem;
-            cursor: pointer;
-            transition: all var(--transition-fast);
-        }
-
-        .task-action-btn:hover {
-            background: var(--hover-bg);
-        }
-
-        .task-action-btn.danger:hover {
-            background: var(--color-danger);
-            color: white;
-            border-color: var(--color-danger);
-        }
-
         /* =================================
-           KANBAN VIEW
+           KANBAN VIEW - Minimalist
            ================================= */
         .kanban-view {
             display: none;
@@ -242,7 +208,7 @@
 
         .kanban-view.active {
             display: grid;
-            grid-template-columns: repeat(3, 1fr);
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
             gap: var(--spacing-lg);
         }
 
@@ -260,16 +226,18 @@
             align-items: center;
             margin-bottom: var(--spacing-lg);
             padding-bottom: var(--spacing-md);
-            border-bottom: 2px solid var(--border-color);
+            border-bottom: 1px solid var(--border-color);
         }
 
         .kanban-title {
-            font-size: 1rem;
-            font-weight: 700;
+            font-size: var(--font-size-sm);
+            font-weight: var(--font-weight-semibold);
             color: var(--text-primary);
             display: flex;
             align-items: center;
             gap: var(--spacing-sm);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
         }
 
         .kanban-count {
@@ -277,8 +245,9 @@
             color: var(--text-secondary);
             padding: 2px 8px;
             border-radius: var(--radius-full);
-            font-size: 0.75rem;
-            font-weight: 700;
+            font-size: var(--font-size-xs);
+            font-weight: var(--font-weight-bold);
+            border: 1px solid var(--border-color);
         }
 
         .kanban-tasks {
@@ -298,21 +267,23 @@
         }
 
         .kanban-task:hover {
-            box-shadow: var(--shadow-md);
+            border-color: var(--text-primary);
             transform: translateY(-2px);
+            box-shadow: var(--shadow-sm);
         }
 
         .kanban-task.dragging {
             opacity: 0.5;
+            transform: rotate(2deg);
         }
 
         .kanban-task.drag-over {
-            border: 2px dashed var(--text-primary);
+            border: 2px solid var(--text-primary);
         }
 
         .kanban-task-title {
-            font-size: 0.9375rem;
-            font-weight: 600;
+            font-size: var(--font-size-sm);
+            font-weight: var(--font-weight-semibold);
             color: var(--text-primary);
             margin-bottom: var(--spacing-sm);
         }
@@ -322,10 +293,11 @@
             gap: var(--spacing-sm);
             align-items: center;
             margin-top: var(--spacing-sm);
+            flex-wrap: wrap;
         }
 
         /* =================================
-           CALENDAR VIEW
+           CALENDAR VIEW - Minimalist
            ================================= */
         .calendar-view {
             display: none;
@@ -352,30 +324,13 @@
             align-items: center;
         }
 
-        .calendar-nav-btn {
-            width: 36px;
-            height: 36px;
-            border: 1px solid var(--border-color);
-            background: transparent;
-            color: var(--text-primary);
-            border-radius: var(--radius-md);
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: all var(--transition-fast);
-        }
-
-        .calendar-nav-btn:hover {
-            background: var(--hover-bg);
-        }
-
         .calendar-title {
-            font-size: 1.25rem;
-            font-weight: 700;
+            font-size: var(--font-size-xl);
+            font-weight: var(--font-weight-semibold);
             color: var(--text-primary);
-            min-width: 200px;
+            min-width: 240px;
             text-align: center;
+            letter-spacing: -0.02em;
         }
 
         .calendar-grid {
@@ -395,9 +350,11 @@
         .calendar-weekday {
             padding: var(--spacing-md);
             text-align: center;
-            font-size: 0.875rem;
-            font-weight: 700;
+            font-size: var(--font-size-xs);
+            font-weight: var(--font-weight-semibold);
             color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
         }
 
         .calendar-days {
@@ -420,23 +377,23 @@
         }
 
         .calendar-day.other-month {
-            opacity: 0.4;
+            opacity: 0.3;
         }
 
         .calendar-day.today {
-            background: rgba(102, 126, 234, 0.1);
+            background: var(--bg-secondary);
         }
 
         .calendar-day-number {
-            font-size: 0.875rem;
-            font-weight: 600;
+            font-size: var(--font-size-sm);
+            font-weight: var(--font-weight-semibold);
             color: var(--text-primary);
             margin-bottom: var(--spacing-sm);
         }
 
         .calendar-day.today .calendar-day-number {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
+            background: var(--color-black);
+            color: var(--color-white);
             width: 28px;
             height: 28px;
             display: flex;
@@ -445,15 +402,21 @@
             border-radius: var(--radius-full);
         }
 
+        [data-theme="dark"] .calendar-day.today .calendar-day-number {
+            background: var(--color-white);
+            color: var(--color-black);
+        }
+
         .calendar-task {
             background: var(--bg-secondary);
-            border-left: 3px solid var(--color-todo);
+            border-left: 2px solid var(--color-black);
             padding: 4px 8px;
             margin-bottom: 4px;
-            border-radius: 4px;
-            font-size: 0.75rem;
+            border-radius: var(--radius-sm);
+            font-size: var(--font-size-xs);
             cursor: pointer;
             transition: all var(--transition-fast);
+            line-height: var(--line-height-tight);
         }
 
         .calendar-task:hover {
@@ -461,43 +424,52 @@
             box-shadow: var(--shadow-sm);
         }
 
-        .calendar-task.status-todo {
-            border-left-color: var(--color-todo);
-        }
-
         .calendar-task.status-inprogress {
-            border-left-color: var(--color-inprogress);
+            border-left-color: var(--color-gray-600);
         }
 
         .calendar-task.status-done {
-            border-left-color: var(--color-done);
+            border-left-color: var(--color-gray-400);
+            opacity: 0.6;
         }
 
         /* =================================
-           EMPTY STATE
+           STATS CARDS
            ================================= */
-        .empty-state {
-            text-align: center;
-            padding: var(--spacing-xl) var(--spacing-lg);
-            color: var(--text-secondary);
-        }
-
-        .empty-state-icon {
-            font-size: 4rem;
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: var(--spacing-md);
             margin-bottom: var(--spacing-lg);
-            opacity: 0.5;
         }
 
-        .empty-state-title {
-            font-size: 1.25rem;
-            font-weight: 600;
+        .stat-card {
+            background: var(--bg-primary);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-lg);
+            padding: var(--spacing-lg);
+            transition: all var(--transition-fast);
+        }
+
+        .stat-card:hover {
+            border-color: var(--text-primary);
+            transform: translateY(-2px);
+        }
+
+        .stat-value {
+            font-size: var(--font-size-3xl);
+            font-weight: var(--font-weight-bold);
             color: var(--text-primary);
-            margin-bottom: var(--spacing-sm);
+            margin-bottom: var(--spacing-xs);
+            letter-spacing: -0.02em;
         }
 
-        .empty-state-text {
-            font-size: 0.875rem;
-            margin-bottom: var(--spacing-lg);
+        .stat-label {
+            font-size: var(--font-size-xs);
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            font-weight: var(--font-weight-medium);
         }
 
         /* =================================
@@ -519,16 +491,45 @@
                 width: 100%;
             }
 
+            .filter-group {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
             .filter-select {
+                width: 100%;
+                min-width: auto;
+            }
+
+            .view-modes {
                 width: 100%;
             }
 
-            .calendar-days {
-                font-size: 0.75rem;
+            .view-btn {
+                flex: 1;
             }
 
             .calendar-day {
                 min-height: 80px;
+            }
+
+            .calendar-title {
+                font-size: var(--font-size-lg);
+                min-width: auto;
+            }
+
+            .task-footer {
+                flex-direction: column;
+                gap: var(--spacing-md);
+                align-items: flex-start;
+            }
+
+            .task-actions {
+                width: 100%;
+            }
+
+            .task-actions .btn {
+                flex: 1;
             }
         }
     </style>
@@ -538,12 +539,12 @@
 <div class="header">
     <div class="header-content">
         <div class="header-brand">
-            <span class="logo">📋</span>
-            <h1>Task Manager</h1>
+            <span class="logo">□</span>
+            <h1>TASK MANAGER</h1>
         </div>
         <div class="header-actions">
-            <button class="btn-icon" onclick="setTheme('light')" title="Chế độ sáng">☀️</button>
-            <button class="btn-icon" onclick="setTheme('dark')" title="Chế độ tối">🌙</button>
+            <button class="btn-icon" onclick="setTheme('light')" title="Light Mode">○</button>
+            <button class="btn-icon" onclick="setTheme('dark')" title="Dark Mode">●</button>
             <div class="user-section">
                 <div class="user-avatar" onclick="location.href='${pageContext.request.contextPath}/taikhoan.jsp'">
                     ${sessionScope.user.ten.substring(0,1).toUpperCase()}
@@ -554,7 +555,7 @@
                 </div>
             </div>
             <form action="${pageContext.request.contextPath}/auth?action=logout" method="post" style="margin: 0;">
-                <button type="submit" class="btn btn-secondary">Đăng xuất</button>
+                <button type="submit" class="btn btn-secondary">Logout</button>
             </form>
         </div>
     </div>
@@ -562,52 +563,49 @@
 
 <!-- MAIN CONTAINER -->
 <div class="main-container">
+    <!-- STATS GRID -->
+    <div class="stats-grid" id="statsGrid"></div>
+
     <!-- TOOLBAR -->
     <div class="toolbar">
         <div class="toolbar-section grow">
             <div class="filter-group">
-                <label class="filter-label">Dự án:</label>
-                <select class="filter-select" id="projectFilter" onchange="loadTasks()">
-                    <option value="">Tất cả dự án</option>
+                <label class="filter-label">Project</label>
+                <select class="filter-select form-select" id="projectFilter" onchange="loadTasks()">
+                    <option value="">All Projects</option>
                 </select>
             </div>
             <div class="filter-group">
-                <label class="filter-label">Trạng thái:</label>
-                <select class="filter-select" id="statusFilter" onchange="loadTasks()">
-                    <option value="">Tất cả</option>
-                    <option value="todo">Chưa làm</option>
-                    <option value="inprogress">Đang làm</option>
-                    <option value="done">Đã xong</option>
+                <label class="filter-label">Status</label>
+                <select class="filter-select form-select" id="statusFilter" onchange="loadTasks()">
+                    <option value="">All</option>
+                    <option value="todo">To Do</option>
+                    <option value="inprogress">In Progress</option>
+                    <option value="done">Done</option>
                 </select>
             </div>
             <div class="filter-group">
-                <label class="filter-label">Ưu tiên:</label>
-                <select class="filter-select" id="priorityFilter" onchange="loadTasks()">
-                    <option value="">Tất cả</option>
-                    <option value="high">Cao</option>
-                    <option value="medium">Trung bình</option>
-                    <option value="low">Thấp</option>
+                <label class="filter-label">Priority</label>
+                <select class="filter-select form-select" id="priorityFilter" onchange="loadTasks()">
+                    <option value="">All</option>
+                    <option value="high">High</option>
+                    <option value="medium">Medium</option>
+                    <option value="low">Low</option>
                 </select>
             </div>
         </div>
 
         <div class="toolbar-section">
             <div class="view-modes">
-                <button class="view-btn active" onclick="changeView('list')">📋 Danh sách</button>
-                <button class="view-btn" onclick="changeView('kanban')">📊 Kanban</button>
-                <button class="view-btn" onclick="changeView('calendar')">📅 Lịch</button>
+                <button class="view-btn active" onclick="changeView('list')">LIST</button>
+                <button class="view-btn" onclick="changeView('kanban')">BOARD</button>
+                <button class="view-btn" onclick="changeView('calendar')">CALENDAR</button>
             </div>
         </div>
 
         <div class="toolbar-section">
-            <button class="btn-add-new" onclick="showAddTaskModal()">
-                <span>➕</span>
-                <span>Thêm nhiệm vụ</span>
-            </button>
-            <button class="btn btn-secondary" onclick="showAddProjectModal()">
-                <span>📁</span>
-                <span>Thêm dự án</span>
-            </button>
+            <button class="btn btn-primary" onclick="showAddTaskModal()">+ Task</button>
+            <button class="btn btn-secondary" onclick="showAddProjectModal()">+ Project</button>
         </div>
     </div>
 
@@ -621,7 +619,7 @@
         <div class="kanban-column">
             <div class="kanban-header">
                 <div class="kanban-title">
-                    📝 Chưa làm
+                    To Do
                     <span class="kanban-count" id="todoCount">0</span>
                 </div>
             </div>
@@ -631,7 +629,7 @@
         <div class="kanban-column">
             <div class="kanban-header">
                 <div class="kanban-title">
-                    ⏳ Đang làm
+                    In Progress
                     <span class="kanban-count" id="inprogressCount">0</span>
                 </div>
             </div>
@@ -641,7 +639,7 @@
         <div class="kanban-column">
             <div class="kanban-header">
                 <div class="kanban-title">
-                    ✅ Đã xong
+                    Done
                     <span class="kanban-count" id="doneCount">0</span>
                 </div>
             </div>
@@ -653,155 +651,150 @@
     <div class="calendar-view" id="calendarView">
         <div class="calendar-header">
             <div class="calendar-nav">
-                <button class="calendar-nav-btn" onclick="changeMonth(-1)">◀</button>
-                <div class="calendar-title" id="calendarTitle">Tháng 1, 2025</div>
-                <button class="calendar-nav-btn" onclick="changeMonth(1)">▶</button>
+                <button class="btn-icon" onclick="changeMonth(-1)">‹</button>
+                <div class="calendar-title" id="calendarTitle">January 2025</div>
+                <button class="btn-icon" onclick="changeMonth(1)">›</button>
             </div>
-            <button class="btn btn-secondary" onclick="goToToday()">Hôm nay</button>
+            <button class="btn btn-secondary" onclick="goToToday()">Today</button>
         </div>
         <div class="calendar-grid">
             <div class="calendar-weekdays">
-                <div class="calendar-weekday">CN</div>
-                <div class="calendar-weekday">T2</div>
-                <div class="calendar-weekday">T3</div>
-                <div class="calendar-weekday">T4</div>
-                <div class="calendar-weekday">T5</div>
-                <div class="calendar-weekday">T6</div>
-                <div class="calendar-weekday">T7</div>
+                <div class="calendar-weekday">Sun</div>
+                <div class="calendar-weekday">Mon</div>
+                <div class="calendar-weekday">Tue</div>
+                <div class="calendar-weekday">Wed</div>
+                <div class="calendar-weekday">Thu</div>
+                <div class="calendar-weekday">Fri</div>
+                <div class="calendar-weekday">Sat</div>
             </div>
             <div class="calendar-days" id="calendarDays"></div>
         </div>
     </div>
 </div>
 
-<!-- MODAL THÊM/SỬA NHIỆM VỤ -->
+<!-- MODAL NHIỆM VỤ -->
 <div class="modal" id="taskModal">
     <div class="modal-content">
         <div class="modal-header">
-            <h2 class="modal-title" id="taskModalTitle">Thêm nhiệm vụ mới</h2>
-            <button class="modal-close" onclick="closeTaskModal()">✕</button>
+            <h2 class="modal-title" id="taskModalTitle">New Task</h2>
+            <button class="modal-close" onclick="closeTaskModal()">×</button>
         </div>
         <div class="modal-body">
             <form id="taskForm">
                 <input type="hidden" id="taskId">
 
                 <div class="form-group">
-                    <label class="form-label" for="taskName">Tên nhiệm vụ *</label>
-                    <input type="text" class="form-input" id="taskName" required>
+                    <label class="form-label" for="taskName">Task Name *</label>
+                    <input type="text" class="form-input" id="taskName" required placeholder="Enter task name">
                 </div>
 
                 <div class="form-group">
-                    <label class="form-label" for="taskDescription">Mô tả</label>
-                    <textarea class="form-textarea" id="taskDescription" rows="3"></textarea>
+                    <label class="form-label" for="taskDescription">Description</label>
+                    <textarea class="form-textarea" id="taskDescription" rows="3" placeholder="Task description"></textarea>
                 </div>
 
                 <div class="form-group">
-                    <label class="form-label" for="taskProject">Dự án</label>
+                    <label class="form-label" for="taskProject">Project</label>
                     <select class="form-select" id="taskProject">
-                        <option value="">Không thuộc dự án</option>
+                        <option value="">No Project</option>
                     </select>
                 </div>
 
                 <div class="form-group">
-                    <label class="form-label" for="taskStatus">Trạng thái</label>
+                    <label class="form-label" for="taskStatus">Status</label>
                     <select class="form-select" id="taskStatus">
-                        <option value="todo">Chưa làm</option>
-                        <option value="inprogress">Đang làm</option>
-                        <option value="done">Đã xong</option>
+                        <option value="todo">To Do</option>
+                        <option value="inprogress">In Progress</option>
+                        <option value="done">Done</option>
                     </select>
                 </div>
 
                 <div class="form-group">
-                    <label class="form-label" for="taskPriority">Độ ưu tiên</label>
+                    <label class="form-label" for="taskPriority">Priority</label>
                     <select class="form-select" id="taskPriority">
-                        <option value="1">Rất thấp</option>
-                        <option value="2">Thấp</option>
-                        <option value="3" selected>Trung bình</option>
-                        <option value="4">Cao</option>
-                        <option value="5">Rất cao</option>
+                        <option value="1">Very Low</option>
+                        <option value="2">Low</option>
+                        <option value="3" selected>Medium</option>
+                        <option value="4">High</option>
+                        <option value="5">Very High</option>
                     </select>
                 </div>
 
                 <div class="form-group">
-                    <label class="form-label" for="taskStartDate">Ngày bắt đầu</label>
+                    <label class="form-label" for="taskStartDate">Start Date</label>
                     <input type="date" class="form-input" id="taskStartDate">
                 </div>
 
                 <div class="form-group">
-                    <label class="form-label" for="taskEndDate">Ngày kết thúc</label>
+                    <label class="form-label" for="taskEndDate">Due Date</label>
                     <input type="date" class="form-input" id="taskEndDate">
                 </div>
 
                 <div class="form-group">
-                    <label class="form-label" for="taskNote">Ghi chú</label>
-                    <textarea class="form-textarea" id="taskNote" rows="2"></textarea>
+                    <label class="form-label" for="taskNote">Notes</label>
+                    <textarea class="form-textarea" id="taskNote" rows="2" placeholder="Additional notes"></textarea>
                 </div>
             </form>
         </div>
         <div class="modal-footer">
-            <button class="btn btn-secondary" onclick="closeTaskModal()">Hủy</button>
-            <button class="btn btn-primary" onclick="saveTask()">Lưu</button>
+            <button class="btn btn-secondary" onclick="closeTaskModal()">Cancel</button>
+            <button class="btn btn-primary" onclick="saveTask()">Save Task</button>
         </div>
     </div>
 </div>
 
-<!-- MODAL THÊM/SỬA DỰ ÁN -->
+<!-- MODAL DỰ ÁN -->
 <div class="modal" id="projectModal">
     <div class="modal-content">
         <div class="modal-header">
-            <h2 class="modal-title" id="projectModalTitle">Thêm dự án mới</h2>
-            <button class="modal-close" onclick="closeProjectModal()">✕</button>
+            <h2 class="modal-title" id="projectModalTitle">New Project</h2>
+            <button class="modal-close" onclick="closeProjectModal()">×</button>
         </div>
         <div class="modal-body">
             <form id="projectForm">
                 <input type="hidden" id="projectId">
 
                 <div class="form-group">
-                    <label class="form-label" for="projectName">Tên dự án *</label>
-                    <input type="text" class="form-input" id="projectName" required>
+                    <label class="form-label" for="projectName">Project Name *</label>
+                    <input type="text" class="form-input" id="projectName" required placeholder="Enter project name">
                 </div>
 
                 <div class="form-group">
-                    <label class="form-label" for="projectDescription">Mô tả</label>
-                    <textarea class="form-textarea" id="projectDescription" rows="3"></textarea>
+                    <label class="form-label" for="projectDescription">Description</label>
+                    <textarea class="form-textarea" id="projectDescription" rows="3" placeholder="Project description"></textarea>
                 </div>
 
                 <div class="form-group">
-                    <label class="form-label" for="projectAssignee">Người thực hiện</label>
-                    <input type="text" class="form-input" id="projectAssignee" value="${sessionScope.user.ten}">
+                    <label class="form-label" for="projectAssignee">Assignee</label>
+                    <input type="text" class="form-input" id="projectAssignee" value="${sessionScope.user.ten}" placeholder="Assignee name">
                 </div>
 
                 <div class="form-group">
-                    <label class="form-label" for="projectStartDate">Ngày bắt đầu</label>
+                    <label class="form-label" for="projectStartDate">Start Date</label>
                     <input type="date" class="form-input" id="projectStartDate">
                 </div>
 
                 <div class="form-group">
-                    <label class="form-label" for="projectEndDate">Ngày kết thúc</label>
+                    <label class="form-label" for="projectEndDate">End Date</label>
                     <input type="date" class="form-input" id="projectEndDate">
                 </div>
 
                 <div class="form-group">
-                    <label class="form-label" for="projectColor">Màu sắc</label>
-                    <input type="color" class="form-input" id="projectColor" value="#667eea">
-                </div>
-
-                <div class="form-group">
-                    <label class="form-label" for="projectNote">Ghi chú</label>
-                    <textarea class="form-textarea" id="projectNote" rows="2"></textarea>
+                    <label class="form-label" for="projectNote">Notes</label>
+                    <textarea class="form-textarea" id="projectNote" rows="2" placeholder="Additional notes"></textarea>
                 </div>
             </form>
         </div>
         <div class="modal-footer">
-            <button class="btn btn-secondary" onclick="closeProjectModal()">Hủy</button>
-            <button class="btn btn-primary" onclick="saveProject()">Lưu</button>
+            <button class="btn btn-secondary" onclick="closeProjectModal()">Cancel</button>
+            <button class="btn btn-primary" onclick="saveProject()">Save Project</button>
         </div>
     </div>
 </div>
 
 <script>
     // ==========================================
-    // BIẾN TOÀN CỤC
+    // CONFIGURATION
     // ==========================================
     const API_BASE = '${pageContext.request.contextPath}';
     const API_TASKS = API_BASE + '/nhiemvu';
@@ -821,7 +814,7 @@
     let currentYear = new Date().getFullYear();
 
     // ==========================================
-    // KHỞI TẠO
+    // INITIALIZATION
     // ==========================================
     document.addEventListener('DOMContentLoaded', () => {
         loadTheme();
@@ -830,12 +823,12 @@
     });
 
     // ==========================================
-    // THEME
+    // THEME MANAGEMENT
     // ==========================================
     function setTheme(theme) {
         document.documentElement.setAttribute('data-theme', theme);
         localStorage.setItem('theme', theme);
-        document.cookie = "theme=" + theme + "; path=/; max-age=31536000";
+        document.cookie = `theme=${theme}; path=/; max-age=31536000`;
     }
 
     function loadTheme() {
@@ -851,7 +844,7 @@
     }
 
     // ==========================================
-    // LOAD DỮ LIỆU
+    // DATA LOADING
     // ==========================================
     async function loadProjects() {
         try {
@@ -861,7 +854,7 @@
                 updateProjectSelects();
             }
         } catch (error) {
-            console.error('Lỗi load projects:', error);
+            console.error('Error loading projects:', error);
         }
     }
 
@@ -879,10 +872,11 @@
             const response = await fetch(url);
             if (response.ok) {
                 tasks = await response.json();
+                updateStats();
                 renderCurrentView();
             }
         } catch (error) {
-            console.error('Lỗi load tasks:', error);
+            console.error('Error loading tasks:', error);
         }
     }
 
@@ -895,21 +889,48 @@
         selects.forEach((select, index) => {
             const currentValue = select.value;
             const options = projects.map(p =>
-                `<option value="${p.id}">${p.ten}</option>`
+                `<option value="${p.id}">${escapeHtml(p.ten)}</option>`
             ).join('');
 
             if (index === 0) {
-                select.innerHTML = '<option value="">Tất cả dự án</option>' + options;
+                select.innerHTML = '<option value="">All Projects</option>' + options;
             } else {
-                select.innerHTML = '<option value="">Không thuộc dự án</option>' + options;
+                select.innerHTML = '<option value="">No Project</option>' + options;
             }
 
             if (currentValue) select.value = currentValue;
         });
     }
 
+    function updateStats() {
+        const total = tasks.length;
+        const todo = tasks.filter(t => t.trangThai === 'todo').length;
+        const inprogress = tasks.filter(t => t.trangThai === 'inprogress').length;
+        const done = tasks.filter(t => t.trangThai === 'done').length;
+
+        const statsHtml = `
+            <div class="stat-card">
+                <div class="stat-value">${total}</div>
+                <div class="stat-label">Total Tasks</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value">${todo}</div>
+                <div class="stat-label">To Do</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value">${inprogress}</div>
+                <div class="stat-label">In Progress</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value">${done}</div>
+                <div class="stat-label">Completed</div>
+            </div>
+        `;
+        document.getElementById('statsGrid').innerHTML = statsHtml;
+    }
+
     // ==========================================
-    // RENDER VIEWS
+    // VIEW MANAGEMENT
     // ==========================================
     function changeView(view) {
         currentView = view;
@@ -960,54 +981,54 @@
     }
 
     // ==========================================
-    // LIST VIEW
+    // LIST VIEW RENDERING
     // ==========================================
     function renderListView(taskList) {
         const container = document.getElementById('taskList');
 
         if (taskList.length === 0) {
             container.innerHTML = `
-            <div class="empty-state">
-                <div class="empty-state-icon">📝</div>
-                <h3 class="empty-state-title">Chưa có nhiệm vụ nào</h3>
-                <p class="empty-state-text">Hãy tạo nhiệm vụ đầu tiên của bạn!</p>
-                <button class="btn btn-primary" onclick="showAddTaskModal()">Thêm nhiệm vụ</button>
-            </div>
-        `;
+                <div class="empty-state">
+                    <div class="empty-state-icon">□</div>
+                    <h3 class="empty-state-title">No Tasks</h3>
+                    <p class="empty-state-text">Create your first task to get started</p>
+                    <button class="btn btn-primary" onclick="showAddTaskModal()">+ New Task</button>
+                </div>
+            `;
             return;
         }
 
         container.innerHTML = taskList.map(task => `
-        <div class="task-card" onclick="editTask(${task.id})">
-            <div class="task-card-header">
-                <div>
-                    <h3 class="task-title">${escapeHtml(task.ten)}</h3>
-                    <div class="task-meta">
-                        ${getStatusBadge(task.trangThai)}
-                        ${getPriorityBadge(task.doUuTien)}
-                        ${task.duAnTen ? `<span class="badge" style="background: rgba(102, 126, 234, 0.1); color: #667eea;">📁 ${escapeHtml(task.duAnTen)}</span>` : ''}
+            <div class="task-card" onclick="editTask(${task.id})">
+                <div class="task-card-header">
+                    <div>
+                        <h3 class="task-title">${escapeHtml(task.ten)}</h3>
+                        <div class="task-meta">
+                            ${getStatusBadge(task.trangThai)}
+                            ${getPriorityBadge(task.doUuTien)}
+                            ${task.duAnTen ? `<span class="badge">${escapeHtml(task.duAnTen)}</span>` : ''}
+                        </div>
+                    </div>
+                </div>
+
+                ${task.mo_ta ? `<div class="task-description">${escapeHtml(task.mo_ta)}</div>` : ''}
+
+                <div class="task-footer">
+                    <div class="task-dates">
+                        ${task.ngayBatDau ? `<span>Start: ${formatDate(task.ngayBatDau)}</span>` : ''}
+                        ${task.ngayKetThuc ? `<span>Due: ${formatDate(task.ngayKetThuc)}</span>` : ''}
+                    </div>
+                    <div class="task-actions" onclick="event.stopPropagation()">
+                        <button class="btn btn-sm btn-secondary" onclick="editTask(${task.id})">Edit</button>
+                        <button class="btn btn-sm btn-danger" onclick="deleteTask(${task.id})">Delete</button>
                     </div>
                 </div>
             </div>
-
-            ${task.mo_ta ? `<div class="task-description">${escapeHtml(task.mo_ta)}</div>` : ''}
-
-            <div class="task-footer">
-                <div class="task-dates">
-                    ${task.ngayBatDau ? `<span>📅 Bắt đầu: ${formatDate(task.ngayBatDau)}</span>` : ''}
-                    ${task.ngayKetThuc ? `<span>⏰ Hạn: ${formatDate(task.ngayKetThuc)}</span>` : ''}
-                </div>
-                <div class="task-actions" onclick="event.stopPropagation()">
-                    <button class="task-action-btn" onclick="editTask(${task.id})">✏️ Sửa</button>
-                    <button class="task-action-btn danger" onclick="deleteTask(${task.id})">🗑️ Xóa</button>
-                </div>
-            </div>
-        </div>
-    `).join('');
+        `).join('');
     }
 
     // ==========================================
-    // KANBAN VIEW
+    // KANBAN VIEW RENDERING
     // ==========================================
     function renderKanbanView(taskList) {
         const todoTasks = taskList.filter(t => t.trangThai === 'todo');
@@ -1027,23 +1048,23 @@
         const container = document.getElementById(columnId);
 
         if (taskList.length === 0) {
-            container.innerHTML = '<div class="empty-state-text">Không có nhiệm vụ</div>';
+            container.innerHTML = '<div class="empty-state-text">No tasks</div>';
             return;
         }
 
         container.innerHTML = taskList.map(task => `
-        <div class="kanban-task" draggable="true" data-id="${task.id}"
-             ondragstart="handleDragStart(event)"
-             ondragend="handleDragEnd(event)"
-             onclick="editTask(${task.id})">
-            <div class="kanban-task-title">${escapeHtml(task.ten)}</div>
-            ${task.mo_ta ? `<div class="task-description">${escapeHtml(task.mo_ta)}</div>` : ''}
-            <div class="kanban-task-meta">
-                ${getPriorityBadge(task.doUuTien)}
-                ${task.ngayKetThuc ? `<span class="badge" style="background: rgba(245, 158, 11, 0.1); color: #f59e0b;">⏰ ${formatDate(task.ngayKetThuc)}</span>` : ''}
+            <div class="kanban-task" draggable="true" data-id="${task.id}"
+                 ondragstart="handleDragStart(event)"
+                 ondragend="handleDragEnd(event)"
+                 onclick="editTask(${task.id})">
+                <div class="kanban-task-title">${escapeHtml(task.ten)}</div>
+                ${task.mo_ta ? `<div class="task-description">${escapeHtml(task.mo_ta)}</div>` : ''}
+                <div class="kanban-task-meta">
+                    ${getPriorityBadge(task.doUuTien)}
+                    ${task.ngayKetThuc ? `<span class="badge">Due: ${formatDate(task.ngayKetThuc)}</span>` : ''}
+                </div>
             </div>
-        </div>
-    `).join('');
+        `).join('');
 
         // Setup drop zones
         container.addEventListener('dragover', handleDragOver);
@@ -1091,11 +1112,11 @@
                 if (response.ok) {
                     await loadTasks();
                 } else {
-                    alert('Lỗi cập nhật trạng thái');
+                    alert('Error updating status');
                 }
             } catch (error) {
-                console.error('Lỗi:', error);
-                alert('Lỗi cập nhật trạng thái');
+                console.error('Error:', error);
+                alert('Error updating status');
             }
         }
 
@@ -1103,7 +1124,7 @@
     }
 
     // ==========================================
-    // CALENDAR VIEW
+    // CALENDAR VIEW RENDERING
     // ==========================================
     function renderCalendarView() {
         updateCalendarTitle();
@@ -1123,8 +1144,8 @@
         // Previous month days
         for (let x = firstDayIndex; x > 0; x--) {
             html += `<div class="calendar-day other-month">
-            <div class="calendar-day-number">${prevLastDayDate - x + 1}</div>
-        </div>`;
+                <div class="calendar-day-number">${prevLastDayDate - x + 1}</div>
+            </div>`;
         }
 
         // Current month days
@@ -1137,20 +1158,20 @@
             const dayTasks = getTasksForDate(i, currentMonth, currentYear);
 
             html += `<div class="calendar-day ${isToday ? 'today' : ''}">
-            <div class="calendar-day-number">${i}</div>
-            ${dayTasks.map(task => `
-                <div class="calendar-task status-${task.trangThai}" onclick="editTask(${task.id})">
-                    ${escapeHtml(task.ten)}
-                </div>
-            `).join('')}
-        </div>`;
+                <div class="calendar-day-number">${i}</div>
+                ${dayTasks.map(task => `
+                    <div class="calendar-task status-${task.trangThai}" onclick="editTask(${task.id})">
+                        ${escapeHtml(task.ten)}
+                    </div>
+                `).join('')}
+            </div>`;
         }
 
         // Next month days
         for (let j = 1; j <= nextDays; j++) {
             html += `<div class="calendar-day other-month">
-            <div class="calendar-day-number">${j}</div>
-        </div>`;
+                <div class="calendar-day-number">${j}</div>
+            </div>`;
         }
 
         calendarDays.innerHTML = html;
@@ -1167,10 +1188,10 @@
     }
 
     function updateCalendarTitle() {
-        const monthNames = ['Tháng 1', 'Tháng 2', 'Tháng 3', 'Tháng 4', 'Tháng 5', 'Tháng 6',
-            'Tháng 7', 'Tháng 8', 'Tháng 9', 'Tháng 10', 'Tháng 11', 'Tháng 12'];
+        const monthNames = ['January', 'February', 'March', 'April', 'May', 'June',
+            'July', 'August', 'September', 'October', 'November', 'December'];
         document.getElementById('calendarTitle').textContent =
-            `${monthNames[currentMonth]}, ${currentYear}`;
+            `${monthNames[currentMonth]} ${currentYear}`;
     }
 
     function changeMonth(delta) {
@@ -1193,10 +1214,10 @@
     }
 
     // ==========================================
-    // MODAL NHIỆM VỤ
+    // TASK MODAL
     // ==========================================
     function showAddTaskModal() {
-        document.getElementById('taskModalTitle').textContent = 'Thêm nhiệm vụ mới';
+        document.getElementById('taskModalTitle').textContent = 'New Task';
         document.getElementById('taskForm').reset();
         document.getElementById('taskId').value = '';
         document.getElementById('taskModal').classList.add('active');
@@ -1210,13 +1231,13 @@
         const task = tasks.find(t => t.id === taskId);
         if (!task) return;
 
-        document.getElementById('taskModalTitle').textContent = 'Chỉnh sửa nhiệm vụ';
+        document.getElementById('taskModalTitle').textContent = 'Edit Task';
         document.getElementById('taskId').value = task.id;
-        document.getElementById('taskName').value = task.ten;
+        document.getElementById('taskName').value = task.ten || '';
         document.getElementById('taskDescription').value = task.mo_ta || '';
         document.getElementById('taskProject').value = task.duAnId || '';
-        document.getElementById('taskStatus').value = task.trangThai;
-        document.getElementById('taskPriority').value = task.doUuTien;
+        document.getElementById('taskStatus').value = task.trangThai || 'todo';
+        document.getElementById('taskPriority').value = task.doUuTien || 3;
         document.getElementById('taskStartDate').value = formatDateForInput(task.ngayBatDau);
         document.getElementById('taskEndDate').value = formatDateForInput(task.ngayKetThuc);
         document.getElementById('taskNote').value = task.ghiChu || '';
@@ -1239,7 +1260,7 @@
         };
 
         if (!taskData.ten) {
-            alert('Vui lòng nhập tên nhiệm vụ');
+            alert('Please enter task name');
             return;
         }
 
@@ -1258,16 +1279,16 @@
                 await loadTasks();
             } else {
                 const error = await response.json();
-                alert('Lỗi: ' + (error.error || 'Không thể lưu nhiệm vụ'));
+                alert('Error: ' + (error.error || 'Cannot save task'));
             }
         } catch (error) {
-            console.error('Lỗi:', error);
-            alert('Lỗi kết nối server');
+            console.error('Error:', error);
+            alert('Server connection error');
         }
     }
 
     async function deleteTask(taskId) {
-        if (!confirm('Bạn có chắc muốn xóa nhiệm vụ này?')) return;
+        if (!confirm('Are you sure you want to delete this task?')) return;
 
         try {
             const response = await fetch(`${API_TASKS}?id=${taskId}`, {
@@ -1277,21 +1298,22 @@
             if (response.ok) {
                 await loadTasks();
             } else {
-                alert('Lỗi xóa nhiệm vụ');
+                alert('Error deleting task');
             }
         } catch (error) {
-            console.error('Lỗi:', error);
-            alert('Lỗi kết nối server');
+            console.error('Error:', error);
+            alert('Server connection error');
         }
     }
 
     // ==========================================
-    // MODAL DỰ ÁN
+    // PROJECT MODAL
     // ==========================================
     function showAddProjectModal() {
-        document.getElementById('projectModalTitle').textContent = 'Thêm dự án mới';
+        document.getElementById('projectModalTitle').textContent = 'New Project';
         document.getElementById('projectForm').reset();
         document.getElementById('projectId').value = '';
+        document.getElementById('projectAssignee').value = currentUser.ten;
         document.getElementById('projectModal').classList.add('active');
     }
 
@@ -1307,13 +1329,12 @@
             nguoiThucHien: document.getElementById('projectAssignee').value.trim(),
             ngayBatDau: document.getElementById('projectStartDate').value || null,
             ngayKetThuc: document.getElementById('projectEndDate').value || null,
-            mauSac: document.getElementById('projectColor').value,
             ghiChu: document.getElementById('projectNote').value.trim(),
             trangThai: 'active'
         };
 
         if (!projectData.ten) {
-            alert('Vui lòng nhập tên dự án');
+            alert('Please enter project name');
             return;
         }
 
@@ -1333,11 +1354,11 @@
                 await loadTasks();
             } else {
                 const error = await response.json();
-                alert('Lỗi: ' + (error.error || 'Không thể lưu dự án'));
+                alert('Error: ' + (error.error || 'Cannot save project'));
             }
         } catch (error) {
-            console.error('Lỗi:', error);
-            alert('Lỗi kết nối server');
+            console.error('Error:', error);
+            alert('Server connection error');
         }
     }
 
@@ -1371,9 +1392,9 @@
 
     function getStatusBadge(status) {
         const statusMap = {
-            'todo': { label: 'Chưa làm', class: 'badge-todo' },
-            'inprogress': { label: 'Đang làm', class: 'badge-inprogress' },
-            'done': { label: 'Đã xong', class: 'badge-done' }
+            'todo': { label: 'To Do', class: 'badge-todo' },
+            'inprogress': { label: 'In Progress', class: 'badge-inprogress' },
+            'done': { label: 'Done', class: 'badge-done' }
         };
         const s = statusMap[status] || statusMap['todo'];
         return `<span class="badge ${s.class}">${s.label}</span>`;
@@ -1382,12 +1403,25 @@
     function getPriorityBadge(priority) {
         const level = getPriorityLevel(priority);
         const priorityMap = {
-            'high': { label: 'Cao', class: 'badge-priority-high', icon: '🔴' },
-            'medium': { label: 'TB', class: 'badge-priority-medium', icon: '🟡' },
-            'low': { label: 'Thấp', class: 'badge-priority-low', icon: '🟢' }
+            'high': { label: 'High', class: 'badge-priority-high' },
+            'medium': { label: 'Medium', class: 'badge-priority-medium' },
+            'low': { label: 'Low', class: 'badge-priority-low' }
         };
         const p = priorityMap[level];
-        return `<span class="badge ${p.class}">${p.icon} ${p.label}</span>`;
+        return `<span class="badge ${p.class}">${p.label}</span>`;
+    }
+
+    // Close modals on outside click
+    window.onclick = function(event) {
+        const taskModal = document.getElementById('taskModal');
+        const projectModal = document.getElementById('projectModal');
+
+        if (event.target === taskModal) {
+            closeTaskModal();
+        }
+        if (event.target === projectModal) {
+            closeProjectModal();
+        }
     }
 </script>
 </body>
