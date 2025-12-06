@@ -6,7 +6,7 @@ import java.sql.SQLException;
 
 public class DatabaseConfig {
     // SQL Server connection string
-    private static final String URL = "jdbc:sqlserver://localhost:1433;databaseName=taskmanager;encrypt=true;trustServerCertificate=true";
+    private static final String URL = "jdbc:sqlserver://localhost:1433;databaseName=taskmanager1;encrypt=true;trustServerCertificate=true";
     private static final String USER = "sa";
     private static final String PASSWORD = "123456";
 
