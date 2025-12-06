@@ -1,5 +1,6 @@
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 
 <%-- Kiểm tra đăng nhập --%>
 <c:if test="${empty sessionScope.user}">
@@ -136,7 +137,7 @@
             font-size: var(--font-size-3xl);
             font-weight: var(--font-weight-bold);
             margin-bottom: var(--spacing-xs);
-            letter-spacing: -0.02em);
+            letter-spacing: -0.02em;
         }
 
         .stat-label {
@@ -192,18 +193,18 @@
     <div class="profile-card">
         <div class="profile-header">
             <div class="profile-avatar" id="profileAvatar">
-                ${sessionScope.user.ten.substring(0,1).toUpperCase()}
+                <c:out value="${fn:substring(sessionScope.user.ten, 0, 1)}" />
             </div>
             <div class="profile-info">
-                <h2 id="profileName">${sessionScope.user.ten}</h2>
-                <div class="profile-role">${sessionScope.user.vaiTro}</div>
+                <h2 id="profileName"><c:out value="${sessionScope.user.ten}" /></h2>
+                <div class="profile-role"><c:out value="${sessionScope.user.vaiTro}" /></div>
             </div>
         </div>
 
         <div id="viewMode">
             <div class="info-group">
                 <div class="info-label">Email Address</div>
-                <div class="info-value" id="viewEmail">${sessionScope.user.email}</div>
+                <div class="info-value" id="viewEmail"><c:out value="${sessionScope.user.email}" /></div>
             </div>
 
             <div class="info-group">
@@ -251,15 +252,15 @@
 
     let currentUser = {
         id: ${sessionScope.user.id},
-        ten: '${sessionScope.user.ten}',
-        email: '${sessionScope.user.email}',
-        vaiTro: '${sessionScope.user.vaiTro}'
+        ten: '<c:out value="${sessionScope.user.ten}" />',
+        email: '<c:out value="${sessionScope.user.email}" />',
+        vaiTro: '<c:out value="${sessionScope.user.vaiTro}" />'
     };
 
     function setTheme(theme) {
         document.documentElement.setAttribute('data-theme', theme);
         localStorage.setItem('theme', theme);
-        document.cookie = `theme=${theme}; path=/; max-age=31536000`;
+        document.cookie = 'theme=' + theme + '; path=/; max-age=31536000';
     }
 
     function loadTheme() {

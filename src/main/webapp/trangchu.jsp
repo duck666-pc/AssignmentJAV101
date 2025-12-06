@@ -1,5 +1,6 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" pageEncoding="UTF-8" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 
 <%-- Kiểm tra đăng nhập --%>
 <c:if test="${empty sessionScope.user}">
@@ -547,11 +548,11 @@
             <button class="btn-icon" onclick="setTheme('dark')" title="Dark Mode">●</button>
             <div class="user-section">
                 <div class="user-avatar" onclick="location.href='${pageContext.request.contextPath}/taikhoan.jsp'">
-                    ${sessionScope.user.ten.substring(0,1).toUpperCase()}
+                    <c:out value="${fn:substring(sessionScope.user.ten, 0, 1)}" />
                 </div>
                 <div class="user-info">
-                    <div class="user-name">${sessionScope.user.ten}</div>
-                    <div class="user-role">${sessionScope.user.vaiTro}</div>
+                    <div class="user-name"><c:out value="${sessionScope.user.ten}" /></div>
+                    <div class="user-role"><c:out value="${sessionScope.user.vaiTro}" /></div>
                 </div>
             </div>
             <form action="${pageContext.request.contextPath}/auth?action=logout" method="post" style="margin: 0;">
@@ -766,7 +767,7 @@
 
                 <div class="form-group">
                     <label class="form-label" for="projectAssignee">Assignee</label>
-                    <input type="text" class="form-input" id="projectAssignee" value="${sessionScope.user.ten}" placeholder="Assignee name">
+                    <input type="text" class="form-input" id="projectAssignee" value="<c:out value='${sessionScope.user.ten}' />" placeholder="Assignee name">
                 </div>
 
                 <div class="form-group">
@@ -802,9 +803,9 @@
 
     let currentUser = {
         id: ${sessionScope.user.id},
-        ten: '${sessionScope.user.ten}',
-        email: '${sessionScope.user.email}',
-        vaiTro: '${sessionScope.user.vaiTro}'
+        ten: '<c:out value="${sessionScope.user.ten}" />',
+        email: '<c:out value="${sessionScope.user.email}" />',
+        vaiTro: '<c:out value="${sessionScope.user.vaiTro}" />'
     };
 
     let tasks = [];
@@ -828,7 +829,7 @@
     function setTheme(theme) {
         document.documentElement.setAttribute('data-theme', theme);
         localStorage.setItem('theme', theme);
-        document.cookie = `theme=${theme}; path=/; max-age=31536000`;
+        document.cookie = 'theme=' + theme + '; path=/; max-age=31536000';
     }
 
     function loadTheme() {
@@ -889,7 +890,7 @@
         selects.forEach((select, index) => {
             const currentValue = select.value;
             const options = projects.map(p =>
-                `<option value="${p.id}">${escapeHtml(p.ten)}</option>`
+                '<option value="' + p.id + '">' + escapeHtml(p.ten) + '</option>'
             ).join('');
 
             if (index === 0) {
@@ -908,24 +909,23 @@
         const inprogress = tasks.filter(t => t.trangThai === 'inprogress').length;
         const done = tasks.filter(t => t.trangThai === 'done').length;
 
-        const statsHtml = `
-            <div class="stat-card">
-                <div class="stat-value">${total}</div>
-                <div class="stat-label">Total Tasks</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-value">${todo}</div>
-                <div class="stat-label">To Do</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-value">${inprogress}</div>
-                <div class="stat-label">In Progress</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-value">${done}</div>
-                <div class="stat-label">Completed</div>
-            </div>
-        `;
+        const statsHtml = '<div class="stat-card">' +
+            '<div class="stat-value">' + total + '</div>' +
+            '<div class="stat-label">Total Tasks</div>' +
+            '</div>' +
+            '<div class="stat-card">' +
+            '<div class="stat-value">' + todo + '</div>' +
+            '<div class="stat-label">To Do</div>' +
+            '</div>' +
+            '<div class="stat-card">' +
+            '<div class="stat-value">' + inprogress + '</div>' +
+            '<div class="stat-label">In Progress</div>' +
+            '</div>' +
+            '<div class="stat-card">' +
+            '<div class="stat-value">' + done + '</div>' +
+            '<div class="stat-label">Completed</div>' +
+            '</div>';
+
         document.getElementById('statsGrid').innerHTML = statsHtml;
     }
 
@@ -987,44 +987,52 @@
         const container = document.getElementById('taskList');
 
         if (taskList.length === 0) {
-            container.innerHTML = `
-                <div class="empty-state">
-                    <div class="empty-state-icon">□</div>
-                    <h3 class="empty-state-title">No Tasks</h3>
-                    <p class="empty-state-text">Create your first task to get started</p>
-                    <button class="btn btn-primary" onclick="showAddTaskModal()">+ New Task</button>
-                </div>
-            `;
+            container.innerHTML = '<div class="empty-state">' +
+                '<div class="empty-state-icon">□</div>' +
+                '<h3 class="empty-state-title">No Tasks</h3>' +
+                '<p class="empty-state-text">Create your first task to get started</p>' +
+                '<button class="btn btn-primary" onclick="showAddTaskModal()">+ New Task</button>' +
+                '</div>';
             return;
         }
 
-        container.innerHTML = taskList.map(task => `
-            <div class="task-card" onclick="editTask(${task.id})">
-                <div class="task-card-header">
-                    <div>
-                        <h3 class="task-title">${escapeHtml(task.ten)}</h3>
-                        <div class="task-meta">
-                            ${getStatusBadge(task.trangThai)}
-                            ${getPriorityBadge(task.doUuTien)}
-                            ${task.duAnTen ? `<span class="badge">${escapeHtml(task.duAnTen)}</span>` : ''}
-                        </div>
-                    </div>
-                </div>
+        container.innerHTML = taskList.map(task => {
+            let html = '<div class="task-card" onclick="editTask(' + task.id + ')">' +
+                '<div class="task-card-header">' +
+                '<div>' +
+                '<h3 class="task-title">' + escapeHtml(task.ten) + '</h3>' +
+                '<div class="task-meta">' +
+                getStatusBadge(task.trangThai) +
+                getPriorityBadge(task.doUuTien);
 
-                ${task.mo_ta ? `<div class="task-description">${escapeHtml(task.mo_ta)}</div>` : ''}
+            if (task.duAnTen) {
+                html += '<span class="badge">' + escapeHtml(task.duAnTen) + '</span>';
+            }
 
-                <div class="task-footer">
-                    <div class="task-dates">
-                        ${task.ngayBatDau ? `<span>Start: ${formatDate(task.ngayBatDau)}</span>` : ''}
-                        ${task.ngayKetThuc ? `<span>Due: ${formatDate(task.ngayKetThuc)}</span>` : ''}
-                    </div>
-                    <div class="task-actions" onclick="event.stopPropagation()">
-                        <button class="btn btn-sm btn-secondary" onclick="editTask(${task.id})">Edit</button>
-                        <button class="btn btn-sm btn-danger" onclick="deleteTask(${task.id})">Delete</button>
-                    </div>
-                </div>
-            </div>
-        `).join('');
+            html += '</div></div></div>';
+
+            if (task.mo_ta) {
+                html += '<div class="task-description">' + escapeHtml(task.mo_ta) + '</div>';
+            }
+
+            html += '<div class="task-footer">' +
+                '<div class="task-dates">';
+
+            if (task.ngayBatDau) {
+                html += '<span>Start: ' + formatDate(task.ngayBatDau) + '</span>';
+            }
+            if (task.ngayKetThuc) {
+                html += '<span>Due: ' + formatDate(task.ngayKetThuc) + '</span>';
+            }
+
+            html += '</div>' +
+                '<div class="task-actions" onclick="event.stopPropagation()">' +
+                '<button class="btn btn-sm btn-secondary" onclick="editTask(' + task.id + ')">Edit</button>' +
+                '<button class="btn btn-sm btn-danger" onclick="deleteTask(' + task.id + ')">Delete</button>' +
+                '</div></div></div>';
+
+            return html;
+        }).join('');
     }
 
     // ==========================================
@@ -1052,19 +1060,28 @@
             return;
         }
 
-        container.innerHTML = taskList.map(task => `
-            <div class="kanban-task" draggable="true" data-id="${task.id}"
-                 ondragstart="handleDragStart(event)"
-                 ondragend="handleDragEnd(event)"
-                 onclick="editTask(${task.id})">
-                <div class="kanban-task-title">${escapeHtml(task.ten)}</div>
-                ${task.mo_ta ? `<div class="task-description">${escapeHtml(task.mo_ta)}</div>` : ''}
-                <div class="kanban-task-meta">
-                    ${getPriorityBadge(task.doUuTien)}
-                    ${task.ngayKetThuc ? `<span class="badge">Due: ${formatDate(task.ngayKetThuc)}</span>` : ''}
-                </div>
-            </div>
-        `).join('');
+        container.innerHTML = taskList.map(task => {
+            let html = '<div class="kanban-task" draggable="true" data-id="' + task.id + '"' +
+                ' ondragstart="handleDragStart(event)"' +
+                ' ondragend="handleDragEnd(event)"' +
+                ' onclick="editTask(' + task.id + ')">' +
+                '<div class="kanban-task-title">' + escapeHtml(task.ten) + '</div>';
+
+            if (task.mo_ta) {
+                html += '<div class="task-description">' + escapeHtml(task.mo_ta) + '</div>';
+            }
+
+            html += '<div class="kanban-task-meta">' +
+                getPriorityBadge(task.doUuTien);
+
+            if (task.ngayKetThuc) {
+                html += '<span class="badge">Due: ' + formatDate(task.ngayKetThuc) + '</span>';
+            }
+
+            html += '</div></div>';
+
+            return html;
+        }).join('');
 
         // Setup drop zones
         container.addEventListener('dragover', handleDragOver);
@@ -1103,7 +1120,7 @@
             const newStatus = e.currentTarget.dataset.status;
 
             try {
-                const response = await fetch(`${API_TASKS}?id=${taskId}`, {
+                const response = await fetch(API_TASKS + '?id=' + taskId, {
                     method: 'PUT',
                     headers: { 'Content-Type': 'application/json; charset=UTF-8' },
                     body: JSON.stringify({ trangThai: newStatus })
@@ -1143,9 +1160,9 @@
 
         // Previous month days
         for (let x = firstDayIndex; x > 0; x--) {
-            html += `<div class="calendar-day other-month">
-                <div class="calendar-day-number">${prevLastDayDate - x + 1}</div>
-            </div>`;
+            html += '<div class="calendar-day other-month">' +
+                '<div class="calendar-day-number">' + (prevLastDayDate - x + 1) + '</div>' +
+                '</div>';
         }
 
         // Current month days
@@ -1157,21 +1174,23 @@
 
             const dayTasks = getTasksForDate(i, currentMonth, currentYear);
 
-            html += `<div class="calendar-day ${isToday ? 'today' : ''}">
-                <div class="calendar-day-number">${i}</div>
-                ${dayTasks.map(task => `
-                    <div class="calendar-task status-${task.trangThai}" onclick="editTask(${task.id})">
-                        ${escapeHtml(task.ten)}
-                    </div>
-                `).join('')}
-            </div>`;
+            html += '<div class="calendar-day ' + (isToday ? 'today' : '') + '">' +
+                '<div class="calendar-day-number">' + i + '</div>';
+
+            dayTasks.forEach(task => {
+                html += '<div class="calendar-task status-' + task.trangThai + '" onclick="editTask(' + task.id + ')">' +
+                    escapeHtml(task.ten) +
+                    '</div>';
+            });
+
+            html += '</div>';
         }
 
         // Next month days
         for (let j = 1; j <= nextDays; j++) {
-            html += `<div class="calendar-day other-month">
-                <div class="calendar-day-number">${j}</div>
-            </div>`;
+            html += '<div class="calendar-day other-month">' +
+                '<div class="calendar-day-number">' + j + '</div>' +
+                '</div>';
         }
 
         calendarDays.innerHTML = html;
@@ -1191,7 +1210,7 @@
         const monthNames = ['January', 'February', 'March', 'April', 'May', 'June',
             'July', 'August', 'September', 'October', 'November', 'December'];
         document.getElementById('calendarTitle').textContent =
-            `${monthNames[currentMonth]} ${currentYear}`;
+            monthNames[currentMonth] + ' ' + currentYear;
     }
 
     function changeMonth(delta) {
@@ -1265,7 +1284,7 @@
         }
 
         try {
-            const url = taskId ? `${API_TASKS}?id=${taskId}` : API_TASKS;
+            const url = taskId ? (API_TASKS + '?id=' + taskId) : API_TASKS;
             const method = taskId ? 'PUT' : 'POST';
 
             const response = await fetch(url, {
@@ -1291,7 +1310,7 @@
         if (!confirm('Are you sure you want to delete this task?')) return;
 
         try {
-            const response = await fetch(`${API_TASKS}?id=${taskId}`, {
+            const response = await fetch(API_TASKS + '?id=' + taskId, {
                 method: 'DELETE'
             });
 
@@ -1339,7 +1358,7 @@
         }
 
         try {
-            const url = projectId ? `${API_PROJECTS}?id=${projectId}` : API_PROJECTS;
+            const url = projectId ? (API_PROJECTS + '?id=' + projectId) : API_PROJECTS;
             const method = projectId ? 'PUT' : 'POST';
 
             const response = await fetch(url, {
@@ -1378,7 +1397,7 @@
         const day = String(date.getDate()).padStart(2, '0');
         const month = String(date.getMonth() + 1).padStart(2, '0');
         const year = date.getFullYear();
-        return `${day}/${month}/${year}`;
+        return day + '/' + month + '/' + year;
     }
 
     function formatDateForInput(dateString) {
@@ -1387,28 +1406,28 @@
         const year = date.getFullYear();
         const month = String(date.getMonth() + 1).padStart(2, '0');
         const day = String(date.getDate()).padStart(2, '0');
-        return `${year}-${month}-${day}`;
+        return year + '-' + month + '-' + day;
     }
 
     function getStatusBadge(status) {
         const statusMap = {
-            'todo': { label: 'To Do', class: 'badge-todo' },
-            'inprogress': { label: 'In Progress', class: 'badge-inprogress' },
-            'done': { label: 'Done', class: 'badge-done' }
+            'todo': { label: 'To Do', className: 'badge-todo' },
+            'inprogress': { label: 'In Progress', className: 'badge-inprogress' },
+            'done': { label: 'Done', className: 'badge-done' }
         };
         const s = statusMap[status] || statusMap['todo'];
-        return `<span class="badge ${s.class}">${s.label}</span>`;
+        return '<span class="badge ' + s.className + '">' + s.label + '</span>';
     }
 
     function getPriorityBadge(priority) {
         const level = getPriorityLevel(priority);
         const priorityMap = {
-            'high': { label: 'High', class: 'badge-priority-high' },
-            'medium': { label: 'Medium', class: 'badge-priority-medium' },
-            'low': { label: 'Low', class: 'badge-priority-low' }
+            'high': { label: 'High', className: 'badge-priority-high' },
+            'medium': { label: 'Medium', className: 'badge-priority-medium' },
+            'low': { label: 'Low', className: 'badge-priority-low' }
         };
         const p = priorityMap[level];
-        return `<span class="badge ${p.class}">${p.label}</span>`;
+        return '<span class="badge ' + p.className + '">' + p.label + '</span>';
     }
 
     // Close modals on outside click
